@@ -23,8 +23,7 @@ import java.lang.annotation.Target;
 
 /**
  * 删除注解
- * 可以指定删除语句所在的类、方法
- * 通过这种方式不需要写额外的xml
+ * 可以指定删除sql所在的类、方法
  *
  * @author Clinton Begin
  */
@@ -41,7 +40,7 @@ public @interface DeleteProvider {
     Class<?> type();
 
     /**
-     * 删除语句所在方法 返回值就是删除语句
+     * 删除语句所在方法 返回值就是删除sql
      *
      * @return
      */

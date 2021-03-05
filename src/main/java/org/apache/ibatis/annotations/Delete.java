@@ -23,7 +23,6 @@ import java.lang.annotation.Target;
 
 /**
  * 删除语句注解
- * 如果通过注解写的话 就不需要额外写xml
  *
  * @author Clinton Begin
  */
