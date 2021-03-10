@@ -19,7 +19,7 @@ import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
+/**维护的所有的jdbc类型
  * @author Clinton Begin
  */
 public enum JdbcType {
