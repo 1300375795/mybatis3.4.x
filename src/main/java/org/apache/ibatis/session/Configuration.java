@@ -189,18 +189,34 @@ public class Configuration {
      */
     protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
 
+    /**
+     * 是否允许懒加载
+     */
     protected boolean lazyLoadingEnabled = false;
+
+    /**
+     * 代理工厂 实现类为javassist 一个开源的字节码类库
+     */
     protected ProxyFactory proxyFactory = new JavassistProxyFactory(); // #224 Using internal Javassist instead of OGNL
 
+    /**
+     * 数据库id
+     */
     protected String databaseId;
+
     /**
      * Configuration factory class.
      * Used to create Configuration for loading deserialized unread properties.
+     * 配置工厂class对象
+     * 用于创建用于加载反序列化的未读属性的配置。
      *
      * @see <a href='https://code.google.com/p/mybatis/issues/detail?id=300'>Issue 300 (google code)</a>
      */
     protected Class<?> configurationFactory;
 
+    /**
+     * 映射注册器
+     */
     protected final MapperRegistry mapperRegistry = new MapperRegistry(this);
     protected final InterceptorChain interceptorChain = new InterceptorChain();
     protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
