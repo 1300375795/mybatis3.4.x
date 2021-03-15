@@ -798,9 +798,16 @@ public class Configuration {
         return incompleteMethods;
     }
 
+    /**
+     * 判断是否存在这个id的映射声明
+     *
+     * @param id mapperInterface+methodName
+     * @return
+     */
     public MappedStatement getMappedStatement(String id) {
         return this.getMappedStatement(id, true);
     }
+
 
     public MappedStatement getMappedStatement(String id, boolean validateIncompleteStatements) {
         if (validateIncompleteStatements) {

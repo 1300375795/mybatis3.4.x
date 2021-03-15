@@ -43,10 +43,23 @@ public class MapperRegistry {
      */
     private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = new HashMap<Class<?>, MapperProxyFactory<?>>();
 
+    /**
+     * 构造函数
+     *
+     * @param config
+     */
     public MapperRegistry(Configuration config) {
         this.config = config;
     }
 
+    /**
+     * 映射class类型
+     *
+     * @param type
+     * @param sqlSession
+     * @param <T>
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
         final MapperProxyFactory<T> mapperProxyFactory = (MapperProxyFactory<T>) knownMappers.get(type);

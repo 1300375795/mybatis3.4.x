@@ -1,150 +1,246 @@
 /**
- *    Copyright 2009-2015 the original author or authors.
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ * Copyright 2009-2015 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.ibatis.executor;
 
 /**
+ * 异常上下文
+ *
  * @author Clinton Begin
  */
 public class ErrorContext {
 
-  private static final String LINE_SEPARATOR = System.getProperty("line.separator","\n");
-  private static final ThreadLocal<ErrorContext> LOCAL = new ThreadLocal<ErrorContext>();
+    /**
+     * 行分隔符
+     */
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator", "\n");
 
-  private ErrorContext stored;
-  private String resource;
-  private String activity;
-  private String object;
-  private String message;
-  private String sql;
-  private Throwable cause;
+    private static final ThreadLocal<ErrorContext> LOCAL = new ThreadLocal<ErrorContext>();
 
-  private ErrorContext() {
-  }
+    /**
+     *
+     */
+    private ErrorContext stored;
 
-  public static ErrorContext instance() {
-    ErrorContext context = LOCAL.get();
-    if (context == null) {
-      context = new ErrorContext();
-      LOCAL.set(context);
-    }
-    return context;
-  }
+    /**
+     * 资源
+     */
+    private String resource;
 
-  public ErrorContext store() {
-    stored = this;
-    LOCAL.set(new ErrorContext());
-    return LOCAL.get();
-  }
+    /**
+     * 行为
+     */
+    private String activity;
 
-  public ErrorContext recall() {
-    if (stored != null) {
-      LOCAL.set(stored);
-      stored = null;
-    }
-    return LOCAL.get();
-  }
+    /**
+     * 对象
+     */
+    private String object;
 
-  public ErrorContext resource(String resource) {
-    this.resource = resource;
-    return this;
-  }
+    /**
+     * 信息
+     */
+    private String message;
 
-  public ErrorContext activity(String activity) {
-    this.activity = activity;
-    return this;
-  }
+    /**
+     * sql
+     */
+    private String sql;
 
-  public ErrorContext object(String object) {
-    this.object = object;
-    return this;
-  }
+    /**
+     * 异常
+     */
+    private Throwable cause;
 
-  public ErrorContext message(String message) {
-    this.message = message;
-    return this;
-  }
-
-  public ErrorContext sql(String sql) {
-    this.sql = sql;
-    return this;
-  }
-
-  public ErrorContext cause(Throwable cause) {
-    this.cause = cause;
-    return this;
-  }
-
-  public ErrorContext reset() {
-    resource = null;
-    activity = null;
-    object = null;
-    message = null;
-    sql = null;
-    cause = null;
-    LOCAL.remove();
-    return this;
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder description = new StringBuilder();
-
-    // message
-    if (this.message != null) {
-      description.append(LINE_SEPARATOR);
-      description.append("### ");
-      description.append(this.message);
+    /**
+     * 构造函数
+     */
+    private ErrorContext() {
     }
 
-    // resource
-    if (resource != null) {
-      description.append(LINE_SEPARATOR);
-      description.append("### The error may exist in ");
-      description.append(resource);
+    /**
+     * 返回当前线程的ErrorContext
+     * 如果不存在 新建一个
+     *
+     * @return
+     */
+    public static ErrorContext instance() {
+        ErrorContext context = LOCAL.get();
+        if (context == null) {
+            context = new ErrorContext();
+            LOCAL.set(context);
+        }
+        return context;
     }
 
-    // object
-    if (object != null) {
-      description.append(LINE_SEPARATOR);
-      description.append("### The error may involve ");
-      description.append(object);
+    /**
+     * 存储当前对象为stored
+     * 重新new一个ErrorContext并返回
+     *
+     * @return
+     */
+    public ErrorContext store() {
+        stored = this;
+        LOCAL.set(new ErrorContext());
+        return LOCAL.get();
     }
 
-    // activity
-    if (activity != null) {
-      description.append(LINE_SEPARATOR);
-      description.append("### The error occurred while ");
-      description.append(activity);
+    /**
+     * 如果存储的不为空 那么将存储的设置为当前线程的ErrorContext
+     * 存储的设置为null
+     * 返回当前线程的ErrorContext
+     *
+     * @return
+     */
+    public ErrorContext recall() {
+        if (stored != null) {
+            LOCAL.set(stored);
+            stored = null;
+        }
+        return LOCAL.get();
     }
 
-    // activity
-    if (sql != null) {
-      description.append(LINE_SEPARATOR);
-      description.append("### SQL: ");
-      description.append(sql.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ').trim());
+    /**
+     * 设置资源
+     *
+     * @param resource
+     * @return
+     */
+    public ErrorContext resource(String resource) {
+        this.resource = resource;
+        return this;
     }
 
-    // cause
-    if (cause != null) {
-      description.append(LINE_SEPARATOR);
-      description.append("### Cause: ");
-      description.append(cause.toString());
+    /**
+     * 设置行为
+     *
+     * @param activity
+     * @return
+     */
+    public ErrorContext activity(String activity) {
+        this.activity = activity;
+        return this;
     }
 
-    return description.toString();
-  }
+    /**
+     * 设置对象
+     *
+     * @param object
+     * @return
+     */
+    public ErrorContext object(String object) {
+        this.object = object;
+        return this;
+    }
+
+    /**
+     * 设置信息
+     *
+     * @param message
+     * @return
+     */
+    public ErrorContext message(String message) {
+        this.message = message;
+        return this;
+    }
+
+    /**
+     * 设置sql
+     *
+     * @param sql
+     * @return
+     */
+    public ErrorContext sql(String sql) {
+        this.sql = sql;
+        return this;
+    }
+
+    /**
+     * 设置异常
+     *
+     * @param cause
+     * @return
+     */
+    public ErrorContext cause(Throwable cause) {
+        this.cause = cause;
+        return this;
+    }
+
+    /**
+     * 重置
+     *
+     * @return
+     */
+    public ErrorContext reset() {
+        resource = null;
+        activity = null;
+        object = null;
+        message = null;
+        sql = null;
+        cause = null;
+        LOCAL.remove();
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder description = new StringBuilder();
+
+        // message
+        if (this.message != null) {
+            description.append(LINE_SEPARATOR);
+            description.append("### ");
+            description.append(this.message);
+        }
+
+        // resource
+        if (resource != null) {
+            description.append(LINE_SEPARATOR);
+            description.append("### The error may exist in ");
+            description.append(resource);
+        }
+
+        // object
+        if (object != null) {
+            description.append(LINE_SEPARATOR);
+            description.append("### The error may involve ");
+            description.append(object);
+        }
+
+        // activity
+        if (activity != null) {
+            description.append(LINE_SEPARATOR);
+            description.append("### The error occurred while ");
+            description.append(activity);
+        }
+
+        // activity
+        if (sql != null) {
+            description.append(LINE_SEPARATOR);
+            description.append("### SQL: ");
+            description.append(sql.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ').trim());
+        }
+
+        // cause
+        if (cause != null) {
+            description.append(LINE_SEPARATOR);
+            description.append("### Cause: ");
+            description.append(cause.toString());
+        }
+
+        return description.toString();
+    }
 
 }

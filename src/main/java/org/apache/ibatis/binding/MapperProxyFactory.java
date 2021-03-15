@@ -34,10 +34,10 @@ public class MapperProxyFactory<T> {
      */
     private final Class<T> mapperInterface;
 
-  /**
-   *
-   */
-  private final Map<Method, MapperMethod> methodCache = new ConcurrentHashMap<Method, MapperMethod>();
+    /**
+     * 方法跟方法对应的映射方法map
+     */
+    private final Map<Method, MapperMethod> methodCache = new ConcurrentHashMap<Method, MapperMethod>();
 
     public MapperProxyFactory(Class<T> mapperInterface) {
         this.mapperInterface = mapperInterface;

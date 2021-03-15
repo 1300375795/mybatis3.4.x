@@ -18,6 +18,7 @@ package org.apache.ibatis.mapping;
 import java.sql.ResultSet;
 
 /**
+ *
  * @author Clinton Begin
  */
 public enum ResultSetType {
