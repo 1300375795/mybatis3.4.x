@@ -48,18 +48,26 @@ public abstract class VFS {
 
     /**
      * The list to which implementations are added by {@link #addImplClass(Class)}.
+     * 用户自定义VFS实现类
      */
     public static final List<Class<? extends VFS>> USER_IMPLEMENTATIONS = new ArrayList<Class<? extends VFS>>();
 
     /**
      * Singleton instance holder.
+     * 单例持有者
      */
     private static class VFSHolder {
         static final VFS INSTANCE = createVFS();
 
+        /**
+         * 创建vfs
+         *
+         * @return
+         */
         @SuppressWarnings("unchecked")
         static VFS createVFS() {
             // Try the user implementations first, then the built-ins
+            //将用户定义的VFS跟我们系统定义的VFS加载一个集合中 用户实现的在集合前面
             List<Class<? extends VFS>> impls = new ArrayList<Class<? extends VFS>>();
             impls.addAll(USER_IMPLEMENTATIONS);
             impls.addAll(Arrays.asList((Class<? extends VFS>[]) IMPLEMENTATIONS));
@@ -95,6 +103,7 @@ public abstract class VFS {
     /**
      * Get the singleton {@link VFS} instance. If no {@link VFS} implementation can be found for the
      * current environment, then this method returns null.
+     * 返回vfs的单例 如果当前环境没有找到 那么返回null
      */
     public static VFS getInstance() {
         return VFSHolder.INSTANCE;
@@ -103,6 +112,7 @@ public abstract class VFS {
     /**
      * Adds the specified class to the list of {@link VFS} implementations. Classes added in this
      * manner are tried in the order they are added and before any of the built-in implementations.
+     * 添加用户自定义VFS
      *
      * @param clazz The {@link VFS} implementation class to add.
      */
@@ -114,6 +124,7 @@ public abstract class VFS {
 
     /**
      * Get a class by name. If the class is not found then return null.
+     * 根据类名称加载class对象 如果出现异常 返回null
      */
     protected static Class<?> getClass(String className) {
         try {
@@ -129,6 +140,7 @@ public abstract class VFS {
 
     /**
      * Get a method by name and parameter types. If the method is not found then return null.
+     * 根据方法名称以及参数类型获取方法
      *
      * @param clazz          The class to which the method belongs.
      * @param methodName     The name of the method.
@@ -151,6 +163,7 @@ public abstract class VFS {
 
     /**
      * Invoke a method on an object and return whatever it returns.
+     * 执行方法
      *
      * @param method     The method to invoke.
      * @param object     The instance or class (for static methods) on which to invoke the method.
@@ -180,6 +193,7 @@ public abstract class VFS {
     /**
      * Get a list of {@link URL}s from the context classloader for all the resources found at the
      * specified path.
+     * 在指定路径下寻找资源url集合
      *
      * @param path The resource path.
      * @return A list of {@link URL}s, as returned by {@link ClassLoader#getResources(String)}.
@@ -191,12 +205,14 @@ public abstract class VFS {
 
     /**
      * Return true if the {@link VFS} implementation is valid for the current environment.
+     * 判断VFS在当前环境是否有效
      */
     public abstract boolean isValid();
 
     /**
      * Recursively list the full resource path of all the resources that are children of the
      * resource identified by a URL.
+     * 找到这个路径下面的所有资源
      *
      * @param url     The URL that identifies the resource to list.
      * @param forPath The path to the resource that is identified by the URL. Generally, this is the
@@ -209,6 +225,7 @@ public abstract class VFS {
     /**
      * Recursively list the full resource path of all the resources that are children of all the
      * resources found at the specified path.
+     * 找到指定资源下面的所有子资源
      *
      * @param path The path of the resource(s) to list.
      * @return A list containing the names of the child resources.

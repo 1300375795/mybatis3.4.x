@@ -46,9 +46,15 @@ public class DefaultVFS extends VFS {
 
     /**
      * The magic header that indicates a JAR (ZIP) file.
+     * jar、zip魔数标识
      */
     private static final byte[] JAR_MAGIC = { 'P', 'K', 3, 4 };
 
+    /**
+     * 默认的在各种环境都是有效的
+     *
+     * @return
+     */
     @Override
     public boolean isValid() {
         return true;

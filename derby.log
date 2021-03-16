@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-Fri Mar 05 16:38:41 CST 2021:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-0178-0189-f352-00000ba0c4c8 
+Tue Mar 16 13:12:28 CST 2021:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-0178-3973-1ae6-00000d627458 
 on database directory /Users/yedeguo/mybatis3.4.x/ibderby with class loader sun.misc.Launcher$AppClassLoader@18b4aac2 
 Loaded from file:/Users/yedeguo/.m2/repository/org/apache/derby/derby/10.12.1.1/derby-10.12.1.1.jar
 java.vendor=Oracle Corporation
@@ -8,6 +8,6 @@ java.runtime.version=1.8.0_131-b11
 user.dir=/Users/yedeguo/mybatis3.4.x
 os.name=Mac OS X
 os.arch=x86_64
-os.version=10.15.7
+os.version=10.16
 derby.system.home=null
 Database Class Loader started - derby.database.classpath=''

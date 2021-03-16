@@ -170,6 +170,7 @@ public class TypeAliasRegistry {
      * 根据注解进行别名化
      * 如果class对象上面存在@Alias注解
      * 那么拿到这个注解的value作为key 将这个class对象进行别名化
+     * 如果没有注解那么就拿这个类的简单名称作为别名
      *
      * @param type
      */
