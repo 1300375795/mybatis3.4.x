@@ -36,16 +36,44 @@ import org.apache.ibatis.session.SqlSession;
 public class MapperProxy<T> implements InvocationHandler, Serializable {
 
     private static final long serialVersionUID = -6424540398559729838L;
+
+    /**
+     * sql会话
+     */
     private final SqlSession sqlSession;
+
+    /**
+     * 源映射接口
+     */
     private final Class<T> mapperInterface;
+
+    /**
+     * 方法跟映射方法的map
+     */
     private final Map<Method, MapperMethod> methodCache;
 
+    /**
+     * 构造函数
+     *
+     * @param sqlSession
+     * @param mapperInterface
+     * @param methodCache
+     */
     public MapperProxy(SqlSession sqlSession, Class<T> mapperInterface, Map<Method, MapperMethod> methodCache) {
         this.sqlSession = sqlSession;
         this.mapperInterface = mapperInterface;
         this.methodCache = methodCache;
     }
 
+    /**
+     * 被代理接口执行方法时实际会执行这个方法
+     *
+     * @param proxy
+     * @param method
+     * @param args
+     * @return
+     * @throws Throwable
+     */
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         try {
@@ -61,6 +89,12 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
         return mapperMethod.execute(sqlSession, args);
     }
 
+    /**
+     * 缓存mapper对应的方法
+     *
+     * @param method
+     * @return
+     */
     private MapperMethod cachedMapperMethod(Method method) {
         MapperMethod mapperMethod = methodCache.get(method);
         if (mapperMethod == null) {
@@ -86,6 +120,11 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
 
     /**
      * Backport of java.lang.reflect.Method#isDefault()
+     * 按位与运算符（&）
+     * 按位或运算符（|）
+     * 取反运算符（~）
+     * 异或运算符（^）
+     * 是否默认方法
      */
     private boolean isDefaultMethod(Method method) {
         return (method.getModifiers() & (Modifier.ABSTRACT | Modifier.PUBLIC | Modifier.STATIC)) == Modifier.PUBLIC

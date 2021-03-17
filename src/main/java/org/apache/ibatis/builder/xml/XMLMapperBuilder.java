@@ -158,6 +158,7 @@ public class XMLMapperBuilder extends BaseBuilder {
             configurationElement(parser.evalNode("/mapper"));
             //将这个文件加到已经加载过的资源集合中
             configuration.addLoadedResource(resource);
+            //绑定命名空间
             bindMapperForNamespace();
         }
 

@@ -75,24 +75,29 @@ public class MapperMethod {
      */
     public Object execute(SqlSession sqlSession, Object[] args) {
         Object result;
+        //判断sql的类型
         switch (command.getType()) {
-            //如果方法的类型是新增 转换请求参数到sql命令
+            //如果方法的类型是新增 执行新增sql
             case INSERT: {
                 Object param = method.convertArgsToSqlCommandParam(args);
                 result = rowCountResult(sqlSession.insert(command.getName(), param));
                 break;
             }
+            //如果是更新执行更新sql
             case UPDATE: {
                 Object param = method.convertArgsToSqlCommandParam(args);
                 result = rowCountResult(sqlSession.update(command.getName(), param));
                 break;
             }
+            //如果是删除执行删除sql
             case DELETE: {
                 Object param = method.convertArgsToSqlCommandParam(args);
                 result = rowCountResult(sqlSession.delete(command.getName(), param));
                 break;
             }
+            //如果是查询 执行查询sql
             case SELECT:
+                //如果返回是void  并且有ResultHandler那么通过resultHandler执行
                 if (method.returnsVoid() && method.hasResultHandler()) {
                     executeWithResultHandler(sqlSession, args);
                     result = null;
@@ -107,12 +112,15 @@ public class MapperMethod {
                     result = sqlSession.selectOne(command.getName(), param);
                 }
                 break;
+            //如果是刷新 执行刷新sql
             case FLUSH:
                 result = sqlSession.flushStatements();
                 break;
+            //其他情况抛出异常
             default:
                 throw new BindingException("Unknown execution method for: " + command.getName());
         }
+        //如果返回结果是null并且方法的返回类型是原始类型并且方法不是返回的void 抛出异常
         if (result == null && method.getReturnType().isPrimitive() && !method.returnsVoid()) {
             throw new BindingException("Mapper method '" + command.getName()
                     + " attempted to return null from a method with a primitive return type (" + method.getReturnType()
@@ -121,52 +129,93 @@ public class MapperMethod {
         return result;
     }
 
+    /**
+     * 影响行数量结果
+     *
+     * @param rowCount
+     * @return
+     */
     private Object rowCountResult(int rowCount) {
         final Object result;
+        //如果方法是返回void 直接返回null
         if (method.returnsVoid()) {
             result = null;
-        } else if (Integer.class.equals(method.getReturnType()) || Integer.TYPE.equals(method.getReturnType())) {
+        }
+        //如果是返回Integer直接赋值
+        else if (Integer.class.equals(method.getReturnType()) || Integer.TYPE.equals(method.getReturnType())) {
             result = rowCount;
-        } else if (Long.class.equals(method.getReturnType()) || Long.TYPE.equals(method.getReturnType())) {
+        }
+        //如果返回Long 进行强转
+        else if (Long.class.equals(method.getReturnType()) || Long.TYPE.equals(method.getReturnType())) {
             result = (long) rowCount;
-        } else if (Boolean.class.equals(method.getReturnType()) || Boolean.TYPE.equals(method.getReturnType())) {
+        }
+        //如果是返回boolean类型 判断影响的行数是不是大于0
+        else if (Boolean.class.equals(method.getReturnType()) || Boolean.TYPE.equals(method.getReturnType())) {
             result = rowCount > 0;
         } else {
+            //其他类型不支持 比如short、double
             throw new BindingException(
                     "Mapper method '" + command.getName() + "' has an unsupported return type: " + method
                             .getReturnType());
         }
+        //返回结果
         return result;
     }
 
+    /**
+     * 以ResultHandler的形式执行
+     *
+     * @param sqlSession
+     * @param args
+     */
     private void executeWithResultHandler(SqlSession sqlSession, Object[] args) {
+        //拿到这个声明id的映射声明
         MappedStatement ms = sqlSession.getConfiguration().getMappedStatement(command.getName());
+        //如果声明类型不是回调并且返回类型是void 抛出异常
         if (!StatementType.CALLABLE.equals(ms.getStatementType()) && void.class
                 .equals(ms.getResultMaps().get(0).getType())) {
             throw new BindingException(
                     "method " + command.getName() + " needs either a @ResultMap annotation, a @ResultType annotation,"
                             + " or a resultType attribute in XML so a ResultHandler can be used as a parameter.");
         }
+        //转换参数
         Object param = method.convertArgsToSqlCommandParam(args);
+        //如果有分页参数 那么以分页执行
         if (method.hasRowBounds()) {
             RowBounds rowBounds = method.extractRowBounds(args);
             sqlSession.select(command.getName(), param, rowBounds, method.extractResultHandler(args));
         } else {
+            //如果没有分页参数 直接执行
             sqlSession.select(command.getName(), param, method.extractResultHandler(args));
         }
     }
 
+    /**
+     * 以返回多条的形式执行
+     *
+     * @param sqlSession
+     * @param args
+     * @param <E>
+     * @return
+     */
     private <E> Object executeForMany(SqlSession sqlSession, Object[] args) {
         List<E> result;
+        //转换请求参数
         Object param = method.convertArgsToSqlCommandParam(args);
+        //如果有分页参数
         if (method.hasRowBounds()) {
+            //拿到分页参数
             RowBounds rowBounds = method.extractRowBounds(args);
+            //以分页的形式执行
             result = sqlSession.<E>selectList(command.getName(), param, rowBounds);
         } else {
+            //没有分页参数的话 直接执行
             result = sqlSession.<E>selectList(command.getName(), param);
         }
         // issue #510 Collections & arrays support
+        //如果方法方法定义的返回类型不是返回结果的class的父类或者本类
         if (!method.getReturnType().isAssignableFrom(result.getClass())) {
+            //以方法的返回类型为准 如果方法的返回类型是数组
             if (method.getReturnType().isArray()) {
                 return convertToArray(result);
             } else {
@@ -176,25 +225,53 @@ public class MapperMethod {
         return result;
     }
 
+    /**
+     * 以游标的形式执行
+     *
+     * @param sqlSession
+     * @param args
+     * @param <T>
+     * @return
+     */
     private <T> Cursor<T> executeForCursor(SqlSession sqlSession, Object[] args) {
         Cursor<T> result;
+        //转换参数
         Object param = method.convertArgsToSqlCommandParam(args);
+        //如果有分页参数 那么以分页的形式执行
         if (method.hasRowBounds()) {
+            //拿到分页参数
             RowBounds rowBounds = method.extractRowBounds(args);
             result = sqlSession.<T>selectCursor(command.getName(), param, rowBounds);
         } else {
+            //没有分页参数话 直接执行
             result = sqlSession.<T>selectCursor(command.getName(), param);
         }
         return result;
     }
 
+    /**
+     * 转换成声明的集合
+     *
+     * @param config
+     * @param list
+     * @param <E>
+     * @return
+     */
     private <E> Object convertToDeclaredCollection(Configuration config, List<E> list) {
+        //
         Object collection = config.getObjectFactory().create(method.getReturnType());
         MetaObject metaObject = config.newMetaObject(collection);
         metaObject.addAll(list);
         return collection;
     }
 
+    /**
+     * 将返回结果转换成数组
+     *
+     * @param list
+     * @param <E>
+     * @return
+     */
     @SuppressWarnings("unchecked")
     private <E> Object convertToArray(List<E> list) {
         Class<?> arrayComponentType = method.getReturnType().getComponentType();
@@ -209,13 +286,26 @@ public class MapperMethod {
         }
     }
 
+    /**
+     * 以返回map的形式执行
+     *
+     * @param sqlSession
+     * @param args
+     * @param <K>
+     * @param <V>
+     * @return
+     */
     private <K, V> Map<K, V> executeForMap(SqlSession sqlSession, Object[] args) {
         Map<K, V> result;
+        //转换参数
         Object param = method.convertArgsToSqlCommandParam(args);
+        //如果有分页参数
         if (method.hasRowBounds()) {
+            //拿到分页参数 以及分页的形式执行
             RowBounds rowBounds = method.extractRowBounds(args);
             result = sqlSession.<K, V>selectMap(command.getName(), param, method.getMapKey(), rowBounds);
         } else {
+            //如果没有分页参数 那么直接执行
             result = sqlSession.<K, V>selectMap(command.getName(), param, method.getMapKey());
         }
         return result;
@@ -303,7 +393,7 @@ public class MapperMethod {
          */
         private MappedStatement resolveMappedStatement(Class<?> mapperInterface, String methodName,
                 Class<?> declaringClass, Configuration configuration) {
-            //映射接口+方法名称
+            //映射接口+方法名称 类似：org.apache.ibatis.binding.BoundBlogMapper.selectBlog
             String statementId = mapperInterface.getName() + "." + methodName;
             //如果存在这个声明id
             if (configuration.hasStatement(statementId)) {
@@ -339,7 +429,8 @@ public class MapperMethod {
         private final boolean returnsMany;
 
         /**
-         * 是否返回的是map
+         * 只有在mapKey属性不为null的时候才会为true
+         * 其他都是false
          */
         private final boolean returnsMap;
 
@@ -359,7 +450,7 @@ public class MapperMethod {
         private final Class<?> returnType;
 
         /**
-         * 方法如果有@MapKey 那么这个这个注解的value
+         * 方法如果返回类型是map 并且有@MapKey 值为这个注解的value
          */
         private final String mapKey;
 
@@ -407,7 +498,7 @@ public class MapperMethod {
                     configuration.getObjectFactory().isCollection(this.returnType) || this.returnType.isArray();
             //设置返回是不是游标
             this.returnsCursor = Cursor.class.equals(this.returnType);
-            //获取mapKey的值
+            //获取mapKey的值 只有在返回类型是map并且@MapKey不为空的时候才会有值
             this.mapKey = getMapKey(method);
             //设置是不是返回的map
             this.returnsMap = this.mapKey != null;
@@ -419,6 +510,12 @@ public class MapperMethod {
             this.paramNameResolver = new ParamNameResolver(configuration, method);
         }
 
+        /**
+         * 根据给出的参数 拿到参数名称跟对应的值
+         *
+         * @param args
+         * @return
+         */
         public Object convertArgsToSqlCommandParam(Object[] args) {
             return paramNameResolver.getNamedParams(args);
         }
@@ -461,26 +558,57 @@ public class MapperMethod {
             return hasResultHandler() ? (ResultHandler) args[resultHandlerIndex] : null;
         }
 
+        /**
+         * 获取@MapKey注解的value
+         * 只有在方法返回的是map并且有@MapKey才会有值
+         *
+         * @return
+         */
         public String getMapKey() {
             return mapKey;
         }
 
+        /**
+         * 拿到返回的类型
+         *
+         * @return
+         */
         public Class<?> getReturnType() {
             return returnType;
         }
 
+        /**
+         * 拿到是否返回多条
+         *
+         * @return
+         */
         public boolean returnsMany() {
             return returnsMany;
         }
 
+        /**
+         * 拿到是否存在@MapKey
+         *
+         * @return
+         */
         public boolean returnsMap() {
             return returnsMap;
         }
 
+        /**
+         * 是否返回void
+         *
+         * @return
+         */
         public boolean returnsVoid() {
             return returnsVoid;
         }
 
+        /**
+         * 是否返回Cursor
+         *
+         * @return
+         */
         public boolean returnsCursor() {
             return returnsCursor;
         }

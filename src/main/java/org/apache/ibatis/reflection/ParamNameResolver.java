@@ -164,13 +164,17 @@ public class ParamNameResolver {
         } else if (!hasParamAnnotation && paramCount == 1) {
             return args[names.firstKey()];
         } else {
+            //有参数注解并且参数数量大于等于1
+            //无参数注解并且参数数量大于1
             final Map<String, Object> param = new ParamMap<Object>();
             int i = 0;
             for (Map.Entry<Integer, String> entry : names.entrySet()) {
+                //将之前解析的参数名称进行反转 即得到参数名称对应的参数的值
                 param.put(entry.getValue(), args[entry.getKey()]);
                 // add generic param names (param1, param2, ...)
                 final String genericParamName = GENERIC_NAME_PREFIX + String.valueOf(i + 1);
                 // ensure not to overwrite parameter named with @Param
+                //额外添加param1、param2这种给参数名称
                 if (!names.containsValue(genericParamName)) {
                     param.put(genericParamName, args[entry.getKey()]);
                 }

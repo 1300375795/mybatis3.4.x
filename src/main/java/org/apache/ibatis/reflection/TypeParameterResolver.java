@@ -43,6 +43,8 @@ public class TypeParameterResolver {
     }
 
     /**
+     * @param method
+     * @param srcType mapper类
      * @return The return type of the method as {@link Type}. If it has type parameters in the declaration,<br>
      * they will be resolved to the actual runtime {@link Type}s.
      */

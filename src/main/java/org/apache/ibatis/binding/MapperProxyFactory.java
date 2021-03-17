@@ -49,7 +49,7 @@ public class MapperProxyFactory<T> {
     }
 
     /**
-     * 拿到被代理的mapper接口
+     * 拿到源mapper接口
      *
      * @return
      */
@@ -66,13 +66,28 @@ public class MapperProxyFactory<T> {
         return methodCache;
     }
 
+    /**
+     * 创建映射代理实例
+     *
+     * @param mapperProxy
+     * @return
+     */
     @SuppressWarnings("unchecked")
     protected T newInstance(MapperProxy<T> mapperProxy) {
         return (T) Proxy
                 .newProxyInstance(mapperInterface.getClassLoader(), new Class[] { mapperInterface }, mapperProxy);
     }
 
+    /**
+     * 根据sqlSession创建映射代理实例
+     *
+     * @param sqlSession
+     * @return
+     */
     public T newInstance(SqlSession sqlSession) {
+        /**
+         * 创建代理
+         */
         final MapperProxy<T> mapperProxy = new MapperProxy<T>(sqlSession, mapperInterface, methodCache);
         return newInstance(mapperProxy);
     }

@@ -29,13 +29,32 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
  */
 public abstract class BaseWrapper implements ObjectWrapper {
 
+    /**
+     * 没有参数
+     */
     protected static final Object[] NO_ARGUMENTS = new Object[0];
+
+    /**
+     * 元对象
+     */
     protected final MetaObject metaObject;
 
+    /**
+     * 构造函数
+     *
+     * @param metaObject
+     */
     protected BaseWrapper(MetaObject metaObject) {
         this.metaObject = metaObject;
     }
 
+    /**
+     * 解析集合
+     *
+     * @param prop
+     * @param object
+     * @return
+     */
     protected Object resolveCollection(PropertyTokenizer prop, Object object) {
         if ("".equals(prop.getName())) {
             return object;

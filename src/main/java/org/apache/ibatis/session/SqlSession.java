@@ -45,7 +45,8 @@ public interface SqlSession extends Closeable {
 
     /**
      * Retrieve a single row mapped from the statement key and parameter.
-     * 根据statement一级参数查询一条记录
+     * 根据statement以及参数查询一条记录
+     * statement就是类名+方法名称org.apache.ibatis.binding.BoundBlogMapper.selectBlog
      *
      * @param <T>       the returned object type
      * @param statement Unique identifier matching the statement to use.

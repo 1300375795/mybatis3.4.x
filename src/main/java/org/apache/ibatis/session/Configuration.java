@@ -200,7 +200,7 @@ public class Configuration {
     protected ProxyFactory proxyFactory = new JavassistProxyFactory(); // #224 Using internal Javassist instead of OGNL
 
     /**
-     * 数据库id
+     * 数据库id 如果没有额外设置 这个的值就是对应的数据库的产品名称 比如MySQL
      */
     protected String databaseId;
 
@@ -814,7 +814,7 @@ public class Configuration {
     }
 
     /**
-     * 判断是否存在这个id的映射声明
+     * 拿到这个id的映射声明
      *
      * @param id mapperInterface+methodName
      * @return
@@ -823,6 +823,12 @@ public class Configuration {
         return this.getMappedStatement(id, true);
     }
 
+    /**
+     * 根据statementId以及
+     * @param id
+     * @param validateIncompleteStatements
+     * @return
+     */
     public MappedStatement getMappedStatement(String id, boolean validateIncompleteStatements) {
         if (validateIncompleteStatements) {
             buildAllStatements();

@@ -97,6 +97,7 @@ public class ResolverUtil<T> {
 
         /**
          * Returns true if type is assignable to the parent type supplied in the constructor.
+         * 判断是不是父子类关系
          */
         @Override
         public boolean matches(Class<?> type) {

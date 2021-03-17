@@ -610,7 +610,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     private void mapperElement(XNode parent) throws Exception {
         if (parent != null) {
             for (XNode child : parent.getChildren()) {
-                //如果名字是package元素 那么将这个包下面的所有的mapper进行加载
+                //如果名字是package元素 那么将这个包下面的所有的mapper class类进行加载
                 if ("package".equals(child.getName())) {
                     String mapperPackage = child.getStringAttribute("name");
                     configuration.addMappers(mapperPackage);

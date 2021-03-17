@@ -42,6 +42,8 @@ public class MapperRegistry {
 
     /**
      * 已知的映射
+     * key 为mapper的class对象
+     * value 为这个mapper的代理工厂
      */
     private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = new HashMap<Class<?>, MapperProxyFactory<?>>();
 
@@ -55,7 +57,7 @@ public class MapperRegistry {
     }
 
     /**
-     * 映射class类型
+     * 通过mapper class以及sqlSession从映射代理工厂中拿到这个映射的代理
      *
      * @param type
      * @param sqlSession
@@ -64,11 +66,13 @@ public class MapperRegistry {
      */
     @SuppressWarnings("unchecked")
     public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
+        //如果是给出的mapper class不在已知的mapper中 那么抛出异常
         final MapperProxyFactory<T> mapperProxyFactory = (MapperProxyFactory<T>) knownMappers.get(type);
         if (mapperProxyFactory == null) {
             throw new BindingException("Type " + type + " is not known to the MapperRegistry.");
         }
         try {
+            //通过映射代理工厂拿到这个映射的代理 需要给出参数sqlSession
             return mapperProxyFactory.newInstance(sqlSession);
         } catch (Exception e) {
             throw new BindingException("Error getting mapper instance. Cause: " + e, e);
@@ -121,6 +125,8 @@ public class MapperRegistry {
     }
 
     /**
+     * 返回所有已知的mapper class的不可修改集合
+     *
      * @since 3.2.2
      */
     public Collection<Class<?>> getMappers() {
@@ -128,6 +134,9 @@ public class MapperRegistry {
     }
 
     /**
+     * 把这个包下面的所有superType的子类作为mapper进行添加
+     * 只有接口才会被添加
+     *
      * @since 3.2.2
      */
     public void addMappers(String packageName, Class<?> superType) {
@@ -140,6 +149,8 @@ public class MapperRegistry {
     }
 
     /**
+     * 解析这个包下面的类添加到mapper集合中
+     *
      * @since 3.2.2
      */
     public void addMappers(String packageName) {
