@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * 映射注册器
+ *
  * @author Clinton Begin
  * @author Eduardo Macarron
  * @author Lasse Voss
@@ -73,25 +75,44 @@ public class MapperRegistry {
         }
     }
 
+    /**
+     * 是否有给出的class mapper
+     *
+     * @param type
+     * @param <T>
+     * @return
+     */
     public <T> boolean hasMapper(Class<T> type) {
         return knownMappers.containsKey(type);
     }
 
+    /**
+     * 添加mapper
+     *
+     * @param type
+     * @param <T>
+     */
     public <T> void addMapper(Class<T> type) {
+        //如果是接口才进行添加操作
         if (type.isInterface()) {
+            //如果已经存在这个mapper 那么抛出异常 不能继续添加
             if (hasMapper(type)) {
                 throw new BindingException("Type " + type + " is already known to the MapperRegistry.");
             }
+            //初始为未加载完毕
             boolean loadCompleted = false;
             try {
+                //往已知的mapper中添加给出的type
                 knownMappers.put(type, new MapperProxyFactory<T>(type));
                 // It's important that the type is added before the parser is run
                 // otherwise the binding may automatically be attempted by the
                 // mapper parser. If the type is already known, it won't try.
+                //会同时加载mapper class跟mapper对应的xml文件
                 MapperAnnotationBuilder parser = new MapperAnnotationBuilder(config, type);
                 parser.parse();
                 loadCompleted = true;
             } finally {
+                //如果是为加载完毕 那么从已知的mapper map中删除这个mapper
                 if (!loadCompleted) {
                     knownMappers.remove(type);
                 }

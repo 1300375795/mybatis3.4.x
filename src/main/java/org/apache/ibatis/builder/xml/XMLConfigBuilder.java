@@ -476,17 +476,24 @@ public class XMLConfigBuilder extends BaseBuilder {
                     //如果是一样的  这个时候拿到这个环境配置的transactionManager以及dataSource
                     TransactionFactory txFactory = transactionManagerElement(child.evalNode("transactionManager"));
                     DataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
+                    //从数据源工厂中拿到数据源
                     DataSource dataSource = dsFactory.getDataSource();
-                    //创建环境配置 并设置事务工厂 数据源工厂
+                    //创建环境配置 并设置事务工厂 数据源
                     Environment.Builder environmentBuilder = new Environment.Builder(id).transactionFactory(txFactory)
                             .dataSource(dataSource);
-
+                    //设置环境
                     configuration.setEnvironment(environmentBuilder.build());
                 }
             }
         }
     }
 
+    /**
+     * 解析数据库id
+     *
+     * @param context
+     * @throws Exception
+     */
     private void databaseIdProviderElement(XNode context) throws Exception {
         DatabaseIdProvider databaseIdProvider = null;
         if (context != null) {
@@ -554,19 +561,32 @@ public class XMLConfigBuilder extends BaseBuilder {
         throw new BuilderException("Environment declaration requires a DataSourceFactory.");
     }
 
+    /**
+     * 解析类型处理器元素
+     *
+     * @param parent
+     * @throws Exception
+     */
     private void typeHandlerElement(XNode parent) throws Exception {
         if (parent != null) {
             for (XNode child : parent.getChildren()) {
+                //如果存在package属性
                 if ("package".equals(child.getName())) {
+                    //拿到拿到这个包名称注册这个包下面所有的类型处理器
                     String typeHandlerPackage = child.getStringAttribute("name");
                     typeHandlerRegistry.register(typeHandlerPackage);
                 } else {
+                    //如果不是package的 那么拿到javaType、jdbcType、handler
                     String javaTypeName = child.getStringAttribute("javaType");
                     String jdbcTypeName = child.getStringAttribute("jdbcType");
                     String handlerTypeName = child.getStringAttribute("handler");
+                    //解析java类型
                     Class<?> javaTypeClass = resolveClass(javaTypeName);
+                    //解析jdbc类型
                     JdbcType jdbcType = resolveJdbcType(jdbcTypeName);
+                    //解析类型处理器class
                     Class<?> typeHandlerClass = resolveClass(handlerTypeName);
+                    //根据java类型是否存在注册的类型处理器
                     if (javaTypeClass != null) {
                         if (jdbcType == null) {
                             typeHandlerRegistry.register(javaTypeClass, typeHandlerClass);
@@ -581,9 +601,16 @@ public class XMLConfigBuilder extends BaseBuilder {
         }
     }
 
+    /**
+     * 解析mapper元素
+     *
+     * @param parent
+     * @throws Exception
+     */
     private void mapperElement(XNode parent) throws Exception {
         if (parent != null) {
             for (XNode child : parent.getChildren()) {
+                //如果名字是package元素 那么将这个包下面的所有的mapper进行加载
                 if ("package".equals(child.getName())) {
                     String mapperPackage = child.getStringAttribute("name");
                     configuration.addMappers(mapperPackage);

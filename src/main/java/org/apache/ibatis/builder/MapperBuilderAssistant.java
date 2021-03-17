@@ -76,26 +76,42 @@ public class MapperBuilderAssistant extends BaseBuilder {
      */
     private boolean unresolvedCacheRef; // issue #676
 
+    /**
+     * 构造函数
+     *
+     * @param configuration
+     * @param resource
+     */
     public MapperBuilderAssistant(Configuration configuration, String resource) {
         super(configuration);
         ErrorContext.instance().resource(resource);
         this.resource = resource;
     }
 
+    /**
+     * 获取当期那命名空间
+     *
+     * @return
+     */
     public String getCurrentNamespace() {
         return currentNamespace;
     }
 
+    /**
+     * 设置当前命名空间
+     *
+     * @param currentNamespace
+     */
     public void setCurrentNamespace(String currentNamespace) {
         if (currentNamespace == null) {
             throw new BuilderException("The mapper element requires a namespace attribute to be specified.");
         }
-
+        //当前命名空间不为空并且新给出的命名空间跟当前命名空间不一样 抛出异常
         if (this.currentNamespace != null && !this.currentNamespace.equals(currentNamespace)) {
             throw new BuilderException(
                     "Wrong namespace. Expected '" + this.currentNamespace + "' but found '" + currentNamespace + "'.");
         }
-
+        //设置当前命名空间为给出的命名空间
         this.currentNamespace = currentNamespace;
     }
 
@@ -138,6 +154,18 @@ public class MapperBuilderAssistant extends BaseBuilder {
         }
     }
 
+    /**
+     * 使用新的缓存
+     *
+     * @param typeClass
+     * @param evictionClass
+     * @param flushInterval
+     * @param size
+     * @param readWrite
+     * @param blocking
+     * @param props
+     * @return
+     */
     public Cache useNewCache(Class<? extends Cache> typeClass, Class<? extends Cache> evictionClass, Long flushInterval,
             Integer size, boolean readWrite, boolean blocking, Properties props) {
         Cache cache = new CacheBuilder(currentNamespace).implementation(valueOrDefault(typeClass, PerpetualCache.class))

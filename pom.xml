@@ -264,6 +264,13 @@
       <version>2.5</version>
       <scope>test</scope>
     </dependency>
+
+    <!--TODO: 2021/3/16 CallYeDeGuo 自己加的mysql pom-->
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.35</version>
+    </dependency>
   </dependencies>
 
   <build>

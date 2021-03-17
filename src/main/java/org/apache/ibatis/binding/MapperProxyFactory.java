@@ -39,14 +39,29 @@ public class MapperProxyFactory<T> {
      */
     private final Map<Method, MapperMethod> methodCache = new ConcurrentHashMap<Method, MapperMethod>();
 
+    /**
+     * 构造函数
+     *
+     * @param mapperInterface
+     */
     public MapperProxyFactory(Class<T> mapperInterface) {
         this.mapperInterface = mapperInterface;
     }
 
+    /**
+     * 拿到被代理的mapper接口
+     *
+     * @return
+     */
     public Class<T> getMapperInterface() {
         return mapperInterface;
     }
 
+    /**
+     * 拿到方法的缓存map
+     *
+     * @return
+     */
     public Map<Method, MapperMethod> getMethodCache() {
         return methodCache;
     }

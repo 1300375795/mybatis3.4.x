@@ -73,21 +73,31 @@ public class MetaObject {
         this.objectFactory = objectFactory;
         this.objectWrapperFactory = objectWrapperFactory;
         this.reflectorFactory = reflectorFactory;
-        //如果
+        //如果这个类是ObjectWrapper 直接设置为objectWrapper
         if (object instanceof ObjectWrapper) {
             this.objectWrapper = (ObjectWrapper) object;
-        } else if (objectWrapperFactory.hasWrapperFor(object)) {
+        }
+        //如果对象包装工厂有给出的对象的包装 那么拿到这个对象的包装
+        // 由于默认的objectWrapperFactory是返回false的 所以这个只有在用户自定义的时候才会返回true
+        else if (objectWrapperFactory.hasWrapperFor(object)) {
             this.objectWrapper = objectWrapperFactory.getWrapperFor(this, object);
-        } else if (object instanceof Map) {
+        }
+        //如果对象是map类 那么拿到MapWrapper
+        else if (object instanceof Map) {
             this.objectWrapper = new MapWrapper(this, (Map) object);
-        } else if (object instanceof Collection) {
+        }
+        //如果是集合 那么拿到CollectionWrapper
+        else if (object instanceof Collection) {
             this.objectWrapper = new CollectionWrapper(this, (Collection) object);
         } else {
+            //其他情况那么拿到BeanWrapper
             this.objectWrapper = new BeanWrapper(this, object);
         }
     }
 
     /**
+     * 根据给出的对象、对象工厂、对象包装工厂、反射工厂构建元对象
+     *
      * @param object
      * @param objectFactory
      * @param objectWrapperFactory
@@ -96,9 +106,11 @@ public class MetaObject {
      */
     public static MetaObject forObject(Object object, ObjectFactory objectFactory,
             ObjectWrapperFactory objectWrapperFactory, ReflectorFactory reflectorFactory) {
+        //如果对象是空 那么返回空对象对应的元对象
         if (object == null) {
             return SystemMetaObject.NULL_META_OBJECT;
         } else {
+            //构建这个对象的元对象
             return new MetaObject(object, objectFactory, objectWrapperFactory, reflectorFactory);
         }
     }

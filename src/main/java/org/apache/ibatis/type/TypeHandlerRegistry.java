@@ -58,9 +58,17 @@ public final class TypeHandlerRegistry {
 
     /**
      * jdbc类型对应的类型处理器map
+     * 这个map只会在TypeHandlerRegistry的构造函数里面进行put操作 外部没有put操作
      */
     private final Map<JdbcType, TypeHandler<?>> JDBC_TYPE_HANDLER_MAP = new EnumMap<JdbcType, TypeHandler<?>>(
             JdbcType.class);
+
+    /**
+     * 类型处理器map
+     * key java类型 value jdbc类型跟相应的类型处理器
+     * 即一个java类型能存在多个Map<JdbcType, TypeHandler<?>>Entry
+     * JAVA类型如果为空 不会put到这个map中
+     */
     private final Map<Type, Map<JdbcType, TypeHandler<?>>> TYPE_HANDLER_MAP = new ConcurrentHashMap<Type, Map<JdbcType, TypeHandler<?>>>();
 
     /**
@@ -69,7 +77,9 @@ public final class TypeHandlerRegistry {
     private final TypeHandler<Object> UNKNOWN_TYPE_HANDLER = new UnknownTypeHandler(this);
 
     /**
-     * 所有类型对应的类型处理器map
+     * 所有class类型对应的类型处理器map
+     * 不管什么类型的处理器 都会添加在这个map中
+     * 如果一个类型处理器的javaType是null的话 那么就只会存在在这个map中
      */
     private final Map<Class<?>, TypeHandler<?>> ALL_TYPE_HANDLERS_MAP = new HashMap<Class<?>, TypeHandler<?>>();
 

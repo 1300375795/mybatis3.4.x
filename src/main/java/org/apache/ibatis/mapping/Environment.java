@@ -37,7 +37,7 @@ public final class Environment {
     private final TransactionFactory transactionFactory;
 
     /**
-     * 数据元工厂
+     * 数据源
      */
     private final DataSource dataSource;
 
@@ -67,42 +67,96 @@ public final class Environment {
      * 构造者
      */
     public static class Builder {
+
+        /**
+         * 环境id名称
+         */
         private String id;
+
+        /**
+         * 事务工厂
+         */
         private TransactionFactory transactionFactory;
+
+        /**
+         * 数据源
+         */
         private DataSource dataSource;
 
+        /**
+         * 构造函数
+         *
+         * @param id
+         */
         public Builder(String id) {
             this.id = id;
         }
 
+        /**
+         * 设置事务工厂
+         *
+         * @param transactionFactory
+         * @return
+         */
         public Builder transactionFactory(TransactionFactory transactionFactory) {
             this.transactionFactory = transactionFactory;
             return this;
         }
 
+        /**
+         * 设置数据源
+         *
+         * @param dataSource
+         * @return
+         */
         public Builder dataSource(DataSource dataSource) {
             this.dataSource = dataSource;
             return this;
         }
 
+        /**
+         * 返回id
+         *
+         * @return
+         */
         public String id() {
             return this.id;
         }
 
+        /**
+         * 构建环境对象
+         *
+         * @return
+         */
         public Environment build() {
             return new Environment(this.id, this.transactionFactory, this.dataSource);
         }
 
     }
 
+    /**
+     * 获取环境id名称
+     *
+     * @return
+     */
     public String getId() {
         return this.id;
     }
 
+    /**
+     * 获取事务工厂
+     *
+     * @return
+     */
     public TransactionFactory getTransactionFactory() {
         return this.transactionFactory;
     }
 
+    /**
+     * 获取数据源
+     *
+     * @return
+     */
     public DataSource getDataSource() {
         return this.dataSource;
     }

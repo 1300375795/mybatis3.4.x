@@ -31,17 +31,35 @@ import java.util.TreeSet;
 import org.apache.ibatis.reflection.ReflectionException;
 
 /**
+ * 默认的对象工厂
+ *
  * @author Clinton Begin
  */
 public class DefaultObjectFactory implements ObjectFactory, Serializable {
 
     private static final long serialVersionUID = -8855120656740914948L;
 
+    /**
+     * 根据class实例化对象
+     *
+     * @param type Object type
+     * @param <T>
+     * @return
+     */
     @Override
     public <T> T create(Class<T> type) {
         return create(type, null, null);
     }
 
+    /**
+     * 根据给出的参数实例化对象
+     *
+     * @param type                Object type
+     * @param constructorArgTypes Constructor argument types
+     * @param constructorArgs     Constructor argument values
+     * @param <T>
+     * @return
+     */
     @SuppressWarnings("unchecked")
     @Override
     public <T> T create(Class<T> type, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
@@ -50,6 +68,11 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
         return (T) instantiateClass(classToCreate, constructorArgTypes, constructorArgs);
     }
 
+    /**
+     * 设置属性配置
+     *
+     * @param properties configuration properties
+     */
     @Override
     public void setProperties(Properties properties) {
         // no props for default

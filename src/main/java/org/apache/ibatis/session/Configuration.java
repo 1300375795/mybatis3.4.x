@@ -230,7 +230,11 @@ public class Configuration {
     protected final Map<String, ParameterMap> parameterMaps = new StrictMap<ParameterMap>("Parameter Maps collection");
     protected final Map<String, KeyGenerator> keyGenerators = new StrictMap<KeyGenerator>("Key Generators collection");
 
+    /**
+     * 已经加载过的资源
+     */
     protected final Set<String> loadedResources = new HashSet<String>();
+
     protected final Map<String, XNode> sqlFragments = new StrictMap<XNode>(
             "XML fragments parsed from previous mappers");
 
@@ -379,10 +383,21 @@ public class Configuration {
         this.mapUnderscoreToCamelCase = mapUnderscoreToCamelCase;
     }
 
+    /**
+     * 添加已经添加过的资源
+     *
+     * @param resource
+     */
     public void addLoadedResource(String resource) {
         loadedResources.add(resource);
     }
 
+    /**
+     * 是否已经加载过
+     *
+     * @param resource
+     * @return
+     */
     public boolean isResourceLoaded(String resource) {
         return loadedResources.contains(resource);
     }
@@ -808,7 +823,6 @@ public class Configuration {
         return this.getMappedStatement(id, true);
     }
 
-
     public MappedStatement getMappedStatement(String id, boolean validateIncompleteStatements) {
         if (validateIncompleteStatements) {
             buildAllStatements();
@@ -828,6 +842,11 @@ public class Configuration {
         mapperRegistry.addMappers(packageName, superType);
     }
 
+    /**
+     * 添加这个包下面的所有的mapper
+     *
+     * @param packageName
+     */
     public void addMappers(String packageName) {
         mapperRegistry.addMappers(packageName);
     }
