@@ -101,14 +101,24 @@ public class MapperMethod {
                 if (method.returnsVoid() && method.hasResultHandler()) {
                     executeWithResultHandler(sqlSession, args);
                     result = null;
-                } else if (method.returnsMany()) {
+                }
+                //如果返回多条数据
+                else if (method.returnsMany()) {
                     result = executeForMany(sqlSession, args);
-                } else if (method.returnsMap()) {
+                }
+                //如果returnMap为true
+                else if (method.returnsMap()) {
                     result = executeForMap(sqlSession, args);
-                } else if (method.returnsCursor()) {
+                }
+                //如果返回的是游标
+                else if (method.returnsCursor()) {
                     result = executeForCursor(sqlSession, args);
-                } else {
+                }
+                //其他情形
+                else {
+                    //转化参数
                     Object param = method.convertArgsToSqlCommandParam(args);
+                    //直接调用调用单条数据查询
                     result = sqlSession.selectOne(command.getName(), param);
                 }
                 break;
@@ -219,6 +229,7 @@ public class MapperMethod {
             if (method.getReturnType().isArray()) {
                 return convertToArray(result);
             } else {
+                //如多不是数组
                 return convertToDeclaredCollection(sqlSession.getConfiguration(), result);
             }
         }
@@ -258,8 +269,9 @@ public class MapperMethod {
      * @return
      */
     private <E> Object convertToDeclaredCollection(Configuration config, List<E> list) {
-        //
+        //根据方法的返回类型转换成相应的class
         Object collection = config.getObjectFactory().create(method.getReturnType());
+        //转换成相应的元对象
         MetaObject metaObject = config.newMetaObject(collection);
         metaObject.addAll(list);
         return collection;
@@ -274,14 +286,19 @@ public class MapperMethod {
      */
     @SuppressWarnings("unchecked")
     private <E> Object convertToArray(List<E> list) {
+        //拿到数组存放的class对象 比如 MapperMethod[] 那么就是MapperMethod.class
         Class<?> arrayComponentType = method.getReturnType().getComponentType();
+        //创建对象数组
         Object array = Array.newInstance(arrayComponentType, list.size());
+        //如果是基础类型
         if (arrayComponentType.isPrimitive()) {
+            //设置基础类型导致
             for (int i = 0; i < list.size(); i++) {
                 Array.set(array, i, list.get(i));
             }
             return array;
         } else {
+            //不是私有类型的话 那么转成E数组并返回
             return list.toArray((E[]) array);
         }
     }
@@ -311,10 +328,21 @@ public class MapperMethod {
         return result;
     }
 
+    /**
+     * 参数map
+     *
+     * @param <V>
+     */
     public static class ParamMap<V> extends HashMap<String, V> {
 
         private static final long serialVersionUID = -2212268410512043556L;
 
+        /**
+         * 重写了get方法 如果map中不包含改出的key 抛出异常
+         *
+         * @param key
+         * @return
+         */
         @Override
         public V get(Object key) {
             if (!super.containsKey(key)) {
@@ -420,6 +448,7 @@ public class MapperMethod {
 
     /**
      * 静态内部类 方法签名
+     * 存放mapper接口中的所有的方法的方法签名
      */
     public static class MethodSignature {
 

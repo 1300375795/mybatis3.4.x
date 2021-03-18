@@ -225,6 +225,10 @@ public class Configuration {
 
     protected final Map<String, MappedStatement> mappedStatements = new StrictMap<MappedStatement>(
             "Mapped Statements collection");
+
+    /**
+     * 缓存集合 id为namespace
+     */
     protected final Map<String, Cache> caches = new StrictMap<Cache>("Caches collection");
     protected final Map<String, ResultMap> resultMaps = new StrictMap<ResultMap>("Result Maps collection");
     protected final Map<String, ParameterMap> parameterMaps = new StrictMap<ParameterMap>("Parameter Maps collection");
@@ -238,9 +242,24 @@ public class Configuration {
     protected final Map<String, XNode> sqlFragments = new StrictMap<XNode>(
             "XML fragments parsed from previous mappers");
 
+    /**
+     * 不完整的xml声明构造器
+     */
     protected final Collection<XMLStatementBuilder> incompleteStatements = new LinkedList<XMLStatementBuilder>();
+
+    /**
+     * 不完整的缓存引用
+     */
     protected final Collection<CacheRefResolver> incompleteCacheRefs = new LinkedList<CacheRefResolver>();
+
+    /**
+     * 不完整的结果map解析器
+     */
     protected final Collection<ResultMapResolver> incompleteResultMaps = new LinkedList<ResultMapResolver>();
+
+    /**
+     * 不完整的方法解析器
+     */
     protected final Collection<MethodResolver> incompleteMethods = new LinkedList<MethodResolver>();
 
     /*
@@ -717,6 +736,12 @@ public class Configuration {
         return caches.values();
     }
 
+    /**
+     * 根据id获取相应的缓存
+     *
+     * @param id 为namespace
+     * @return
+     */
     public Cache getCache(String id) {
         return caches.get(id);
     }
@@ -793,6 +818,11 @@ public class Configuration {
         return incompleteCacheRefs;
     }
 
+    /**
+     * 添加不完整的缓存引用
+     *
+     * @param incompleteCacheRef
+     */
     public void addIncompleteCacheRef(CacheRefResolver incompleteCacheRef) {
         incompleteCacheRefs.add(incompleteCacheRef);
     }
@@ -825,6 +855,7 @@ public class Configuration {
 
     /**
      * 根据statementId以及
+     *
      * @param id
      * @param validateIncompleteStatements
      * @return
@@ -880,6 +911,12 @@ public class Configuration {
         return mappedStatements.containsKey(statementName);
     }
 
+    /**
+     * 添加缓存引用
+     *
+     * @param namespace           xml的namespace
+     * @param referencedNamespace xml中cache-ref节点中写的namespace
+     */
     public void addCacheRef(String namespace, String referencedNamespace) {
         cacheRefMap.put(namespace, referencedNamespace);
     }

@@ -21,14 +21,25 @@ import java.util.List;
 import org.apache.ibatis.session.Configuration;
 
 /**
- * 参数map
+ * 参数map 对应xml的parameterMap配置
  *
  * @author Clinton Begin
  */
 public class ParameterMap {
 
+    /**
+     * parameterMap的id配置
+     */
     private String id;
+
+    /**
+     * parameterMap的type配置
+     */
     private Class<?> type;
+
+    /**
+     * parameterMap的parameter配置集合
+     */
     private List<ParameterMapping> parameterMappings;
 
     /**
@@ -58,10 +69,20 @@ public class ParameterMap {
             parameterMap.parameterMappings = parameterMappings;
         }
 
+        /**
+         * 获取参数类型
+         *
+         * @return
+         */
         public Class<?> type() {
             return parameterMap.type;
         }
 
+        /**
+         * 构建对象
+         *
+         * @return
+         */
         public ParameterMap build() {
             //lock down collections
             parameterMap.parameterMappings = Collections.unmodifiableList(parameterMap.parameterMappings);
@@ -69,14 +90,29 @@ public class ParameterMap {
         }
     }
 
+    /**
+     * 获取id
+     *
+     * @return
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * 获取类型class
+     *
+     * @return
+     */
     public Class<?> getType() {
         return type;
     }
 
+    /**
+     * 获取parameter集合
+     *
+     * @return
+     */
     public List<ParameterMapping> getParameterMappings() {
         return parameterMappings;
     }

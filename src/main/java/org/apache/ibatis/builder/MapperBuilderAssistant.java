@@ -80,7 +80,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
      * 构造函数
      *
      * @param configuration
-     * @param resource
+     * @param resource      xx/xx/xx/xx/methodName.java (best guess)
      */
     public MapperBuilderAssistant(Configuration configuration, String resource) {
         super(configuration);
@@ -115,16 +115,26 @@ public class MapperBuilderAssistant extends BaseBuilder {
         this.currentNamespace = currentNamespace;
     }
 
+    /**
+     * 申请命名空间
+     *
+     * @param base
+     * @param isReference
+     * @return
+     */
     public String applyCurrentNamespace(String base, boolean isReference) {
         if (base == null) {
             return null;
         }
+        //如果是引用
         if (isReference) {
             // is it qualified with any namespace yet?
             if (base.contains(".")) {
                 return base;
             }
-        } else {
+        }
+        //不是引用的话
+        else {
             // is it qualified with this namespace yet?
             if (base.startsWith(currentNamespace + ".")) {
                 return base;
@@ -136,17 +146,27 @@ public class MapperBuilderAssistant extends BaseBuilder {
         return currentNamespace + "." + base;
     }
 
+    /**
+     * 根据命名空间拿到对应的缓存
+     *
+     * @param namespace
+     * @return
+     */
     public Cache useCacheRef(String namespace) {
         if (namespace == null) {
             throw new BuilderException("cache-ref element requires a namespace attribute.");
         }
         try {
             unresolvedCacheRef = true;
+            //获取命名空间对应的缓存
             Cache cache = configuration.getCache(namespace);
+            //如果为空 抛出异常
             if (cache == null) {
                 throw new IncompleteElementException("No cache for namespace '" + namespace + "' could be found.");
             }
+            //设置当前缓存
             currentCache = cache;
+            //未解析的缓存引用
             unresolvedCacheRef = false;
             return cache;
         } catch (IllegalArgumentException e) {
@@ -155,7 +175,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
     }
 
     /**
-     * 使用新的缓存
+     * 根据给出的参数构建新的缓存
      *
      * @param typeClass
      * @param evictionClass
@@ -176,14 +196,36 @@ public class MapperBuilderAssistant extends BaseBuilder {
         return cache;
     }
 
+    /**
+     * 添加参数map
+     *
+     * @param id
+     * @param parameterClass
+     * @param parameterMappings
+     * @return
+     */
     public ParameterMap addParameterMap(String id, Class<?> parameterClass, List<ParameterMapping> parameterMappings) {
         id = applyCurrentNamespace(id, false);
         ParameterMap parameterMap = new ParameterMap.Builder(configuration, id, parameterClass, parameterMappings)
                 .build();
+        //往全局配置中添加参数map
         configuration.addParameterMap(parameterMap);
         return parameterMap;
     }
 
+    /**
+     * 构建参数映射
+     *
+     * @param parameterType
+     * @param property
+     * @param javaType
+     * @param jdbcType
+     * @param resultMap
+     * @param parameterMode
+     * @param typeHandler
+     * @param numericScale
+     * @return
+     */
     public ParameterMapping buildParameterMapping(Class<?> parameterType, String property, Class<?> javaType,
             JdbcType jdbcType, String resultMap, ParameterMode parameterMode,
             Class<? extends TypeHandler<?>> typeHandler, Integer numericScale) {
@@ -191,8 +233,8 @@ public class MapperBuilderAssistant extends BaseBuilder {
 
         // Class parameterType = parameterMapBuilder.type();
         Class<?> javaTypeClass = resolveParameterJavaType(parameterType, property, javaType, jdbcType);
+        //拿到类型处理器实例
         TypeHandler<?> typeHandlerInstance = resolveTypeHandler(javaTypeClass, typeHandler);
-
         return new ParameterMapping.Builder(configuration, property, javaTypeClass).jdbcType(jdbcType)
                 .resultMapId(resultMap).mode(parameterMode).numericScale(numericScale).typeHandler(typeHandlerInstance)
                 .build();
@@ -382,18 +424,34 @@ public class MapperBuilderAssistant extends BaseBuilder {
         return javaType;
     }
 
+    /**
+     * 解析参数java类型
+     *
+     * @param resultType parameterMap中的type属性
+     * @param property
+     * @param javaType
+     * @param jdbcType
+     * @return
+     */
     private Class<?> resolveParameterJavaType(Class<?> resultType, String property, Class<?> javaType,
             JdbcType jdbcType) {
+        //如果java类型为空
         if (javaType == null) {
+            //如果jdbc类型是游标 java类型设置为ResultSet
             if (JdbcType.CURSOR.equals(jdbcType)) {
                 javaType = java.sql.ResultSet.class;
-            } else if (Map.class.isAssignableFrom(resultType)) {
+            }
+            //如果map是parameterMap的父类 java类型设置为object
+            else if (Map.class.isAssignableFrom(resultType)) {
                 javaType = Object.class;
-            } else {
+            }
+            //否则拿到这个参数class的元class 拿到这个类中的这个属性的类型
+            else {
                 MetaClass metaResultType = MetaClass.forClass(resultType, configuration.getReflectorFactory());
                 javaType = metaResultType.getGetterType(property);
             }
         }
+        //如果还是为空 设置为object
         if (javaType == null) {
             javaType = Object.class;
         }

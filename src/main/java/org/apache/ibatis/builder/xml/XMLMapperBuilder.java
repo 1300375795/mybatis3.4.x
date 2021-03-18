@@ -48,7 +48,7 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 
 /**
- * xml类型的mapper构造器
+ * xml类型的mapper文件构造器
  *
  * @author Clinton Begin
  */
@@ -70,7 +70,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     private final Map<String, XNode> sqlFragments;
 
     /**
-     * 所属来源
+     * 所属来源 xx/xx/xx/xx.xml
      */
     private final String resource;
 
@@ -151,6 +151,9 @@ public class XMLMapperBuilder extends BaseBuilder {
         this.resource = resource;
     }
 
+    /**
+     * 解析xml文件
+     */
     public void parse() {
         //如果没有加载过
         if (!configuration.isResourceLoaded(resource)) {
@@ -185,8 +188,9 @@ public class XMLMapperBuilder extends BaseBuilder {
             }
             //设置当前命名空间
             builderAssistant.setCurrentNamespace(namespace);
-            //获取其他命名空间缓存配置的引用
+            //获取cache-ref节点信息
             cacheRefElement(context.evalNode("cache-ref"));
+            //解析缓存 org/apache/ibatis/submitted/global_variables/Mapper.xml
             cacheElement(context.evalNode("cache"));
             parameterMapElement(context.evalNodes("/mapper/parameterMap"));
             resultMapElements(context.evalNodes("/mapper/resultMap"));
@@ -269,64 +273,116 @@ public class XMLMapperBuilder extends BaseBuilder {
      */
     private void cacheRefElement(XNode context) {
         if (context != null) {
+            //将xml文件的名称空间跟cache-ref节点填写的命名空间保存起来
             configuration.addCacheRef(builderAssistant.getCurrentNamespace(), context.getStringAttribute("namespace"));
+            //拿到缓存引用解析器
             CacheRefResolver cacheRefResolver = new CacheRefResolver(builderAssistant,
                     context.getStringAttribute("namespace"));
             try {
+                //解析缓存引用
                 cacheRefResolver.resolveCacheRef();
             } catch (IncompleteElementException e) {
+                //如果抛出了这个异常 即这个class没有过缓存
                 configuration.addIncompleteCacheRef(cacheRefResolver);
             }
         }
     }
 
+    /**
+     * 解析缓存节点
+     *
+     * @param context
+     * @throws Exception
+     */
     private void cacheElement(XNode context) throws Exception {
         if (context != null) {
+            //拿到缓存的类型 class 如果为空的话 就设置为系统默认的PERPETUAL
             String type = context.getStringAttribute("type", "PERPETUAL");
+            //从别名中拿到type对应的class
             Class<? extends Cache> typeClass = typeAliasRegistry.resolveAlias(type);
+            //拿到缓存class的过期策略缓存 即装饰对象 默认是 LRU
             String eviction = context.getStringAttribute("eviction", "LRU");
+            //拿到这个装饰缓存的class
             Class<? extends Cache> evictionClass = typeAliasRegistry.resolveAlias(eviction);
+            //拿到过期刷新时间
             Long flushInterval = context.getLongAttribute("flushInterval");
+            //拿到缓存大小
             Integer size = context.getIntAttribute("size");
+            //拿到是否只读
             boolean readWrite = !context.getBooleanAttribute("readOnly", false);
+            //拿到是否阻断
             boolean blocking = context.getBooleanAttribute("blocking", false);
+            //拿到相应的属性配置
             Properties props = context.getChildrenAsProperties();
+            //根据这些信息创建一个新的缓存
             builderAssistant.useNewCache(typeClass, evictionClass, flushInterval, size, readWrite, blocking, props);
         }
     }
 
+    /**
+     * 构建参数map
+     * org/apache/ibatis/builder/AuthorMapper.xml
+     *
+     * @param list
+     * @throws Exception
+     */
     private void parameterMapElement(List<XNode> list) throws Exception {
         for (XNode parameterMapNode : list) {
+            //拿到这个参数map的id
             String id = parameterMapNode.getStringAttribute("id");
+            //拿到这个参数map的类型
             String type = parameterMapNode.getStringAttribute("type");
+            //拿到这个type对应的class类
             Class<?> parameterClass = resolveClass(type);
+            //拿到这个参数map的属性
             List<XNode> parameterNodes = parameterMapNode.evalNodes("parameter");
             List<ParameterMapping> parameterMappings = new ArrayList<ParameterMapping>();
+            //循环每个属性配置
             for (XNode parameterNode : parameterNodes) {
+                //拿到这个属性配置属性名称
                 String property = parameterNode.getStringAttribute("property");
+                //拿到这个属性的java类型
                 String javaType = parameterNode.getStringAttribute("javaType");
+                //拿到这个属性的jdbc类型
                 String jdbcType = parameterNode.getStringAttribute("jdbcType");
+                //拿到这个属性的返回map
                 String resultMap = parameterNode.getStringAttribute("resultMap");
+                //拿到这个属性的模式
                 String mode = parameterNode.getStringAttribute("mode");
+                //拿到这个属性的参数的类型处理器
                 String typeHandler = parameterNode.getStringAttribute("typeHandler");
+                //拿到这个属性的数值范围
                 Integer numericScale = parameterNode.getIntAttribute("numericScale");
+                //解析参数模式
                 ParameterMode modeEnum = resolveParameterMode(mode);
+                //解析获取java类型的class
                 Class<?> javaTypeClass = resolveClass(javaType);
+                //解析获取jdbc类型
                 JdbcType jdbcTypeEnum = resolveJdbcType(jdbcType);
+                //解析类型处理器
                 @SuppressWarnings("unchecked") Class<? extends TypeHandler<?>> typeHandlerClass = (Class<? extends TypeHandler<?>>) resolveClass(
                         typeHandler);
+                //构建参数mapping
                 ParameterMapping parameterMapping = builderAssistant
                         .buildParameterMapping(parameterClass, property, javaTypeClass, jdbcTypeEnum, resultMap,
                                 modeEnum, typeHandlerClass, numericScale);
                 parameterMappings.add(parameterMapping);
             }
+            //将parameterMap配置的id、type对应的class类以及里面的参数添加到参数map中
             builderAssistant.addParameterMap(id, parameterClass, parameterMappings);
         }
     }
 
+    /**
+     * 解析resultMap配置
+     *
+     * @param list
+     * @throws Exception
+     */
     private void resultMapElements(List<XNode> list) throws Exception {
         for (XNode resultMapNode : list) {
             try {
+                //解析resultMap配置
                 resultMapElement(resultMapNode);
             } catch (IncompleteElementException e) {
                 // ignore, it will be retried
@@ -334,6 +390,13 @@ public class XMLMapperBuilder extends BaseBuilder {
         }
     }
 
+    /**
+     * 解析resultMap元素
+     *
+     * @param resultMapNode
+     * @return
+     * @throws Exception
+     */
     private ResultMap resultMapElement(XNode resultMapNode) throws Exception {
         return resultMapElement(resultMapNode, Collections.<ResultMapping>emptyList());
     }

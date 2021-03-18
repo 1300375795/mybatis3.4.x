@@ -77,20 +77,29 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         try {
+            //如果这个方法是Object的方法 直接执行
             if (Object.class.equals(method.getDeclaringClass())) {
                 return method.invoke(this, args);
-            } else if (isDefaultMethod(method)) {
+            }
+            //如果是默认的方法
+            else if (isDefaultMethod(method)) {
+                //执行默认的方法
                 return invokeDefaultMethod(proxy, method, args);
             }
         } catch (Throwable t) {
             throw ExceptionUtil.unwrapThrowable(t);
         }
+        //其他情况
         final MapperMethod mapperMethod = cachedMapperMethod(method);
+        //执行这个方法
         return mapperMethod.execute(sqlSession, args);
     }
 
     /**
      * 缓存mapper对应的方法
+     * 如果这个method不存在在缓存中
+     * 那么创建这个method对应的mapperMethod
+     * 并返回这个mapperMethod
      *
      * @param method
      * @return
@@ -104,6 +113,15 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
         return mapperMethod;
     }
 
+    /**
+     * 执行默认的方法
+     *
+     * @param proxy
+     * @param method
+     * @param args
+     * @return
+     * @throws Throwable
+     */
     @UsesJava7
     private Object invokeDefaultMethod(Object proxy, Method method, Object[] args) throws Throwable {
         final Constructor<MethodHandles.Lookup> constructor = MethodHandles.Lookup.class

@@ -16,7 +16,34 @@
        limitations under the License.
 
 -->
+<!--定义了一个mapper元素 右边的()内表示它的子元素 -->
+<!--
+元素旁边的符号表示出现的次数 符号的含义见下面
+？：不出现或只出现一次
+*：不出现或可出现多次
++：必须出现一次以上
+无符号：只能出现一次
+-->
 <!ELEMENT mapper (cache-ref | cache | resultMap* | parameterMap* | sql* | insert* | update* | delete* | select* )+>
+<!--元素mapper有一个属性 namespace-->
+
+
+<!--
+元素的属性的表示含义
+<!ATTLIST  元素的名字
+   属性的名字  属性类型  属性的说明
+>
+
+属性的类型主要有以下类型：
+CDATA  字符串
+ID     ID
+ENUMERED
+ENTRY  实体对象
+属性的说明主要有以下几种类型：
+REQUIRED  必须有的
+IMPLEMENTED  可以没有
+FIXED   固定的不能变的
+-->
 <!ATTLIST mapper
 namespace CDATA #IMPLIED
 >
@@ -181,7 +208,7 @@ useCache (true|false) #IMPLIED
 databaseId CDATA #IMPLIED
 lang CDATA #IMPLIED
 resultOrdered (true|false) #IMPLIED
-resultSets CDATA #IMPLIED 
+resultSets CDATA #IMPLIED
 >
 
 <!ELEMENT insert (#PCDATA | selectKey | include | trim | where | set | foreach | choose | if | bind)*>

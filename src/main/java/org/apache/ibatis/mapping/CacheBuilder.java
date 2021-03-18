@@ -42,7 +42,7 @@ import org.apache.ibatis.reflection.SystemMetaObject;
 public class CacheBuilder {
 
     /**
-     * 缓存构造器的id  默认是nameSpace 命名空间
+     * 缓存构造器的id  默认是namespace 命名空间
      */
     private final String id;
 
