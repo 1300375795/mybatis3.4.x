@@ -51,6 +51,9 @@ import org.apache.ibatis.type.TypeHandler;
 
 /**
  * 映射构造器助手
+ * 帮助构建mapper中的各种元素节点
+ * 这个只有在MapperAnnotationBuilder以及XMLMapperBuilder类中会进行创建
+ * 即使一个xml是mapper的xml  也会创建一个新的MapperBuilderAssistant
  *
  * @author Clinton Begin
  */
@@ -119,7 +122,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
      * 申请命名空间
      *
      * @param base
-     * @param isReference
+     * @param isReference 是否引用
      * @return
      */
     public String applyCurrentNamespace(String base, boolean isReference) {
@@ -135,14 +138,17 @@ public class MapperBuilderAssistant extends BaseBuilder {
         }
         //不是引用的话
         else {
+            //如果包含是以命名空间+.开头那么直接返回
             // is it qualified with this namespace yet?
             if (base.startsWith(currentNamespace + ".")) {
                 return base;
             }
+            //如果包含.那么抛出异常
             if (base.contains(".")) {
                 throw new BuilderException("Dots are not allowed in element names, please remove it from " + base);
             }
         }
+        //返回命名空间+base
         return currentNamespace + "." + base;
     }
 
@@ -158,6 +164,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
         }
         try {
             unresolvedCacheRef = true;
+            // TODO: 2021/3/19 CallYeDeGuo mapper是一个一个解析的 那如果一个mapper的缓存引用用到的缓存还没有被解析不就报错了 ？
             //获取命名空间对应的缓存
             Cache cache = configuration.getCache(namespace);
             //如果为空 抛出异常
@@ -363,12 +370,34 @@ public class MapperBuilderAssistant extends BaseBuilder {
         return resultMaps;
     }
 
+    /**
+     * 构建结果映射
+     *
+     * @param resultType
+     * @param property
+     * @param column
+     * @param javaType
+     * @param jdbcType
+     * @param nestedSelect
+     * @param nestedResultMap
+     * @param notNullColumn
+     * @param columnPrefix
+     * @param typeHandler
+     * @param flags
+     * @param resultSet
+     * @param foreignColumn
+     * @param lazy
+     * @return
+     */
     public ResultMapping buildResultMapping(Class<?> resultType, String property, String column, Class<?> javaType,
             JdbcType jdbcType, String nestedSelect, String nestedResultMap, String notNullColumn, String columnPrefix,
             Class<? extends TypeHandler<?>> typeHandler, List<ResultFlag> flags, String resultSet, String foreignColumn,
             boolean lazy) {
+        //
         Class<?> javaTypeClass = resolveResultJavaType(resultType, property, javaType);
+        //解析类型处理器
         TypeHandler<?> typeHandlerInstance = resolveTypeHandler(javaTypeClass, typeHandler);
+        //
         List<ResultMapping> composites = parseCompositeColumnName(column);
         return new ResultMapping.Builder(configuration, property, column, javaTypeClass).jdbcType(jdbcType)
                 .nestedQueryId(applyCurrentNamespace(nestedSelect, true))
@@ -394,6 +423,12 @@ public class MapperBuilderAssistant extends BaseBuilder {
         return columns;
     }
 
+    /**
+     * 解析复合列名
+     *
+     * @param columnName
+     * @return
+     */
     private List<ResultMapping> parseCompositeColumnName(String columnName) {
         List<ResultMapping> composites = new ArrayList<ResultMapping>();
         if (columnName != null && (columnName.indexOf('=') > -1 || columnName.indexOf(',') > -1)) {
@@ -409,6 +444,14 @@ public class MapperBuilderAssistant extends BaseBuilder {
         return composites;
     }
 
+    /**
+     * 解析结果java类型
+     *
+     * @param resultType
+     * @param property
+     * @param javaType
+     * @return
+     */
     private Class<?> resolveResultJavaType(Class<?> resultType, String property, Class<?> javaType) {
         if (javaType == null && property != null) {
             try {
@@ -468,12 +511,21 @@ public class MapperBuilderAssistant extends BaseBuilder {
                 notNullColumn, columnPrefix, typeHandler, flags, null, null, configuration.isLazyLoadingEnabled());
     }
 
+    /**
+     * 获取语言驱动
+     *
+     * @param langClass
+     * @return
+     */
     public LanguageDriver getLanguageDriver(Class<?> langClass) {
+        //如果不为空 那么根据给出的class注册语言驱动
         if (langClass != null) {
             configuration.getLanguageRegistry().register(langClass);
         } else {
+            //如果为空 那么获取默认的语言启动class
             langClass = configuration.getLanguageRegistry().getDefaultDriverClass();
         }
+        //返回这个语言启动class的实现类
         return configuration.getLanguageRegistry().getDriver(langClass);
     }
 

@@ -83,11 +83,31 @@ public class PropertyParser {
         return parser.parse(string);
     }
 
+    /**
+     * 变量令牌处理器
+     */
     private static class VariableTokenHandler implements TokenHandler {
+
+        /**
+         * 变量
+         */
         private final Properties variables;
+
+        /**
+         * 是否允许默认值
+         */
         private final boolean enableDefaultValue;
+
+        /**
+         * 默认的分隔符
+         */
         private final String defaultValueSeparator;
 
+        /**
+         * 构造函数
+         *
+         * @param variables
+         */
         private VariableTokenHandler(Properties variables) {
             this.variables = variables;
             this.enableDefaultValue = Boolean
@@ -95,10 +115,25 @@ public class PropertyParser {
             this.defaultValueSeparator = getPropertyValue(KEY_DEFAULT_VALUE_SEPARATOR, DEFAULT_VALUE_SEPARATOR);
         }
 
+        /**
+         * 获取某个key的值
+         * 如果属性为空 那么获取默认值
+         * 如果属性不为空 但是属性中这个key的值为空 那么也是默认值
+         *
+         * @param key
+         * @param defaultValue
+         * @return
+         */
         private String getPropertyValue(String key, String defaultValue) {
             return (variables == null) ? defaultValue : variables.getProperty(key, defaultValue);
         }
 
+        /**
+         * 处理令牌
+         *
+         * @param content
+         * @return
+         */
         @Override
         public String handleToken(String content) {
             if (variables != null) {

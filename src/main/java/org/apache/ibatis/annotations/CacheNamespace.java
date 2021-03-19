@@ -26,6 +26,7 @@ import org.apache.ibatis.cache.impl.PerpetualCache;
 
 /**
  * 缓存命名空间
+ * 对应xml配置中的cache
  *
  * @author Clinton Begin
  * @author Kazuki Shimizu

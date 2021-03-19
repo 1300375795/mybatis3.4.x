@@ -152,6 +152,9 @@ public class Configuration {
      */
     protected Integer defaultStatementTimeout;
 
+    /**
+     *
+     */
     protected Integer defaultFetchSize;
 
     /**
@@ -170,7 +173,7 @@ public class Configuration {
     protected AutoMappingUnknownColumnBehavior autoMappingUnknownColumnBehavior = AutoMappingUnknownColumnBehavior.NONE;
 
     /**
-     * 属性map
+     * 属性配置变量map
      */
     protected Properties variables = new Properties();
 
@@ -244,6 +247,7 @@ public class Configuration {
 
     /**
      * 不完整的xml声明构造器
+     * 为什么会不完整 可能图中抛出了IncompleteElementException异常
      */
     protected final Collection<XMLStatementBuilder> incompleteStatements = new LinkedList<XMLStatementBuilder>();
 
@@ -451,6 +455,11 @@ public class Configuration {
         this.autoMappingUnknownColumnBehavior = autoMappingUnknownColumnBehavior;
     }
 
+    /**
+     * 获取是否允许懒加载
+     *
+     * @return
+     */
     public boolean isLazyLoadingEnabled() {
         return lazyLoadingEnabled;
     }
@@ -564,6 +573,11 @@ public class Configuration {
         this.jdbcTypeForNull = jdbcTypeForNull;
     }
 
+    /**
+     * 获取属性配置变量
+     *
+     * @return
+     */
     public Properties getVariables() {
         return variables;
     }
@@ -631,6 +645,11 @@ public class Configuration {
         return interceptorChain.getInterceptors();
     }
 
+    /**
+     * 获取语言驱动注册器
+     *
+     * @return
+     */
     public LanguageDriverRegistry getLanguageRegistry() {
         return languageRegistry;
     }
@@ -724,6 +743,11 @@ public class Configuration {
         return keyGenerators.containsKey(id);
     }
 
+    /**
+     * 添加缓存
+     *
+     * @param cache
+     */
     public void addCache(Cache cache) {
         caches.put(cache.getId(), cache);
     }
@@ -810,6 +834,11 @@ public class Configuration {
         return incompleteStatements;
     }
 
+    /**
+     * 添加不完整的sql声明节点
+     *
+     * @param incompleteStatement
+     */
     public void addIncompleteStatement(XMLStatementBuilder incompleteStatement) {
         incompleteStatements.add(incompleteStatement);
     }
@@ -888,6 +917,12 @@ public class Configuration {
         mapperRegistry.addMappers(packageName);
     }
 
+    /**
+     * 映射注册器中加上这个映射
+     *
+     * @param type
+     * @param <T>
+     */
     public <T> void addMapper(Class<T> type) {
         mapperRegistry.addMapper(type);
     }

@@ -36,7 +36,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 /**
- * 映射方法
+ * 映射中的某个方法的一些详细的信息
  *
  * @author Clinton Begin
  * @author Eduardo Macarron

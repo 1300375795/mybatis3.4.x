@@ -91,6 +91,7 @@ import org.apache.ibatis.type.UnknownTypeHandler;
 
 /**
  * 映射注解构造器
+ * 这个类主要就是解析class类mapper的各种注解（不写xml）
  *
  * @author Clinton Begin
  */
@@ -169,6 +170,8 @@ public class MapperAnnotationBuilder {
             for (Method method : methods) {
                 try {
                     // issue #237
+                    //泛型为了兼容1.5之前的字节码自动生成一些桥接方法 这个时候就需要根据这个判断 以去掉编译器生成的那些桥接方法
+                    //如果不是桥架方法 那么解析声明
                     if (!method.isBridge()) {
                         parseStatement(method);
                     }
@@ -225,7 +228,8 @@ public class MapperAnnotationBuilder {
     }
 
     /**
-     * 解析缓存
+     * 解析注解形式缓存
+     * 对应xml配置中的cache
      */
     private void parseCache() {
         //拿到这个mapper上面的注解
@@ -264,18 +268,24 @@ public class MapperAnnotationBuilder {
         return props;
     }
 
+    /**
+     * 解析缓存引用
+     */
     private void parseCacheRef() {
         CacheNamespaceRef cacheDomainRef = type.getAnnotation(CacheNamespaceRef.class);
         if (cacheDomainRef != null) {
             Class<?> refType = cacheDomainRef.value();
             String refName = cacheDomainRef.name();
+            //命名空间class不能为void 命名空间名称不能为空 否则是无意义的名称
             if (refType == void.class && refName.isEmpty()) {
                 throw new BuilderException(
                         "Should be specified either value() or name() attribute in the @CacheNamespaceRef");
             }
+            //两个不能都有值 只能定义一个
             if (refType != void.class && !refName.isEmpty()) {
                 throw new BuilderException("Cannot use both value() and name() attribute in the @CacheNamespaceRef");
             }
+            //优先class类 如果class类为空 那么使用名称
             String namespace = (refType != void.class) ? refType.getName() : refName;
             assistant.useCacheRef(namespace);
         }
@@ -354,7 +364,13 @@ public class MapperAnnotationBuilder {
         return null;
     }
 
+    /**
+     * 解析声明
+     *
+     * @param method
+     */
     void parseStatement(Method method) {
+        //拿到这个方法参数类型class
         Class<?> parameterTypeClass = getParameterType(method);
         LanguageDriver languageDriver = getLanguageDriver(method);
         SqlSource sqlSource = getSqlSourceFromAnnotations(method, parameterTypeClass, languageDriver);
@@ -438,6 +454,12 @@ public class MapperAnnotationBuilder {
         }
     }
 
+    /**
+     * 获取语言解析驱动
+     *
+     * @param method
+     * @return
+     */
     private LanguageDriver getLanguageDriver(Method method) {
         Lang lang = method.getAnnotation(Lang.class);
         Class<?> langClass = null;
@@ -447,12 +469,20 @@ public class MapperAnnotationBuilder {
         return assistant.getLanguageDriver(langClass);
     }
 
+    /**
+     * 获取参数类型
+     *
+     * @param method
+     * @return
+     */
     private Class<?> getParameterType(Method method) {
         Class<?> parameterType = null;
         Class<?>[] parameterTypes = method.getParameterTypes();
         for (Class<?> currentParameterType : parameterTypes) {
+            //如果这个参数不是RowBounds跟ResultHandler的子类
             if (!RowBounds.class.isAssignableFrom(currentParameterType) && !ResultHandler.class
                     .isAssignableFrom(currentParameterType)) {
+                //如果参数类型为空 那么设置当前参数 否则设置为ParamMap
                 if (parameterType == null) {
                     parameterType = currentParameterType;
                 } else {
@@ -516,18 +546,31 @@ public class MapperAnnotationBuilder {
         return returnType;
     }
 
+    /**
+     * 从注解中获取sql源
+     *
+     * @param method
+     * @param parameterType
+     * @param languageDriver
+     * @return
+     */
     private SqlSource getSqlSourceFromAnnotations(Method method, Class<?> parameterType,
             LanguageDriver languageDriver) {
         try {
             Class<? extends Annotation> sqlAnnotationType = getSqlAnnotationType(method);
             Class<? extends Annotation> sqlProviderAnnotationType = getSqlProviderAnnotationType(method);
+            //如果sql类型不为空
             if (sqlAnnotationType != null) {
+                //不能同时提供sql类型注解跟sql提供者注解
                 if (sqlProviderAnnotationType != null) {
                     throw new BindingException(
                             "You cannot supply both a static SQL and SqlProvider to method named " + method.getName());
                 }
+                //拿到这个注解
                 Annotation sqlAnnotation = method.getAnnotation(sqlAnnotationType);
+                //拿到这个注解的值
                 final String[] strings = (String[]) sqlAnnotation.getClass().getMethod("value").invoke(sqlAnnotation);
+                //根据注解中的sql信息构建sql源
                 return buildSqlSourceFromStrings(strings, parameterType, languageDriver);
             } else if (sqlProviderAnnotationType != null) {
                 Annotation sqlProviderAnnotation = method.getAnnotation(sqlProviderAnnotationType);
@@ -539,9 +582,18 @@ public class MapperAnnotationBuilder {
         }
     }
 
+    /**
+     * 从sql片段中构建一个sql源
+     *
+     * @param strings
+     * @param parameterTypeClass
+     * @param languageDriver
+     * @return
+     */
     private SqlSource buildSqlSourceFromStrings(String[] strings, Class<?> parameterTypeClass,
             LanguageDriver languageDriver) {
         final StringBuilder sql = new StringBuilder();
+        //拼接sql片段成完整的sql
         for (String fragment : strings) {
             sql.append(fragment);
             sql.append(" ");
@@ -573,14 +625,37 @@ public class MapperAnnotationBuilder {
         return SqlCommandType.valueOf(type.getSimpleName().toUpperCase(Locale.ENGLISH));
     }
 
+    /**
+     * 从方法中拿到这个方法的sql类型注解
+     * Select
+     * Insert
+     * Update
+     * Delete
+     *
+     * @param method
+     * @return
+     */
     private Class<? extends Annotation> getSqlAnnotationType(Method method) {
         return chooseAnnotationType(method, sqlAnnotationTypes);
     }
 
+    /**
+     * 从方法中拿到sql提供者类型注解
+     *
+     * @param method
+     * @return
+     */
     private Class<? extends Annotation> getSqlProviderAnnotationType(Method method) {
         return chooseAnnotationType(method, sqlProviderAnnotationTypes);
     }
 
+    /**
+     * 从方法中拿到types中的注解
+     *
+     * @param method
+     * @param types
+     * @return
+     */
     private Class<? extends Annotation> chooseAnnotationType(Method method, Set<Class<? extends Annotation>> types) {
         for (Class<? extends Annotation> type : types) {
             Annotation annotation = method.getAnnotation(type);
