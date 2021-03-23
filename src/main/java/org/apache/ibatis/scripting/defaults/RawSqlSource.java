@@ -38,22 +38,49 @@ public class RawSqlSource implements SqlSource {
 
     private final SqlSource sqlSource;
 
+    /**
+     * 构造函数
+     *
+     * @param configuration
+     * @param rootSqlNode
+     * @param parameterType
+     */
     public RawSqlSource(Configuration configuration, SqlNode rootSqlNode, Class<?> parameterType) {
         this(configuration, getSql(configuration, rootSqlNode), parameterType);
     }
 
+    /**
+     * 构造函数
+     *
+     * @param configuration
+     * @param sql
+     * @param parameterType
+     */
     public RawSqlSource(Configuration configuration, String sql, Class<?> parameterType) {
         SqlSourceBuilder sqlSourceParser = new SqlSourceBuilder(configuration);
         Class<?> clazz = parameterType == null ? Object.class : parameterType;
         sqlSource = sqlSourceParser.parse(sql, clazz, new HashMap<String, Object>());
     }
 
+    /**
+     * 获取sql
+     *
+     * @param configuration
+     * @param rootSqlNode
+     * @return
+     */
     private static String getSql(Configuration configuration, SqlNode rootSqlNode) {
         DynamicContext context = new DynamicContext(configuration, null);
         rootSqlNode.apply(context);
         return context.getSql();
     }
 
+    /**
+     * 获取绑定的sql
+     *
+     * @param parameterObject
+     * @return
+     */
     @Override
     public BoundSql getBoundSql(Object parameterObject) {
         return sqlSource.getBoundSql(parameterObject);

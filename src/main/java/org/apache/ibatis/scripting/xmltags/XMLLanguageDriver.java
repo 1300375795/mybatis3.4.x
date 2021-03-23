@@ -56,8 +56,11 @@ public class XMLLanguageDriver implements LanguageDriver {
             return createSqlSource(configuration, parser.evalNode("/script"), parameterType);
         } else {
             // issue #127
+            //解析脚本
             script = PropertyParser.parse(script, configuration.getVariables());
+            //创建文本sql节点
             TextSqlNode textSqlNode = new TextSqlNode(script);
+            //判断是否是动态的 如果是动态的创建动态sql源 否则创建原始的sql源
             if (textSqlNode.isDynamic()) {
                 return new DynamicSqlSource(configuration, textSqlNode);
             } else {

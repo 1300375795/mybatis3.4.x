@@ -48,6 +48,11 @@ public class RawLanguageDriver extends XMLLanguageDriver {
         return source;
     }
 
+    /**
+     * 校验是否是动态的
+     *
+     * @param source
+     */
     private void checkIsNotDynamic(SqlSource source) {
         if (!RawSqlSource.class.equals(source.getClass())) {
             throw new BuilderException("Dynamic content is not allowed when using RAW language");

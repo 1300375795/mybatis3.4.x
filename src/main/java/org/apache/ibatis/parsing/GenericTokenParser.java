@@ -50,19 +50,31 @@ public class GenericTokenParser {
         this.handler = handler;
     }
 
+    /**
+     * 解析文本内容
+     *
+     * @param text
+     * @return
+     */
     public String parse(String text) {
+        //如果给出的内容为null或者空 那么直接返回空字符串
         if (text == null || text.isEmpty()) {
             return "";
         }
         // search open token
+        //搜索开始令牌
         int start = text.indexOf(openToken, 0);
+        //如果没有找到开始令牌 直接返回
         if (start == -1) {
             return text;
         }
+        //转换成字节数组
         char[] src = text.toCharArray();
+        //初始化偏移量
         int offset = 0;
         final StringBuilder builder = new StringBuilder();
         StringBuilder expression = null;
+        //当start大于-1的
         while (start > -1) {
             if (start > 0 && src[start - 1] == '\\') {
                 // this open token is escaped. remove the backslash and continue.

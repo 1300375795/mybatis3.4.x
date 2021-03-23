@@ -376,12 +376,15 @@ public class MapperAnnotationBuilder {
         SqlSource sqlSource = getSqlSourceFromAnnotations(method, parameterTypeClass, languageDriver);
         if (sqlSource != null) {
             Options options = method.getAnnotation(Options.class);
+            //已映射的声明id
             final String mappedStatementId = type.getName() + "." + method.getName();
             Integer fetchSize = null;
             Integer timeout = null;
+            //从注解中获取下面这些属性的值
             StatementType statementType = StatementType.PREPARED;
             ResultSetType resultSetType = ResultSetType.FORWARD_ONLY;
             SqlCommandType sqlCommandType = getSqlCommandType(method);
+            //是否查询类型
             boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
             boolean flushCache = !isSelect;
             boolean useCache = isSelect;
@@ -389,9 +392,12 @@ public class MapperAnnotationBuilder {
             KeyGenerator keyGenerator;
             String keyProperty = "id";
             String keyColumn = null;
+            //如果是新增或者更新
             if (SqlCommandType.INSERT.equals(sqlCommandType) || SqlCommandType.UPDATE.equals(sqlCommandType)) {
                 // first check for SelectKey annotation - that overrides everything else
+                //首先检查@SelectKey注解 这个会覆盖掉其他
                 SelectKey selectKey = method.getAnnotation(SelectKey.class);
+                //如果SelectKey注解不为空 处理这个注解
                 if (selectKey != null) {
                     keyGenerator = handleSelectKeyAnnotation(selectKey, mappedStatementId, getParameterType(method),
                             languageDriver);
@@ -601,6 +607,12 @@ public class MapperAnnotationBuilder {
         return languageDriver.createSqlSource(configuration, sql.toString().trim(), parameterTypeClass);
     }
 
+    /**
+     * 获取sql命令类型
+     *
+     * @param method
+     * @return
+     */
     private SqlCommandType getSqlCommandType(Method method) {
         Class<? extends Annotation> type = getSqlAnnotationType(method);
 
@@ -746,9 +758,19 @@ public class MapperAnnotationBuilder {
         return args == null ? new Arg[0] : args.value();
     }
 
+    /**
+     * 处理SelectKey注解
+     *
+     * @param selectKeyAnnotation
+     * @param baseStatementId
+     * @param parameterTypeClass
+     * @param languageDriver
+     * @return
+     */
     private KeyGenerator handleSelectKeyAnnotation(SelectKey selectKeyAnnotation, String baseStatementId,
             Class<?> parameterTypeClass, LanguageDriver languageDriver) {
         String id = baseStatementId + SelectKeyGenerator.SELECT_KEY_SUFFIX;
+        //拿到注解中的这些属性
         Class<?> resultTypeClass = selectKeyAnnotation.resultType();
         StatementType statementType = selectKeyAnnotation.statementType();
         String keyProperty = selectKeyAnnotation.keyProperty();
