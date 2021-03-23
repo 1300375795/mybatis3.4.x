@@ -29,7 +29,7 @@ import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 
 /**
- * 映射声明
+ * 已映射声明
  *
  * @author Clinton Begin
  */
@@ -89,7 +89,7 @@ public final class MappedStatement {
                     new ArrayList<ParameterMapping>()).build();
             mappedStatement.resultMaps = new ArrayList<ResultMap>();
             mappedStatement.sqlCommandType = sqlCommandType;
-            //主键生产器
+            //主键生产器 如果允许使用主键生成器并且是insert操作 那么设置主键生成器为Jdbc3KeyGenerator否则就是默认的不做任何事情的主键生成器
             mappedStatement.keyGenerator =
                     configuration.isUseGeneratedKeys() && SqlCommandType.INSERT.equals(sqlCommandType) ?
                             Jdbc3KeyGenerator.INSTANCE :

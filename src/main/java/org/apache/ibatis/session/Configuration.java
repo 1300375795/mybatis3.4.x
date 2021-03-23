@@ -109,8 +109,17 @@ public class Configuration {
     protected boolean mapUnderscoreToCamelCase;
     protected boolean aggressiveLazyLoading;
     protected boolean multipleResultSetsEnabled = true;
+
+    /**
+     * 是否使用主键生成器
+     */
     protected boolean useGeneratedKeys;
+
     protected boolean useColumnLabel = true;
+
+    /**
+     * 是否允许缓存
+     */
     protected boolean cacheEnabled = true;
     protected boolean callSettersOnNulls;
     protected boolean useActualParamName = true;
@@ -153,7 +162,7 @@ public class Configuration {
     protected Integer defaultStatementTimeout;
 
     /**
-     *
+     * 这是尝试影响驱动程序每次批量返回的结果行数和这个设置值相等
      */
     protected Integer defaultFetchSize;
 
@@ -173,17 +182,17 @@ public class Configuration {
     protected AutoMappingUnknownColumnBehavior autoMappingUnknownColumnBehavior = AutoMappingUnknownColumnBehavior.NONE;
 
     /**
-     * 属性配置变量map
+     * 属性配置变量配置map
      */
     protected Properties variables = new Properties();
 
     /**
-     * 默认的反射器工厂
+     * 默认的反射器工厂 里面会缓存对象的所有的方法以及属性等
      */
     protected ReflectorFactory reflectorFactory = new DefaultReflectorFactory();
 
     /**
-     * 默认的对象工厂
+     * 默认的对象工厂 负责通过反射创建对象
      */
     protected ObjectFactory objectFactory = new DefaultObjectFactory();
 
@@ -221,11 +230,30 @@ public class Configuration {
      * 映射注册器
      */
     protected final MapperRegistry mapperRegistry = new MapperRegistry(this);
+
+    /**
+     * 拦截器链
+     */
     protected final InterceptorChain interceptorChain = new InterceptorChain();
+
+    /**
+     * 类型处理器注册器
+     */
     protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
+
+    /**
+     * 类型别名注册器
+     */
     protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
+
+    /**
+     * 语言驱动注册器
+     */
     protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
 
+    /**
+     * 已映射的声明map
+     */
     protected final Map<String, MappedStatement> mappedStatements = new StrictMap<MappedStatement>(
             "Mapped Statements collection");
 
@@ -242,6 +270,9 @@ public class Configuration {
      */
     protected final Set<String> loadedResources = new HashSet<String>();
 
+    /**
+     * sql片段map
+     */
     protected final Map<String, XNode> sqlFragments = new StrictMap<XNode>(
             "XML fragments parsed from previous mappers");
 
@@ -252,7 +283,7 @@ public class Configuration {
     protected final Collection<XMLStatementBuilder> incompleteStatements = new LinkedList<XMLStatementBuilder>();
 
     /**
-     * 不完整的缓存引用
+     * 不完整的缓存引用解析器
      */
     protected final Collection<CacheRefResolver> incompleteCacheRefs = new LinkedList<CacheRefResolver>();
 
@@ -266,64 +297,107 @@ public class Configuration {
      */
     protected final Collection<MethodResolver> incompleteMethods = new LinkedList<MethodResolver>();
 
-    /*
+    /**
      * A map holds cache-ref relationship. The key is the namespace that
      * references a cache bound to another namespace and the value is the
      * namespace which the actual cache is bound to.
+     * 缓存引用map
      */
     protected final Map<String, String> cacheRefMap = new HashMap<String, String>();
 
+    /**
+     * 构造函数
+     *
+     * @param environment
+     */
     public Configuration(Environment environment) {
         this();
         this.environment = environment;
     }
 
+    /**
+     * 构造函数
+     */
     public Configuration() {
+        //注册jdbc事务工厂class对应的别名
         typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
+        //注册被管理的事务工class对应的别名
         typeAliasRegistry.registerAlias("MANAGED", ManagedTransactionFactory.class);
-
+        //注册jndi数据源工厂class对应的别名
         typeAliasRegistry.registerAlias("JNDI", JndiDataSourceFactory.class);
+        //注册池化数据源工厂class对应的别名
         typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
+        //注册没有池化的数据源工厂class对应的别名
         typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
-
+        //注册无限期缓存对应的别名
         typeAliasRegistry.registerAlias("PERPETUAL", PerpetualCache.class);
+        //注册新建新出缓存class对应的别名--装饰者
         typeAliasRegistry.registerAlias("FIFO", FifoCache.class);
+        //注册最新最近最少使用缓存class对应的别名--装饰者
         typeAliasRegistry.registerAlias("LRU", LruCache.class);
+        //注册软引用缓存class对应的别名--装饰者
+        //软引用会在系统即将抛出oom的时候回收掉这类引用 比较合适用来作为缓存
         typeAliasRegistry.registerAlias("SOFT", SoftCache.class);
+        //注册弱引用缓存class对应的别名--装饰者
+        //在垃圾回收器线程扫描它所管辖的内存区域的过程中，一旦发现了具有弱引用的对象，不管当前内存空间足够与否，都会回收它的内存。
         typeAliasRegistry.registerAlias("WEAK", WeakCache.class);
-
+        //注册供应商数据库id提供者class的别名
         typeAliasRegistry.registerAlias("DB_VENDOR", VendorDatabaseIdProvider.class);
-
+        //注册xml语言驱动class对应的别名  默认的语言驱动
         typeAliasRegistry.registerAlias("XML", XMLLanguageDriver.class);
+        //注册原生语言驱动class对应的别名
         typeAliasRegistry.registerAlias("RAW", RawLanguageDriver.class);
-
+        //注册日志实现class对应的别名
         typeAliasRegistry.registerAlias("SLF4J", Slf4jImpl.class);
+
         typeAliasRegistry.registerAlias("COMMONS_LOGGING", JakartaCommonsLoggingImpl.class);
         typeAliasRegistry.registerAlias("LOG4J", Log4jImpl.class);
         typeAliasRegistry.registerAlias("LOG4J2", Log4j2Impl.class);
         typeAliasRegistry.registerAlias("JDK_LOGGING", Jdk14LoggingImpl.class);
         typeAliasRegistry.registerAlias("STDOUT_LOGGING", StdOutImpl.class);
         typeAliasRegistry.registerAlias("NO_LOGGING", NoLoggingImpl.class);
-
+        //注册cglib代理工厂class对应的别名
         typeAliasRegistry.registerAlias("CGLIB", CglibProxyFactory.class);
+        //注册Javassist代理工厂class对应的别名
         typeAliasRegistry.registerAlias("JAVASSIST", JavassistProxyFactory.class);
-
+        //设置默认的语言驱动
         languageRegistry.setDefaultDriverClass(XMLLanguageDriver.class);
+        //注册原生的语言驱动
         languageRegistry.register(RawLanguageDriver.class);
     }
 
+    /**
+     * 获取日志前缀
+     *
+     * @return
+     */
     public String getLogPrefix() {
         return logPrefix;
     }
 
+    /**
+     * 设置日志前缀
+     *
+     * @param logPrefix
+     */
     public void setLogPrefix(String logPrefix) {
         this.logPrefix = logPrefix;
     }
 
+    /**
+     * 获取日志实现类class
+     *
+     * @return
+     */
     public Class<? extends Log> getLogImpl() {
         return logImpl;
     }
 
+    /**
+     * 设置自定义的日志实现类class
+     *
+     * @param logImpl
+     */
     public void setLogImpl(Class<? extends Log> logImpl) {
         if (logImpl != null) {
             this.logImpl = logImpl;
@@ -331,10 +405,20 @@ public class Configuration {
         }
     }
 
+    /**
+     * 获取vfs实现class
+     *
+     * @return
+     */
     public Class<? extends VFS> getVfsImpl() {
         return this.vfsImpl;
     }
 
+    /**
+     * 设置用户自定义的cfs实现class
+     *
+     * @param vfsImpl
+     */
     public void setVfsImpl(Class<? extends VFS> vfsImpl) {
         if (vfsImpl != null) {
             this.vfsImpl = vfsImpl;
@@ -366,18 +450,38 @@ public class Configuration {
         this.returnInstanceForEmptyRow = returnEmptyInstance;
     }
 
+    /**
+     * 获取数据库id
+     *
+     * @return
+     */
     public String getDatabaseId() {
         return databaseId;
     }
 
+    /**
+     * 设置数据库id
+     *
+     * @param databaseId
+     */
     public void setDatabaseId(String databaseId) {
         this.databaseId = databaseId;
     }
 
+    /**
+     * 获取配置工厂class
+     *
+     * @return
+     */
     public Class<?> getConfigurationFactory() {
         return configurationFactory;
     }
 
+    /**
+     * 设置配置工厂class
+     *
+     * @param configurationFactory
+     */
     public void setConfigurationFactory(Class<?> configurationFactory) {
         this.configurationFactory = configurationFactory;
     }
@@ -425,23 +529,45 @@ public class Configuration {
         return loadedResources.contains(resource);
     }
 
+    /**
+     * 获取环境
+     *
+     * @return
+     */
     public Environment getEnvironment() {
         return environment;
     }
 
+    /**
+     * 设置环境
+     *
+     * @param environment
+     */
     public void setEnvironment(Environment environment) {
         this.environment = environment;
     }
 
+    /**
+     * 获取自动映射策略
+     *
+     * @return
+     */
     public AutoMappingBehavior getAutoMappingBehavior() {
         return autoMappingBehavior;
     }
 
+    /**
+     * 设置自动映射策略
+     *
+     * @param autoMappingBehavior
+     */
     public void setAutoMappingBehavior(AutoMappingBehavior autoMappingBehavior) {
         this.autoMappingBehavior = autoMappingBehavior;
     }
 
     /**
+     * 获取自动映射位置字段策略
+     *
      * @since 3.4.0
      */
     public AutoMappingUnknownColumnBehavior getAutoMappingUnknownColumnBehavior() {
@@ -449,6 +575,8 @@ public class Configuration {
     }
 
     /**
+     * 设置自动映射位置字段策略
+     *
      * @since 3.4.0
      */
     public void setAutoMappingUnknownColumnBehavior(AutoMappingUnknownColumnBehavior autoMappingUnknownColumnBehavior) {
@@ -464,14 +592,29 @@ public class Configuration {
         return lazyLoadingEnabled;
     }
 
+    /**
+     * 设置是否允许懒加载
+     *
+     * @param lazyLoadingEnabled
+     */
     public void setLazyLoadingEnabled(boolean lazyLoadingEnabled) {
         this.lazyLoadingEnabled = lazyLoadingEnabled;
     }
 
+    /**
+     * 获取代理工厂
+     *
+     * @return
+     */
     public ProxyFactory getProxyFactory() {
         return proxyFactory;
     }
 
+    /**
+     * 设置代理工厂
+     *
+     * @param proxyFactory
+     */
     public void setProxyFactory(ProxyFactory proxyFactory) {
         if (proxyFactory == null) {
             proxyFactory = new JavassistProxyFactory();
@@ -503,34 +646,74 @@ public class Configuration {
         this.lazyLoadTriggerMethods = lazyLoadTriggerMethods;
     }
 
+    /**
+     * 是否使用主键生成器
+     *
+     * @return
+     */
     public boolean isUseGeneratedKeys() {
         return useGeneratedKeys;
     }
 
+    /**
+     * 设置是否使用主键生成器
+     *
+     * @param useGeneratedKeys
+     */
     public void setUseGeneratedKeys(boolean useGeneratedKeys) {
         this.useGeneratedKeys = useGeneratedKeys;
     }
 
+    /**
+     * 获取默认的执行器类型
+     *
+     * @return
+     */
     public ExecutorType getDefaultExecutorType() {
         return defaultExecutorType;
     }
 
+    /**
+     * 设置默认的执行器类型
+     *
+     * @param defaultExecutorType
+     */
     public void setDefaultExecutorType(ExecutorType defaultExecutorType) {
         this.defaultExecutorType = defaultExecutorType;
     }
 
+    /**
+     * 获取是否允许缓存
+     *
+     * @return
+     */
     public boolean isCacheEnabled() {
         return cacheEnabled;
     }
 
+    /**
+     * 设置是否允许缓存
+     *
+     * @param cacheEnabled
+     */
     public void setCacheEnabled(boolean cacheEnabled) {
         this.cacheEnabled = cacheEnabled;
     }
 
+    /**
+     * 获取默认的声明超时时间
+     *
+     * @return
+     */
     public Integer getDefaultStatementTimeout() {
         return defaultStatementTimeout;
     }
 
+    /**
+     * 设置默认的声明超时时间
+     *
+     * @param defaultStatementTimeout
+     */
     public void setDefaultStatementTimeout(Integer defaultStatementTimeout) {
         this.defaultStatementTimeout = defaultStatementTimeout;
     }
@@ -557,24 +740,44 @@ public class Configuration {
         this.useColumnLabel = useColumnLabel;
     }
 
+    /**
+     * 获取本地缓存类型
+     *
+     * @return
+     */
     public LocalCacheScope getLocalCacheScope() {
         return localCacheScope;
     }
 
+    /**
+     * 设置本地缓存类型
+     *
+     * @param localCacheScope
+     */
     public void setLocalCacheScope(LocalCacheScope localCacheScope) {
         this.localCacheScope = localCacheScope;
     }
 
+    /**
+     * 获取null类型对应的jdbc
+     *
+     * @return
+     */
     public JdbcType getJdbcTypeForNull() {
         return jdbcTypeForNull;
     }
 
+    /**
+     * 设置null类型对应的jdbc
+     *
+     * @param jdbcTypeForNull
+     */
     public void setJdbcTypeForNull(JdbcType jdbcTypeForNull) {
         this.jdbcTypeForNull = jdbcTypeForNull;
     }
 
     /**
-     * 获取属性配置变量
+     * 获取属性配置变量配置
      *
      * @return
      */
@@ -582,10 +785,20 @@ public class Configuration {
         return variables;
     }
 
+    /**
+     * 设置属性变量配置
+     *
+     * @param variables
+     */
     public void setVariables(Properties variables) {
         this.variables = variables;
     }
 
+    /**
+     * 获取类型处理器注册器
+     *
+     * @return
+     */
     public TypeHandlerRegistry getTypeHandlerRegistry() {
         return typeHandlerRegistry;
     }
@@ -593,6 +806,7 @@ public class Configuration {
     /**
      * Set a default {@link TypeHandler} class for {@link Enum}.
      * A default {@link TypeHandler} is {@link org.apache.ibatis.type.EnumTypeHandler}.
+     * 注册默认的枚举类型处理器
      *
      * @param typeHandler a type handler class for {@link Enum}
      * @since 3.4.5
@@ -603,42 +817,81 @@ public class Configuration {
         }
     }
 
+    /**
+     * 获取类型别名处理器
+     *
+     * @return
+     */
     public TypeAliasRegistry getTypeAliasRegistry() {
         return typeAliasRegistry;
     }
 
     /**
+     * 获取映射注册器
+     *
      * @since 3.2.2
      */
     public MapperRegistry getMapperRegistry() {
         return mapperRegistry;
     }
 
+    /**
+     * 获取反射工厂
+     *
+     * @return
+     */
     public ReflectorFactory getReflectorFactory() {
         return reflectorFactory;
     }
 
+    /**
+     * 设置反射工厂
+     *
+     * @param reflectorFactory
+     */
     public void setReflectorFactory(ReflectorFactory reflectorFactory) {
         this.reflectorFactory = reflectorFactory;
     }
 
+    /**
+     * 获取对象工厂
+     *
+     * @return
+     */
     public ObjectFactory getObjectFactory() {
         return objectFactory;
     }
 
+    /**
+     * 设置对象工厂
+     *
+     * @param objectFactory
+     */
     public void setObjectFactory(ObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
 
+    /**
+     * 获取对象包装工厂
+     *
+     * @return
+     */
     public ObjectWrapperFactory getObjectWrapperFactory() {
         return objectWrapperFactory;
     }
 
+    /**
+     * 设置对应包装工厂
+     *
+     * @param objectWrapperFactory
+     */
     public void setObjectWrapperFactory(ObjectWrapperFactory objectWrapperFactory) {
         this.objectWrapperFactory = objectWrapperFactory;
     }
 
     /**
+     * 获取所有的拦截器
+     *
      * @since 3.2.2
      */
     public List<Interceptor> getInterceptors() {
@@ -654,6 +907,11 @@ public class Configuration {
         return languageRegistry;
     }
 
+    /**
+     * 设置默认的缓存启动
+     *
+     * @param driver
+     */
     public void setDefaultScriptingLanguage(Class<?> driver) {
         if (driver == null) {
             driver = XMLLanguageDriver.class;
@@ -661,6 +919,11 @@ public class Configuration {
         getLanguageRegistry().setDefaultDriverClass(driver);
     }
 
+    /**
+     * 获取默认的语言驱动
+     *
+     * @return
+     */
     public LanguageDriver getDefaultScriptingLanguageInstance() {
         return languageRegistry.getDefaultDriver();
     }
@@ -673,10 +936,24 @@ public class Configuration {
         return getDefaultScriptingLanguageInstance();
     }
 
+    /**
+     * 创建一个对象的元对象
+     *
+     * @param object
+     * @return
+     */
     public MetaObject newMetaObject(Object object) {
         return MetaObject.forObject(object, objectFactory, objectWrapperFactory, reflectorFactory);
     }
 
+    /**
+     * 创建参数处理器
+     *
+     * @param mappedStatement
+     * @param parameterObject
+     * @param boundSql
+     * @return
+     */
     public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject,
             BoundSql boundSql) {
         ParameterHandler parameterHandler = mappedStatement.getLang()
@@ -685,6 +962,17 @@ public class Configuration {
         return parameterHandler;
     }
 
+    /**
+     * 创建结果集合处理器
+     *
+     * @param executor
+     * @param mappedStatement
+     * @param rowBounds
+     * @param parameterHandler
+     * @param resultHandler
+     * @param boundSql
+     * @return
+     */
     public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds,
             ParameterHandler parameterHandler, ResultHandler resultHandler, BoundSql boundSql) {
         ResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, mappedStatement, parameterHandler,
@@ -693,6 +981,17 @@ public class Configuration {
         return resultSetHandler;
     }
 
+    /**
+     * 创建声明处理器
+     *
+     * @param executor
+     * @param mappedStatement
+     * @param parameterObject
+     * @param rowBounds
+     * @param resultHandler
+     * @param boundSql
+     * @return
+     */
     public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement,
             Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
         StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject,
@@ -701,14 +1000,28 @@ public class Configuration {
         return statementHandler;
     }
 
+    /**
+     * 创建执行器
+     *
+     * @param transaction
+     * @return
+     */
     public Executor newExecutor(Transaction transaction) {
         return newExecutor(transaction, defaultExecutorType);
     }
 
+    /**
+     * 创建执行器
+     *
+     * @param transaction
+     * @param executorType
+     * @return
+     */
     public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
         executorType = executorType == null ? defaultExecutorType : executorType;
         executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
         Executor executor;
+        //根据给出的执行器类型创建对应的执行器
         if (ExecutorType.BATCH == executorType) {
             executor = new BatchExecutor(this, transaction);
         } else if (ExecutorType.REUSE == executorType) {
@@ -716,6 +1029,7 @@ public class Configuration {
         } else {
             executor = new SimpleExecutor(this, transaction);
         }
+        //如果允许缓存 那么执行器类型就是缓存执行器
         if (cacheEnabled) {
             executor = new CachingExecutor(executor);
         }
@@ -723,22 +1037,50 @@ public class Configuration {
         return executor;
     }
 
+    /**
+     * 添加主键生成器
+     *
+     * @param id
+     * @param keyGenerator
+     */
     public void addKeyGenerator(String id, KeyGenerator keyGenerator) {
         keyGenerators.put(id, keyGenerator);
     }
 
+    /**
+     * 获取主键生成器map的键集合
+     *
+     * @return
+     */
     public Collection<String> getKeyGeneratorNames() {
         return keyGenerators.keySet();
     }
 
+    /**
+     * 获取主键生成器集合
+     *
+     * @return
+     */
     public Collection<KeyGenerator> getKeyGenerators() {
         return keyGenerators.values();
     }
 
+    /**
+     * 根据id获取主键生成器
+     *
+     * @param id
+     * @return
+     */
     public KeyGenerator getKeyGenerator(String id) {
         return keyGenerators.get(id);
     }
 
+    /**
+     * 判断给出的id是否存在主键生成器
+     *
+     * @param id
+     * @return
+     */
     public boolean hasKeyGenerator(String id) {
         return keyGenerators.containsKey(id);
     }
@@ -752,10 +1094,20 @@ public class Configuration {
         caches.put(cache.getId(), cache);
     }
 
+    /**
+     * 获取缓存map键集合
+     *
+     * @return
+     */
     public Collection<String> getCacheNames() {
         return caches.keySet();
     }
 
+    /**
+     * 获取缓存集合
+     *
+     * @return
+     */
     public Collection<Cache> getCaches() {
         return caches.values();
     }
@@ -770,66 +1122,146 @@ public class Configuration {
         return caches.get(id);
     }
 
+    /**
+     * 判断给出的id是否存在缓存
+     *
+     * @param id
+     * @return
+     */
     public boolean hasCache(String id) {
         return caches.containsKey(id);
     }
 
+    /**
+     * 添加结果map
+     *
+     * @param rm
+     */
     public void addResultMap(ResultMap rm) {
         resultMaps.put(rm.getId(), rm);
         checkLocallyForDiscriminatedNestedResultMaps(rm);
         checkGloballyForDiscriminatedNestedResultMaps(rm);
     }
 
+    /**
+     * 获取结果map键集合
+     *
+     * @return
+     */
     public Collection<String> getResultMapNames() {
         return resultMaps.keySet();
     }
 
+    /**
+     * 获取结果map集合
+     *
+     * @return
+     */
     public Collection<ResultMap> getResultMaps() {
         return resultMaps.values();
     }
 
+    /**
+     * 根据给出的id获取结果map
+     *
+     * @param id
+     * @return
+     */
     public ResultMap getResultMap(String id) {
         return resultMaps.get(id);
     }
 
+    /**
+     * 判断给出的id是否存在结果map
+     *
+     * @param id
+     * @return
+     */
     public boolean hasResultMap(String id) {
         return resultMaps.containsKey(id);
     }
 
+    /**
+     * 添加参数map
+     *
+     * @param pm
+     */
     public void addParameterMap(ParameterMap pm) {
         parameterMaps.put(pm.getId(), pm);
     }
 
+    /**
+     * 获取参数map键集合
+     *
+     * @return
+     */
     public Collection<String> getParameterMapNames() {
         return parameterMaps.keySet();
     }
 
+    /**
+     * 获取参数map集合
+     *
+     * @return
+     */
     public Collection<ParameterMap> getParameterMaps() {
         return parameterMaps.values();
     }
 
+    /**
+     * 根据给出的id获取参数map
+     *
+     * @param id
+     * @return
+     */
     public ParameterMap getParameterMap(String id) {
         return parameterMaps.get(id);
     }
 
+    /**
+     * 判断给出的id是否存在参数map
+     *
+     * @param id
+     * @return
+     */
     public boolean hasParameterMap(String id) {
         return parameterMaps.containsKey(id);
     }
 
+    /**
+     * 添加已映射的声明
+     *
+     * @param ms
+     */
     public void addMappedStatement(MappedStatement ms) {
         mappedStatements.put(ms.getId(), ms);
     }
 
+    /**
+     * 获取已映射的声明的map键集合
+     *
+     * @return
+     */
     public Collection<String> getMappedStatementNames() {
         buildAllStatements();
         return mappedStatements.keySet();
     }
 
+    /**
+     * 获取已映射的声明集合
+     *
+     * @return
+     */
     public Collection<MappedStatement> getMappedStatements() {
         buildAllStatements();
         return mappedStatements.values();
     }
 
+    /**
+     * 获取不完整的声明集合
+     *
+     * @return
+     */
     public Collection<XMLStatementBuilder> getIncompleteStatements() {
         return incompleteStatements;
     }
@@ -843,12 +1275,17 @@ public class Configuration {
         incompleteStatements.add(incompleteStatement);
     }
 
+    /**
+     * 获取不完整的缓存引用解析器集合
+     *
+     * @return
+     */
     public Collection<CacheRefResolver> getIncompleteCacheRefs() {
         return incompleteCacheRefs;
     }
 
     /**
-     * 添加不完整的缓存引用
+     * 添加不完整的缓存引用解析器
      *
      * @param incompleteCacheRef
      */
@@ -856,18 +1293,38 @@ public class Configuration {
         incompleteCacheRefs.add(incompleteCacheRef);
     }
 
+    /**
+     * 获取不完整的结果map解析器集合
+     *
+     * @return
+     */
     public Collection<ResultMapResolver> getIncompleteResultMaps() {
         return incompleteResultMaps;
     }
 
+    /**
+     * 添加不完整的结果map解析器
+     *
+     * @param resultMapResolver
+     */
     public void addIncompleteResultMap(ResultMapResolver resultMapResolver) {
         incompleteResultMaps.add(resultMapResolver);
     }
 
+    /**
+     * 添加不完整的方法解析器
+     *
+     * @param builder
+     */
     public void addIncompleteMethod(MethodResolver builder) {
         incompleteMethods.add(builder);
     }
 
+    /**
+     * 获取不完整的方法解析器集合
+     *
+     * @return
+     */
     public Collection<MethodResolver> getIncompleteMethods() {
         return incompleteMethods;
     }
@@ -883,13 +1340,14 @@ public class Configuration {
     }
 
     /**
-     * 根据statementId以及
+     * 根据statementId获取已映射的声明
      *
-     * @param id
-     * @param validateIncompleteStatements
+     * @param id                           statementId
+     * @param validateIncompleteStatements 是否验证不完整的声明
      * @return
      */
     public MappedStatement getMappedStatement(String id, boolean validateIncompleteStatements) {
+        //如果验证不完整的声明
         if (validateIncompleteStatements) {
             buildAllStatements();
         }
@@ -1034,47 +1492,103 @@ public class Configuration {
         }
     }
 
+    /**
+     * 严格的hashMap
+     * 1:key只能为string
+     * 2:不能存放重复的key  否则抛出异常
+     *
+     * @param <V>
+     */
     protected static class StrictMap<V> extends HashMap<String, V> {
 
         private static final long serialVersionUID = -4950446264854982944L;
+
+        /**
+         * map的名称
+         */
         private final String name;
 
+        /**
+         * 构造函数
+         *
+         * @param name
+         * @param initialCapacity
+         * @param loadFactor
+         */
         public StrictMap(String name, int initialCapacity, float loadFactor) {
             super(initialCapacity, loadFactor);
             this.name = name;
         }
 
+        /**
+         * 构造函数
+         *
+         * @param name
+         * @param initialCapacity
+         */
         public StrictMap(String name, int initialCapacity) {
             super(initialCapacity);
             this.name = name;
         }
 
+        /**
+         * 构造函数
+         *
+         * @param name
+         */
         public StrictMap(String name) {
             super();
             this.name = name;
         }
 
+        /**
+         * 构造函数
+         *
+         * @param name
+         * @param m
+         */
         public StrictMap(String name, Map<String, ? extends V> m) {
             super(m);
             this.name = name;
         }
 
+        /**
+         * 存放key对应的value
+         * 如果map中已经存在这个key 那么抛出异常
+         *
+         * @param key
+         * @param value
+         * @return
+         */
         @SuppressWarnings("unchecked")
         public V put(String key, V value) {
             if (containsKey(key)) {
                 throw new IllegalArgumentException(name + " already contains value for " + key);
             }
+            //如果是键中包含.
             if (key.contains(".")) {
+                //根据.分割 然后获取简称
                 final String shortKey = getShortName(key);
+                //获取简称对应的value 如果为null 直接存放简称对应的value
                 if (super.get(shortKey) == null) {
                     super.put(shortKey, value);
                 } else {
+                    //如果不为null 那么将包装后的简称作为value 表示存在多个这个key对应的value
                     super.put(shortKey, (V) new Ambiguity(shortKey));
                 }
             }
+            //存放key对应的value
             return super.put(key, value);
         }
 
+        /**
+         * 获取这个key对应的value
+         * 如果没有这个key对应的value 抛出异常
+         * 如果value是Ambiguity类型那么抛出异常
+         *
+         * @param key
+         * @return
+         */
         public V get(Object key) {
             V value = super.get(key);
             if (value == null) {
@@ -1087,18 +1601,44 @@ public class Configuration {
             return value;
         }
 
+        /**
+         * 获取简称
+         * 以.分割后的最后一部分
+         * aa.bb.cc
+         * 就是cc
+         *
+         * @param key
+         * @return
+         */
         private String getShortName(String key) {
             final String[] keyParts = key.split("\\.");
             return keyParts[keyParts.length - 1];
         }
 
+        /**
+         * 模糊对象
+         */
         protected static class Ambiguity {
+
+            /**
+             * 主题
+             */
             final private String subject;
 
+            /**
+             * 构造函数
+             *
+             * @param subject
+             */
             public Ambiguity(String subject) {
                 this.subject = subject;
             }
 
+            /**
+             * 获取对象
+             *
+             * @return
+             */
             public String getSubject() {
                 return subject;
             }

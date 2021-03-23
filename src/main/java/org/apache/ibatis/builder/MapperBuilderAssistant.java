@@ -296,6 +296,31 @@ public class MapperBuilderAssistant extends BaseBuilder {
         return new Discriminator.Builder(configuration, resultMapping, namespaceDiscriminatorMap).build();
     }
 
+    /**
+     * 添加已映射的声明
+     *
+     * @param id             声明id
+     * @param sqlSource
+     * @param statementType
+     * @param sqlCommandType
+     * @param fetchSize
+     * @param timeout
+     * @param parameterMap
+     * @param parameterType
+     * @param resultMap
+     * @param resultType
+     * @param resultSetType
+     * @param flushCache
+     * @param useCache
+     * @param resultOrdered
+     * @param keyGenerator
+     * @param keyProperty
+     * @param keyColumn
+     * @param databaseId
+     * @param lang
+     * @param resultSets
+     * @return
+     */
     public MappedStatement addMappedStatement(String id, SqlSource sqlSource, StatementType statementType,
             SqlCommandType sqlCommandType, Integer fetchSize, Integer timeout, String parameterMap,
             Class<?> parameterType, String resultMap, Class<?> resultType, ResultSetType resultSetType,

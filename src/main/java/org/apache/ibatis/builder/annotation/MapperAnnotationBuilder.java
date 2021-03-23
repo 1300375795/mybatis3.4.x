@@ -777,26 +777,27 @@ public class MapperAnnotationBuilder {
         String keyColumn = selectKeyAnnotation.keyColumn();
         boolean executeBefore = selectKeyAnnotation.before();
 
-        // defaults
+        // defaults 默认不适用缓存
         boolean useCache = false;
         KeyGenerator keyGenerator = NoKeyGenerator.INSTANCE;
+        // 这是尝试影响驱动程序每次批量返回的结果行数和这个设置值相等
         Integer fetchSize = null;
         Integer timeout = null;
         boolean flushCache = false;
         String parameterMap = null;
         String resultMap = null;
         ResultSetType resultSetTypeEnum = null;
-
+        //根据注解中的sql声明以及参数类型class以及语言驱动创建sql源
         SqlSource sqlSource = buildSqlSourceFromStrings(selectKeyAnnotation.statement(), parameterTypeClass,
                 languageDriver);
         SqlCommandType sqlCommandType = SqlCommandType.SELECT;
-
+        //添加已映射的声明
         assistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType, fetchSize, timeout, parameterMap,
                 parameterTypeClass, resultMap, resultTypeClass, resultSetTypeEnum, flushCache, useCache, false,
                 keyGenerator, keyProperty, keyColumn, null, languageDriver, null);
-
+        //申请当前命名空间
         id = assistant.applyCurrentNamespace(id, false);
-
+    //
         MappedStatement keyStatement = configuration.getMappedStatement(id, false);
         SelectKeyGenerator answer = new SelectKeyGenerator(keyStatement, executeBefore);
         configuration.addKeyGenerator(id, answer);
