@@ -1354,14 +1354,30 @@ public class Configuration {
         return mappedStatements.get(id);
     }
 
+    /**
+     * 获取sql片段集合
+     *
+     * @return
+     */
     public Map<String, XNode> getSqlFragments() {
         return sqlFragments;
     }
 
+    /**
+     * 添加拦截器
+     *
+     * @param interceptor
+     */
     public void addInterceptor(Interceptor interceptor) {
         interceptorChain.addInterceptor(interceptor);
     }
 
+    /**
+     * 将某个包下面所有superType的子类添加成映射
+     *
+     * @param packageName
+     * @param superType
+     */
     public void addMappers(String packageName, Class<?> superType) {
         mapperRegistry.addMappers(packageName, superType);
     }
@@ -1385,18 +1401,45 @@ public class Configuration {
         mapperRegistry.addMapper(type);
     }
 
+    /**
+     * 根据类型以及会话获取映射实例
+     *
+     * @param type
+     * @param sqlSession
+     * @param <T>
+     * @return
+     */
     public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
         return mapperRegistry.getMapper(type, sqlSession);
     }
 
+    /**
+     * 判断是否存在某映射
+     *
+     * @param type
+     * @return
+     */
     public boolean hasMapper(Class<?> type) {
         return mapperRegistry.hasMapper(type);
     }
 
+    /**
+     * 判断是否存在声明
+     *
+     * @param statementName
+     * @return
+     */
     public boolean hasStatement(String statementName) {
         return hasStatement(statementName, true);
     }
 
+    /**
+     * 判断是否存在声明
+     *
+     * @param statementName
+     * @param validateIncompleteStatements
+     * @return
+     */
     public boolean hasStatement(String statementName, boolean validateIncompleteStatements) {
         if (validateIncompleteStatements) {
             buildAllStatements();
@@ -1414,10 +1457,11 @@ public class Configuration {
         cacheRefMap.put(namespace, referencedNamespace);
     }
 
-    /*
+    /**
      * Parses all the unprocessed statement nodes in the cache. It is recommended
      * to call this method once all the mappers are added as it provides fail-fast
      * statement validation.
+     * 构建所有的声明
      */
     protected void buildAllStatements() {
         if (!incompleteResultMaps.isEmpty()) {
@@ -1446,8 +1490,9 @@ public class Configuration {
         }
     }
 
-    /*
+    /**
      * Extracts namespace from fully qualified statement id.
+     * 摘录命名空间
      *
      * @param statementId
      * @return namespace or null when id does not contain period.

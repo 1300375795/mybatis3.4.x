@@ -18,7 +18,7 @@ package org.apache.ibatis.builder;
 import org.apache.ibatis.cache.Cache;
 
 /**
- * 缓存应用解析器
+ * 缓存引用解析器
  *
  * @author Clinton Begin
  */
