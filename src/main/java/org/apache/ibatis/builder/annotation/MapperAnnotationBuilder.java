@@ -291,6 +291,12 @@ public class MapperAnnotationBuilder {
         }
     }
 
+    /**
+     * 解析结果map
+     *
+     * @param method
+     * @return
+     */
     private String parseResultMap(Method method) {
         Class<?> returnType = getReturnType(method);
         ConstructorArgs args = method.getAnnotation(ConstructorArgs.class);
@@ -301,22 +307,44 @@ public class MapperAnnotationBuilder {
         return resultMapId;
     }
 
+    /**
+     * 生成结果map名称
+     *
+     * @param method
+     * @return
+     */
     private String generateResultMapName(Method method) {
+        //获取这个注解
         Results results = method.getAnnotation(Results.class);
+        //如果有这个注解 并且注解的id不为空
         if (results != null && !results.id().isEmpty()) {
+            //返回这个mapper接口+results的id
             return type.getName() + "." + results.id();
         }
+        //否则
         StringBuilder suffix = new StringBuilder();
+        //遍历参数列表 拼接上作为前缀
         for (Class<?> c : method.getParameterTypes()) {
             suffix.append("-");
             suffix.append(c.getSimpleName());
         }
+        //如果没有参数 那么拼接上-void
         if (suffix.length() < 1) {
             suffix.append("-void");
         }
+        //将mapper接口+方法名称+前缀拼接起来
         return type.getName() + "." + method.getName() + suffix;
     }
 
+    /**
+     * 申请结果map
+     *
+     * @param resultMapId
+     * @param returnType
+     * @param args
+     * @param results
+     * @param discriminator
+     */
     private void applyResultMap(String resultMapId, Class<?> returnType, Arg[] args, Result[] results,
             TypeDiscriminator discriminator) {
         List<ResultMapping> resultMappings = new ArrayList<ResultMapping>();
@@ -500,16 +528,28 @@ public class MapperAnnotationBuilder {
         return parameterType;
     }
 
+    /**
+     * 拿到方法的返回类型
+     *
+     * @param method
+     * @return
+     */
     private Class<?> getReturnType(Method method) {
         Class<?> returnType = method.getReturnType();
         Type resolvedReturnType = TypeParameterResolver.resolveReturnType(method, type);
+        //如果解析出来的返回类型是class
         if (resolvedReturnType instanceof Class) {
+            //转换成class
             returnType = (Class<?>) resolvedReturnType;
+            //如果是数组类型
             if (returnType.isArray()) {
+                //拿到这个数组类型的原始类型
                 returnType = returnType.getComponentType();
             }
             // gcode issue #508
+            //如果是void发回
             if (void.class.equals(returnType)) {
+                //如果有这个注解 那么拿到这个注解的值
                 ResultType rt = method.getAnnotation(ResultType.class);
                 if (rt != null) {
                     returnType = rt.value();
@@ -726,6 +766,13 @@ public class MapperAnnotationBuilder {
         return result.one().select().length() > 0 || result.many().select().length() > 0;
     }
 
+    /**
+     * 遍历Arg数组
+     *
+     * @param args
+     * @param resultType
+     * @param resultMappings
+     */
     private void applyConstructorArgs(Arg[] args, Class<?> resultType, List<ResultMapping> resultMappings) {
         for (Arg arg : args) {
             List<ResultFlag> flags = new ArrayList<ResultFlag>();
@@ -750,10 +797,24 @@ public class MapperAnnotationBuilder {
         return value == null || value.trim().length() == 0 ? null : value;
     }
 
+    /**
+     * 如果有Results注解 那么返回直接中的value
+     * 否则新建一个空数组
+     *
+     * @param results
+     * @return
+     */
     private Result[] resultsIf(Results results) {
         return results == null ? new Result[0] : results.value();
     }
 
+    /**
+     * 如果有ConstructorArgs注解 那么返回注解中的value
+     * 否则返回一个新的数组
+     *
+     * @param args
+     * @return
+     */
     private Arg[] argsIf(ConstructorArgs args) {
         return args == null ? new Arg[0] : args.value();
     }
@@ -797,7 +858,7 @@ public class MapperAnnotationBuilder {
                 keyGenerator, keyProperty, keyColumn, null, languageDriver, null);
         //申请当前命名空间
         id = assistant.applyCurrentNamespace(id, false);
-    //
+        //
         MappedStatement keyStatement = configuration.getMappedStatement(id, false);
         SelectKeyGenerator answer = new SelectKeyGenerator(keyStatement, executeBefore);
         configuration.addKeyGenerator(id, answer);

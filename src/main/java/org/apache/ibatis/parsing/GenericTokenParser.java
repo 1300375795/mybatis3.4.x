@@ -107,6 +107,7 @@ public class GenericTokenParser {
                     builder.append(src, start, src.length - start);
                     offset = src.length;
                 } else {
+                    //找到closeToken 那么就执行handler的handlerToken并执行
                     builder.append(handler.handleToken(expression.toString()));
                     offset = end + closeToken.length();
                 }

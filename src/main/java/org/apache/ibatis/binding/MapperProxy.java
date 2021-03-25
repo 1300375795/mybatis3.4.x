@@ -77,6 +77,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         try {
+            // TODO: 2021/3/25 CallYeDeGuo 在调用映射方法的时候会执行这个代理
             //如果这个方法是Object的方法 直接执行
             if (Object.class.equals(method.getDeclaringClass())) {
                 return method.invoke(this, args);

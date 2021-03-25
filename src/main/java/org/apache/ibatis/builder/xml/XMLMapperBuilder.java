@@ -161,7 +161,7 @@ public class XMLMapperBuilder extends BaseBuilder {
             configurationElement(parser.evalNode("/mapper"));
             //将这个文件加到已经加载过的资源集合中
             configuration.addLoadedResource(resource);
-            //绑定命名空间
+            //绑定命名空间 xml加载完毕 如果映射接口没有被加载的话 那么就会再加载对应的映射接口
             bindMapperForNamespace();
         }
         //再次进行解析这几个
