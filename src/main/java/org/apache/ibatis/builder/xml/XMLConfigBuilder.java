@@ -143,6 +143,7 @@ public class XMLConfigBuilder extends BaseBuilder {
      * @param props
      */
     private XMLConfigBuilder(XPathParser parser, String environment, Properties props) {
+        // TODO: 2021/3/25 CallYeDeGuo 全局属性在这里创建
         super(new Configuration());
         ErrorContext.instance().resource("SQL Mapper Configuration");
         //这里的this.configuration就是上面的new Configuration()出来的实例
@@ -174,7 +175,7 @@ public class XMLConfigBuilder extends BaseBuilder {
      *
      * @param root
      */
-    private void  parseConfiguration(XNode root) {
+    private void parseConfiguration(XNode root) {
         try {
             //issue #117 read properties first
             //解析xml中的属性配置
@@ -419,6 +420,7 @@ public class XMLConfigBuilder extends BaseBuilder {
      * @throws Exception
      */
     private void settingsElement(Properties props) throws Exception {
+        // TODO: 2021/3/25 CallYeDeGuo 全局配置中的一些属性的初始化在这里
         configuration.setAutoMappingBehavior(
                 AutoMappingBehavior.valueOf(props.getProperty("autoMappingBehavior", "PARTIAL")));
         configuration.setAutoMappingUnknownColumnBehavior(AutoMappingUnknownColumnBehavior

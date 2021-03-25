@@ -319,6 +319,7 @@ public class Configuration {
      * 构造函数
      */
     public Configuration() {
+        // TODO: 2021/3/25 CallYeDeGuo 这里定了以很多初始化的默认值
         //注册jdbc事务工厂class对应的别名
         typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
         //注册被管理的事务工class对应的别名

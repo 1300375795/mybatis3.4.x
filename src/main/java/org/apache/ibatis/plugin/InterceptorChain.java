@@ -34,7 +34,7 @@ public class InterceptorChain {
     /**
      * 执行所有的拦截器的插件操作
      *
-     * @param target
+     * @param target 目前看来是执行器
      * @return
      */
     public Object pluginAll(Object target) {

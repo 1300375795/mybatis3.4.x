@@ -30,10 +30,21 @@ import org.apache.ibatis.cache.CacheException;
  */
 public class PerpetualCache implements Cache {
 
+    /**
+     * 缓存id名称
+     */
     private final String id;
 
+    /**
+     * 缓存map
+     */
     private Map<Object, Object> cache = new HashMap<Object, Object>();
 
+    /**
+     * 构造函数
+     *
+     * @param id
+     */
     public PerpetualCache(String id) {
         this.id = id;
     }

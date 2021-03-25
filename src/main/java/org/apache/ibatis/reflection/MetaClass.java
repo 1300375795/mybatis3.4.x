@@ -33,28 +33,68 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
  */
 public class MetaClass {
 
+    /**
+     * 反射工厂
+     */
     private final ReflectorFactory reflectorFactory;
+
+    /**
+     * 反射对象
+     */
     private final Reflector reflector;
 
+    /**
+     * 私有构造函数
+     *
+     * @param type
+     * @param reflectorFactory
+     */
     private MetaClass(Class<?> type, ReflectorFactory reflectorFactory) {
         this.reflectorFactory = reflectorFactory;
         this.reflector = reflectorFactory.findForClass(type);
     }
 
+    /**
+     * 静态方法调用构造函数
+     * 构建这个type对应的class对象的所有的信息
+     *
+     * @param type
+     * @param reflectorFactory
+     * @return
+     */
     public static MetaClass forClass(Class<?> type, ReflectorFactory reflectorFactory) {
         return new MetaClass(type, reflectorFactory);
     }
 
+    /**
+     * 拿到这个属性名称对应的class的元class
+     *
+     * @param name
+     * @return
+     */
     public MetaClass metaClassForProperty(String name) {
         Class<?> propType = reflector.getGetterType(name);
         return MetaClass.forClass(propType, reflectorFactory);
     }
 
+    /**
+     * 根据属性名称查找
+     *
+     * @param name
+     * @return
+     */
     public String findProperty(String name) {
         StringBuilder prop = buildProperty(name, new StringBuilder());
         return prop.length() > 0 ? prop.toString() : null;
     }
 
+    /**
+     * 根据属性名称以及是否驼峰查找
+     *
+     * @param name
+     * @param useCamelCaseMapping
+     * @return
+     */
     public String findProperty(String name, boolean useCamelCaseMapping) {
         if (useCamelCaseMapping) {
             name = name.replace("_", "");
@@ -62,10 +102,20 @@ public class MetaClass {
         return findProperty(name);
     }
 
+    /**
+     * 拿到这个元class对应的源class所有的可读属性名称
+     *
+     * @return
+     */
     public String[] getGetterNames() {
         return reflector.getGetablePropertyNames();
     }
 
+    /**
+     * 拿到这个元class的源class对应的所有的可写属性名称
+     *
+     * @return
+     */
     public String[] getSetterNames() {
         return reflector.getSetablePropertyNames();
     }
