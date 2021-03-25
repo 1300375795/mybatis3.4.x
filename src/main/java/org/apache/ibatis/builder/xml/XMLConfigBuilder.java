@@ -145,6 +145,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     private XMLConfigBuilder(XPathParser parser, String environment, Properties props) {
         super(new Configuration());
         ErrorContext.instance().resource("SQL Mapper Configuration");
+        //这里的this.configuration就是上面的new Configuration()出来的实例
         this.configuration.setVariables(props);
         this.parsed = false;
         this.environment = environment;
@@ -173,7 +174,7 @@ public class XMLConfigBuilder extends BaseBuilder {
      *
      * @param root
      */
-    private void parseConfiguration(XNode root) {
+    private void  parseConfiguration(XNode root) {
         try {
             //issue #117 read properties first
             //解析xml中的属性配置

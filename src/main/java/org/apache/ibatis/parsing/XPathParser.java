@@ -266,6 +266,7 @@ public class XPathParser {
     }
 
     /**
+     * 根据给出的表达解析得到string
      *
      * @param expression
      * @return
@@ -274,64 +275,162 @@ public class XPathParser {
         return evalString(document, expression);
     }
 
+    /**
+     * 根据给出的root节点以及表达式解析string
+     *
+     * @param root
+     * @param expression
+     * @return
+     */
     public String evalString(Object root, String expression) {
         String result = (String) evaluate(expression, root, XPathConstants.STRING);
         result = PropertyParser.parse(result, variables);
         return result;
     }
 
+    /**
+     * 根据给出的表达式解析boolean
+     *
+     * @param expression
+     * @return
+     */
     public Boolean evalBoolean(String expression) {
         return evalBoolean(document, expression);
     }
 
+    /**
+     * 根据给出的根节点以及表达式解析boolean
+     *
+     * @param root
+     * @param expression
+     * @return
+     */
     public Boolean evalBoolean(Object root, String expression) {
         return (Boolean) evaluate(expression, root, XPathConstants.BOOLEAN);
     }
 
+    /**
+     * 根据给出表达式解析short
+     *
+     * @param expression
+     * @return
+     */
     public Short evalShort(String expression) {
         return evalShort(document, expression);
     }
 
+    /**
+     * 根据给出的根节点以及表达式解析short
+     *
+     * @param root
+     * @param expression
+     * @return
+     */
     public Short evalShort(Object root, String expression) {
         return Short.valueOf(evalString(root, expression));
     }
 
+    /**
+     * 根据给出的表达式解析integer
+     *
+     * @param expression
+     * @return
+     */
     public Integer evalInteger(String expression) {
         return evalInteger(document, expression);
     }
 
+    /**
+     * 根据给出的根节点以及表达式解析integer
+     *
+     * @param root
+     * @param expression
+     * @return
+     */
     public Integer evalInteger(Object root, String expression) {
         return Integer.valueOf(evalString(root, expression));
     }
 
+    /**
+     * 根据给出的表达式解析long
+     *
+     * @param expression
+     * @return
+     */
     public Long evalLong(String expression) {
         return evalLong(document, expression);
     }
 
+    /**
+     * 根据给出的根节点以及表达式解析long
+     *
+     * @param root
+     * @param expression
+     * @return
+     */
     public Long evalLong(Object root, String expression) {
         return Long.valueOf(evalString(root, expression));
     }
 
+    /**
+     * 根据给出的表达式解析float
+     *
+     * @param expression
+     * @return
+     */
     public Float evalFloat(String expression) {
         return evalFloat(document, expression);
     }
 
+    /**
+     * 根据给出的根节点以及表达式解析float
+     *
+     * @param root
+     * @param expression
+     * @return
+     */
     public Float evalFloat(Object root, String expression) {
         return Float.valueOf(evalString(root, expression));
     }
 
+    /**
+     * 根据给出的表达式解析double
+     *
+     * @param expression
+     * @return
+     */
     public Double evalDouble(String expression) {
         return evalDouble(document, expression);
     }
 
+    /**
+     * 根据给出的根节点以及表达式解析double
+     *
+     * @param root
+     * @param expression
+     * @return
+     */
     public Double evalDouble(Object root, String expression) {
         return (Double) evaluate(expression, root, XPathConstants.NUMBER);
     }
 
+    /**
+     * 根据给出的表达式解析node节点集合
+     *
+     * @param expression
+     * @return
+     */
     public List<XNode> evalNodes(String expression) {
         return evalNodes(document, expression);
     }
 
+    /**
+     * 根据给出的根节点以及表达式解析node节点集合
+     *
+     * @param root
+     * @param expression
+     * @return
+     */
     public List<XNode> evalNodes(Object root, String expression) {
         List<XNode> xnodes = new ArrayList<XNode>();
         NodeList nodes = (NodeList) evaluate(expression, root, XPathConstants.NODESET);
@@ -341,10 +440,23 @@ public class XPathParser {
         return xnodes;
     }
 
+    /**
+     * 根据给出的表达式解析node节点
+     *
+     * @param expression
+     * @return
+     */
     public XNode evalNode(String expression) {
         return evalNode(document, expression);
     }
 
+    /**
+     * 根据给出的根节点以及表达式解析node节点
+     *
+     * @param root
+     * @param expression
+     * @return
+     */
     public XNode evalNode(Object root, String expression) {
         Node node = (Node) evaluate(expression, root, XPathConstants.NODE);
         if (node == null) {
@@ -353,6 +465,14 @@ public class XPathParser {
         return new XNode(this, node, variables);
     }
 
+    /**
+     * 根据给出的表达式、根节点以及返回类型解析得到返回类型对应的对象
+     *
+     * @param expression
+     * @param root
+     * @param returnType
+     * @return
+     */
     private Object evaluate(String expression, Object root, QName returnType) {
         try {
             return xpath.evaluate(expression, root, returnType);
@@ -361,12 +481,20 @@ public class XPathParser {
         }
     }
 
+    /**
+     * 根据给出的xml输入源构建文档
+     *
+     * @param inputSource
+     * @return
+     */
     private Document createDocument(InputSource inputSource) {
         // important: this must only be called AFTER common constructor
+        //必须要在commonConstructor之后被调用
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            //根据属性设置
             factory.setValidating(validation);
-
+            //设置基本的一些参数
             factory.setNamespaceAware(false);
             factory.setIgnoringComments(true);
             factory.setIgnoringElementContentWhitespace(false);
@@ -396,6 +524,13 @@ public class XPathParser {
         }
     }
 
+    /**
+     * 公共构造函数
+     *
+     * @param validation
+     * @param variables
+     * @param entityResolver
+     */
     private void commonConstructor(boolean validation, Properties variables, EntityResolver entityResolver) {
         this.validation = validation;
         this.entityResolver = entityResolver;

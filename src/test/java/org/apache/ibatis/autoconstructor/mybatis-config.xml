@@ -30,9 +30,10 @@
                 <property name="" value=""/>
             </transactionManager>
             <dataSource type="UNPOOLED">
-                <property name="driver" value="org.hsqldb.jdbcDriver"/>
-                <property name="url" value="jdbc:hsqldb:mem:automapping"/>
-                <property name="username" value="sa"/>
+                <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://120.55.46.244:3306/mybatis"/>
+                <property name="username" value="root"/>
+                <property name="password" value="ydg@971810252"/>
             </dataSource>
         </environment>
     </environments>
