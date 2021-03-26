@@ -85,10 +85,20 @@ public class SimpleExecutor extends BaseExecutor {
         return Collections.emptyList();
     }
 
+    /**
+     * 准备声明
+     *
+     * @param handler
+     * @param statementLog
+     * @return
+     * @throws SQLException
+     */
     private Statement prepareStatement(StatementHandler handler, Log statementLog) throws SQLException {
         Statement stmt;
         Connection connection = getConnection(statementLog);
+        //这里还是没有替换参数的
         stmt = handler.prepare(connection, transaction.getTimeout());
+        //将statement中的参数进行实际的替换
         handler.parameterize(stmt);
         return stmt;
     }

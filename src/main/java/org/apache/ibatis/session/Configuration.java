@@ -115,6 +115,9 @@ public class Configuration {
      */
     protected boolean useGeneratedKeys;
 
+    /**
+     * 是否使用字段标签
+     */
     protected boolean useColumnLabel = true;
 
     /**
@@ -733,6 +736,11 @@ public class Configuration {
         this.defaultFetchSize = defaultFetchSize;
     }
 
+    /**
+     * 是否使用字段标签
+     *
+     * @return
+     */
     public boolean isUseColumnLabel() {
         return useColumnLabel;
     }

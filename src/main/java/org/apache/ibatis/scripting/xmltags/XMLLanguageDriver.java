@@ -35,6 +35,14 @@ import org.apache.ibatis.session.Configuration;
  */
 public class XMLLanguageDriver implements LanguageDriver {
 
+    /**
+     * 创建参数类型处理器
+     *
+     * @param mappedStatement The mapped statement that is being executed
+     * @param parameterObject The input parameter object (can be null)
+     * @param boundSql        The resulting SQL once the dynamic language has been executed.
+     * @return
+     */
     @Override
     public ParameterHandler createParameterHandler(MappedStatement mappedStatement, Object parameterObject,
             BoundSql boundSql) {
