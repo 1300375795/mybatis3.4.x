@@ -14,8 +14,7 @@
 --    limitations under the License.
 --
 
-DROP TABLE subject
-IF EXISTS;
+DROP TABLE IF EXISTS subject;
 
 CREATE TABLE subject (
   id     INT NOT NULL,

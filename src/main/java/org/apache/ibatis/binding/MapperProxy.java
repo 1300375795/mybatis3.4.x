@@ -90,7 +90,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
         } catch (Throwable t) {
             throw ExceptionUtil.unwrapThrowable(t);
         }
-        //其他情况
+        //其他情况 在执行的时候缓存相关的映射方法
         final MapperMethod mapperMethod = cachedMapperMethod(method);
         //执行这个方法
         return mapperMethod.execute(sqlSession, args);

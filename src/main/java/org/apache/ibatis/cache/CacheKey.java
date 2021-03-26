@@ -36,12 +36,28 @@ public class CacheKey implements Cloneable, Serializable {
     private static final int DEFAULT_HASHCODE = 17;
 
     private final int multiplier;
+
+    /**
+     * 这个缓存键的hash
+     */
     private int hashcode;
+
     private long checksum;
+
+    /**
+     * 总共计算了多少次hash
+     */
     private int count;
     // 8/21/2017 - Sonarlint flags this as needing to be marked transient.  While true if content is not serializable, this is not always true and thus should not be marked transient.
+
+    /**
+     * 用来计算hash的对象的集合
+     */
     private List<Object> updateList;
 
+    /**
+     * 构造函数
+     */
     public CacheKey() {
         this.hashcode = DEFAULT_HASHCODE;
         this.multiplier = DEFAULT_MULTIPLYER;
@@ -49,15 +65,31 @@ public class CacheKey implements Cloneable, Serializable {
         this.updateList = new ArrayList<Object>();
     }
 
+    /**
+     * 构造函数
+     *
+     * @param objects
+     */
     public CacheKey(Object[] objects) {
         this();
         updateAll(objects);
     }
 
+    /**
+     * 获取总共计算了多少个对象
+     *
+     * @return
+     */
     public int getUpdateCount() {
         return updateList.size();
     }
 
+    /**
+     * 根据每次给出的内容计算hashCode
+     * 同时将给出的object加到更新集合中
+     *
+     * @param object
+     */
     public void update(Object object) {
         int baseHashCode = object == null ? 1 : ArrayUtil.hashCode(object);
 
@@ -70,6 +102,11 @@ public class CacheKey implements Cloneable, Serializable {
         updateList.add(object);
     }
 
+    /**
+     * 根据给出的集合计算hash
+     *
+     * @param objects
+     */
     public void updateAll(Object[] objects) {
         for (Object o : objects) {
             update(o);

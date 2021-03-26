@@ -132,6 +132,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
         //如果是引用
         if (isReference) {
             // is it qualified with any namespace yet?
+            //如果包含.直接返回
             if (base.contains(".")) {
                 return base;
             }
@@ -247,11 +248,20 @@ public class MapperBuilderAssistant extends BaseBuilder {
                 .build();
     }
 
+    /**
+     * @param id             对应resultMapId
+     * @param type
+     * @param extend
+     * @param discriminator
+     * @param resultMappings
+     * @param autoMapping
+     * @return
+     */
     public ResultMap addResultMap(String id, Class<?> type, String extend, Discriminator discriminator,
             List<ResultMapping> resultMappings, Boolean autoMapping) {
         id = applyCurrentNamespace(id, false);
         extend = applyCurrentNamespace(extend, true);
-
+        //如果继承不为null的话 进行相应处理
         if (extend != null) {
             if (!configuration.hasResultMap(extend)) {
                 throw new IncompleteElementException("Could not find a parent resultmap with id '" + extend + "'");
@@ -277,12 +287,24 @@ public class MapperBuilderAssistant extends BaseBuilder {
             }
             resultMappings.addAll(extendedResultMappings);
         }
+        //构建resultMap
         ResultMap resultMap = new ResultMap.Builder(configuration, id, type, resultMappings, autoMapping)
                 .discriminator(discriminator).build();
         configuration.addResultMap(resultMap);
         return resultMap;
     }
 
+    /**
+     * 构建鉴别器对象
+     *
+     * @param resultType
+     * @param column
+     * @param javaType
+     * @param jdbcType
+     * @param typeHandler
+     * @param discriminatorMap
+     * @return
+     */
     public Discriminator buildDiscriminator(Class<?> resultType, String column, Class<?> javaType, JdbcType jdbcType,
             Class<? extends TypeHandler<?>> typeHandler, Map<String, String> discriminatorMap) {
         ResultMapping resultMapping = buildResultMapping(resultType, null, column, javaType, jdbcType, null, null, null,
@@ -307,7 +329,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
      * @param timeout
      * @param parameterMap
      * @param parameterType
-     * @param resultMap
+     * @param resultMap resultMapId
      * @param resultType
      * @param resultSetType
      * @param flushCache
@@ -326,7 +348,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
             Class<?> parameterType, String resultMap, Class<?> resultType, ResultSetType resultSetType,
             boolean flushCache, boolean useCache, boolean resultOrdered, KeyGenerator keyGenerator, String keyProperty,
             String keyColumn, String databaseId, LanguageDriver lang, String resultSets) {
-
+        // TODO: 2021/3/26 CallYeDeGuo 这里进行创建 MappedStatement
         if (unresolvedCacheRef) {
             throw new IncompleteElementException("Cache-ref not yet resolved");
         }
@@ -374,6 +396,13 @@ public class MapperBuilderAssistant extends BaseBuilder {
         return parameterMap;
     }
 
+    /**
+     *
+     * @param resultMap
+     * @param resultType
+     * @param statementId
+     * @return
+     */
     private List<ResultMap> getStatementResultMaps(String resultMap, Class<?> resultType, String statementId) {
         resultMap = applyCurrentNamespace(resultMap, true);
 
@@ -418,7 +447,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
             JdbcType jdbcType, String nestedSelect, String nestedResultMap, String notNullColumn, String columnPrefix,
             Class<? extends TypeHandler<?>> typeHandler, List<ResultFlag> flags, String resultSet, String foreignColumn,
             boolean lazy) {
-        //
+        //解析结果java类型
         Class<?> javaTypeClass = resolveResultJavaType(resultType, property, javaType);
         //解析类型处理器
         TypeHandler<?> typeHandlerInstance = resolveTypeHandler(javaTypeClass, typeHandler);

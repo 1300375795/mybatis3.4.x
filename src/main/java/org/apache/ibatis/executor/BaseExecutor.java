@@ -59,7 +59,10 @@ public abstract class BaseExecutor implements Executor {
     protected Transaction transaction;
 
     /**
-     * 执行器包装对象
+     * 执行器包装对象 存了被包装的执行器 或者包装自己的执行器
+     * 比如CachingExecutor 那么这个就是SimpleExecutor
+     * SimpleExecutor 那么就是 CachingExecutor
+     *
      */
     protected Executor wrapper;
 
@@ -251,6 +254,7 @@ public abstract class BaseExecutor implements Executor {
         if (closed) {
             throw new ExecutorException("Executor was closed.");
         }
+        //根据msId、分页起止、sql内容计算缓存key
         CacheKey cacheKey = new CacheKey();
         cacheKey.update(ms.getId());
         cacheKey.update(rowBounds.getOffset());
@@ -263,19 +267,28 @@ public abstract class BaseExecutor implements Executor {
             if (parameterMapping.getMode() != ParameterMode.OUT) {
                 Object value;
                 String propertyName = parameterMapping.getProperty();
+                //如果额外参数map里面有这个参数 那么value就是额外参数map中
                 if (boundSql.hasAdditionalParameter(propertyName)) {
                     value = boundSql.getAdditionalParameter(propertyName);
-                } else if (parameterObject == null) {
+                }
+                //如果参数为null
+                else if (parameterObject == null) {
                     value = null;
-                } else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
+                }
+                //如果类型处理器注册器中包含这个参数类型的处理器
+                else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
                     value = parameterObject;
-                } else {
+                }
+                //其他情况 创建一个元对象value等于元对象中这个属性的值
+                else {
                     MetaObject metaObject = configuration.newMetaObject(parameterObject);
                     value = metaObject.getValue(propertyName);
                 }
+                //再次更新这个缓存key
                 cacheKey.update(value);
             }
         }
+        //如果缓存不为空 那么将环境id也作为缓存key计算的一环
         if (configuration.getEnvironment() != null) {
             // issue #176
             cacheKey.update(configuration.getEnvironment().getId());

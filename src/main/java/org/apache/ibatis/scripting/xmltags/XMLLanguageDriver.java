@@ -56,7 +56,7 @@ public class XMLLanguageDriver implements LanguageDriver {
             return createSqlSource(configuration, parser.evalNode("/script"), parameterType);
         } else {
             // issue #127
-            //解析脚本
+            //解析脚本 先解析${}这种变量
             script = PropertyParser.parse(script, configuration.getVariables());
             //创建文本sql节点
             TextSqlNode textSqlNode = new TextSqlNode(script);

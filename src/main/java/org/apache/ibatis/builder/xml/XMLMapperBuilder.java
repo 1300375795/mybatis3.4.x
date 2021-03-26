@@ -49,6 +49,7 @@ import org.apache.ibatis.type.TypeHandler;
 
 /**
  * xml类型的mapper文件构造器
+ * 通过xml形式构造映射之后同时会根据xml中的命名空间去找到对应的映射接口进行构建映射
  *
  * @author Clinton Begin
  */

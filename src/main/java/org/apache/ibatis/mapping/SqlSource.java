@@ -21,6 +21,7 @@ package org.apache.ibatis.mapping;
  * It creates the SQL that will be passed to the database out of the input parameter received from the user.
  * 表示从XML文件或注释读取的映射语句的内容。
  * 它将创建从用户接收的输入参数传递到数据库的SQL。
+ * 用来保存定义的sql
  *
  * @author Clinton Begin
  */

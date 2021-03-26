@@ -110,7 +110,7 @@ public class SqlSourceBuilder extends BaseBuilder {
 
         /**
          * 处理令牌
-         * 这个就是将#{}的参数处理成?
+         * 这个就是将#{}的参数处理成? 并构建ParameterMapping存放到parameterMappings中
          *
          * @param content
          * @return

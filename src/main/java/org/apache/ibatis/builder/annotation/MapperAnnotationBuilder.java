@@ -92,6 +92,7 @@ import org.apache.ibatis.type.UnknownTypeHandler;
 /**
  * 映射注解构造器
  * 这个类主要就是解析class类mapper的各种注解（不写xml）
+ * 通过MapperAnnotation构建之后同时会根据映射接口的路径加上.xml进行构建相应的xml文件
  *
  * @author Clinton Begin
  */
@@ -352,10 +353,18 @@ public class MapperAnnotationBuilder {
         applyResults(results, returnType, resultMappings);
         Discriminator disc = applyDiscriminator(resultMapId, returnType, discriminator);
         // TODO add AutoMappingBehaviour
+        //往全局配置里面添加结果map
         assistant.addResultMap(resultMapId, returnType, null, disc, resultMappings, null);
         createDiscriminatorResultMaps(resultMapId, returnType, discriminator);
     }
 
+    /**
+     * 创建鉴别器结果map
+     *
+     * @param resultMapId
+     * @param resultType
+     * @param discriminator
+     */
     private void createDiscriminatorResultMaps(String resultMapId, Class<?> resultType,
             TypeDiscriminator discriminator) {
         if (discriminator != null) {
@@ -371,17 +380,31 @@ public class MapperAnnotationBuilder {
         }
     }
 
+    /**
+     * 构建鉴别器对象
+     *
+     * @param resultMapId
+     * @param resultType
+     * @param discriminator
+     * @return
+     */
     private Discriminator applyDiscriminator(String resultMapId, Class<?> resultType, TypeDiscriminator discriminator) {
         if (discriminator != null) {
             String column = discriminator.column();
+            //如果java类型是void 那么转换成string 否则就拿设置的java类型
             Class<?> javaType = discriminator.javaType() == void.class ? String.class : discriminator.javaType();
+            //如果是UNDEFINED那么转换成null 否则就拿设置的jdbc类型
             JdbcType jdbcType = discriminator.jdbcType() == JdbcType.UNDEFINED ? null : discriminator.jdbcType();
+            //如果是未定义类型处理器 那么就转换成null 否则就拿设置的类型处理器
             @SuppressWarnings("unchecked") Class<? extends TypeHandler<?>> typeHandler = (Class<? extends TypeHandler<?>>) (
                     discriminator.typeHandler() == UnknownTypeHandler.class ?
                             null :
                             discriminator.typeHandler());
+            //拿到case数组
             Case[] cases = discriminator.cases();
+            //鉴别器map
             Map<String, String> discriminatorMap = new HashMap<String, String>();
+            //转换case的条件对应的value成map的key
             for (Case c : cases) {
                 String value = c.value();
                 String caseResultMapId = resultMapId + "-" + value;
@@ -404,11 +427,11 @@ public class MapperAnnotationBuilder {
         SqlSource sqlSource = getSqlSourceFromAnnotations(method, parameterTypeClass, languageDriver);
         if (sqlSource != null) {
             Options options = method.getAnnotation(Options.class);
-            //已映射的声明id
+            //已映射的声明id 类似：org.apache.ibatis.autoconstructor.AutoConstructorMapper.getSubjects
             final String mappedStatementId = type.getName() + "." + method.getName();
             Integer fetchSize = null;
             Integer timeout = null;
-            //从注解中获取下面这些属性的值
+            //从注解中获取下面这些属性的值  定义一些默认值
             StatementType statementType = StatementType.PREPARED;
             ResultSetType resultSetType = ResultSetType.FORWARD_ONLY;
             SqlCommandType sqlCommandType = getSqlCommandType(method);
@@ -718,6 +741,13 @@ public class MapperAnnotationBuilder {
         return null;
     }
 
+    /**
+     * 遍历Result构建ResultMapping
+     *
+     * @param results
+     * @param resultType
+     * @param resultMappings
+     */
     private void applyResults(Result[] results, Class<?> resultType, List<ResultMapping> resultMappings) {
         for (Result result : results) {
             List<ResultFlag> flags = new ArrayList<ResultFlag>();
@@ -767,7 +797,7 @@ public class MapperAnnotationBuilder {
     }
 
     /**
-     * 遍历Arg数组
+     * 遍历Arg数组构建ResultMapping
      *
      * @param args
      * @param resultType
