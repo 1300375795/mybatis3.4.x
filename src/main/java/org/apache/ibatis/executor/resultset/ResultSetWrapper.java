@@ -153,6 +153,7 @@ public class ResultSetWrapper {
      * Gets the type handler to use when reading the result set.
      * Tries to get from the TypeHandlerRegistry by searching for the property type.
      * If not found it gets the column JDBC type and tries to get a handler for it.
+     * 根据参数class类型以及字段名称获取对应的类型处理器
      *
      * @param propertyType
      * @param columnName
@@ -161,18 +162,23 @@ public class ResultSetWrapper {
     public TypeHandler<?> getTypeHandler(Class<?> propertyType, String columnName) {
         TypeHandler<?> handler = null;
         Map<Class<?>, TypeHandler<?>> columnHandlers = typeHandlerMap.get(columnName);
+        //如果这个字段对应的类型处理器不存在 那么直接创建一个新的 然后存到map中
         if (columnHandlers == null) {
             columnHandlers = new HashMap<Class<?>, TypeHandler<?>>();
             typeHandlerMap.put(columnName, columnHandlers);
         } else {
+            //否则直接这个对应的字段类型的处理器
             handler = columnHandlers.get(propertyType);
         }
+        //如果还是没有
         if (handler == null) {
             JdbcType jdbcType = getJdbcType(columnName);
             handler = typeHandlerRegistry.getTypeHandler(propertyType, jdbcType);
             // Replicate logic of UnknownTypeHandler#resolveTypeHandler
             // See issue #59 comment 10
+            //如果没有找到类型处理器或者是未知的处理器
             if (handler == null || handler instanceof UnknownTypeHandler) {
+                //找到这个字段的java类型然后根据java类型以及jdbc类型再次获取类型处理器
                 final int index = columnNames.indexOf(columnName);
                 final Class<?> javaType = resolveClass(classNames.get(index));
                 if (javaType != null && jdbcType != null) {
@@ -183,6 +189,7 @@ public class ResultSetWrapper {
                     handler = typeHandlerRegistry.getTypeHandler(jdbcType);
                 }
             }
+            //如果还是没有找到 那么直接返回Object类型处理器
             if (handler == null || handler instanceof UnknownTypeHandler) {
                 handler = new ObjectTypeHandler();
             }
@@ -191,6 +198,12 @@ public class ResultSetWrapper {
         return handler;
     }
 
+    /**
+     * 根据类名称加载class
+     *
+     * @param className
+     * @return
+     */
     private Class<?> resolveClass(String className) {
         try {
             // #699 className could be null
@@ -203,11 +216,19 @@ public class ResultSetWrapper {
         return null;
     }
 
+    /**
+     * 加载已映射的跟未映射的字段名称集合
+     *
+     * @param resultMap
+     * @param columnPrefix
+     * @throws SQLException
+     */
     private void loadMappedAndUnmappedColumnNames(ResultMap resultMap, String columnPrefix) throws SQLException {
         List<String> mappedColumnNames = new ArrayList<String>();
         List<String> unmappedColumnNames = new ArrayList<String>();
         final String upperColumnPrefix = columnPrefix == null ? null : columnPrefix.toUpperCase(Locale.ENGLISH);
         final Set<String> mappedColumns = prependPrefixes(resultMap.getMappedColumns(), upperColumnPrefix);
+        //判断字段名称集合是否存在 如果存在就加上已映射集合 没有的话 就加到未知字段集合
         for (String columnName : columnNames) {
             final String upperColumnName = columnName.toUpperCase(Locale.ENGLISH);
             if (mappedColumns.contains(upperColumnName)) {
@@ -220,6 +241,14 @@ public class ResultSetWrapper {
         unMappedColumnNamesMap.put(getMapKey(resultMap, columnPrefix), unmappedColumnNames);
     }
 
+    /**
+     * 获取已映射的字段名称集合
+     *
+     * @param resultMap
+     * @param columnPrefix
+     * @return
+     * @throws SQLException
+     */
     public List<String> getMappedColumnNames(ResultMap resultMap, String columnPrefix) throws SQLException {
         List<String> mappedColumnNames = mappedColumnNamesMap.get(getMapKey(resultMap, columnPrefix));
         if (mappedColumnNames == null) {
@@ -229,6 +258,14 @@ public class ResultSetWrapper {
         return mappedColumnNames;
     }
 
+    /**
+     * 获取未映射的字段集合
+     *
+     * @param resultMap
+     * @param columnPrefix
+     * @return
+     * @throws SQLException
+     */
     public List<String> getUnmappedColumnNames(ResultMap resultMap, String columnPrefix) throws SQLException {
         List<String> unMappedColumnNames = unMappedColumnNamesMap.get(getMapKey(resultMap, columnPrefix));
         if (unMappedColumnNames == null) {
@@ -238,10 +275,26 @@ public class ResultSetWrapper {
         return unMappedColumnNames;
     }
 
+    /**
+     * 获取结果map的id
+     *
+     * @param resultMap
+     * @param columnPrefix
+     * @return
+     */
     private String getMapKey(ResultMap resultMap, String columnPrefix) {
         return resultMap.getId() + ":" + columnPrefix;
     }
 
+    /**
+     * 如果字段名称集合为null或者为空或者前缀为null或者长度为0
+     * 那么直接返回名称集合
+     * 否则给所有的名称加上前缀
+     *
+     * @param columnNames
+     * @param prefix
+     * @return
+     */
     private Set<String> prependPrefixes(Set<String> columnNames, String prefix) {
         if (columnNames == null || columnNames.isEmpty() || prefix == null || prefix.length() == 0) {
             return columnNames;

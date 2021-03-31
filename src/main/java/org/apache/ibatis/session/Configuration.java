@@ -1005,6 +1005,7 @@ public class Configuration {
             Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
         StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject,
                 rowBounds, resultHandler, boundSql);
+        // TODO: 2021/3/31 CallYeDeGuo 在这里将插件进行包装
         statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
         return statementHandler;
     }
@@ -1352,7 +1353,7 @@ public class Configuration {
      * 根据statementId获取已映射的声明
      *
      * @param id                           statementId
-     * @param validateIncompleteStatements 是否验证不完整的声明
+     * @param validateIncompleteStatements 是否验证不完整的声明 在执行的时候调用
      * @return
      */
     public MappedStatement getMappedStatement(String id, boolean validateIncompleteStatements) {
