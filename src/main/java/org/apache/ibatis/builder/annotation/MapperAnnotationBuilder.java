@@ -789,10 +789,18 @@ public class MapperAnnotationBuilder {
         return isLazy;
     }
 
+    /**
+     * 是否有嵌套的查询
+     *
+     * @param result
+     * @return
+     */
     private boolean hasNestedSelect(Result result) {
+        //不能同时给出one和many注解
         if (result.one().select().length() > 0 && result.many().select().length() > 0) {
             throw new BuilderException("Cannot use both @One and @Many annotations in the same @Result");
         }
+        //如果有其中的一个 那么就是true
         return result.one().select().length() > 0 || result.many().select().length() > 0;
     }
 
