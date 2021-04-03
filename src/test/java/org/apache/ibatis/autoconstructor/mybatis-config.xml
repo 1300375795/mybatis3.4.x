@@ -30,8 +30,8 @@
                 <property name="" value=""/>
             </transactionManager>
             <dataSource type="UNPOOLED">
-                <property name="driver" value="com.mysql.jdbc.Driver"/>
-                <property name="url" value="jdbc:mysql://127.0.0.1:3306/mybatis"/>
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://120.55.46.244:3306/mybatis"/>
                 <property name="username" value="root"/>
                 <property name="password" value="ydg@971810252"/>
             </dataSource>
