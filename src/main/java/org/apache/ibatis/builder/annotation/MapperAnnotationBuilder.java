@@ -167,6 +167,7 @@ public class MapperAnnotationBuilder {
             assistant.setCurrentNamespace(type.getName());
             parseCache();
             parseCacheRef();
+            // TODO: 2021/4/5 CallYeDeGuo mapper接口的所有的方法的接口在这里
             Method[] methods = type.getMethods();
             for (Method method : methods) {
                 try {
@@ -416,7 +417,7 @@ public class MapperAnnotationBuilder {
     }
 
     /**
-     * 解析声明
+     * // TODO: 2021/4/5 CallYeDeGuo  解析声明的具体实现
      *
      * @param method
      */

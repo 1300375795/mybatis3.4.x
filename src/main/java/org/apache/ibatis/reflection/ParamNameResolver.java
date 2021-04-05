@@ -156,6 +156,11 @@ public class ParamNameResolver {
      * In addition to the default names, this method also adds the generic names (param1, param2,
      * ...).
      * </p>
+     * else的话 !names.containsValue操作会进行这个
+     *  "size" -> 9223372036854775807
+     *  "id" -> "foo"
+     *  "param1" -> "foo"
+     *  "param2" -> 9223372036854775807
      */
     public Object getNamedParams(Object[] args) {
         final int paramCount = names.size();
