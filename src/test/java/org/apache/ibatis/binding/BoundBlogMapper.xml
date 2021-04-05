@@ -120,7 +120,7 @@
       on b.author_id = a.id 
       where b.id = #{id}
     </select>
-    
+
     <select id="selectBlogUsingConstructorWithResultMapCollection" parameterType="int"
             resultMap="blogUsingConstructorWithResultMapCollection">
       select b.*, p.*,
@@ -135,5 +135,5 @@
           join Post p on b.id = p.blog_id 
       where b.id = #{id}
     </select>
-    
+
 </mapper>

@@ -120,6 +120,8 @@ public class MapperBuilderAssistant extends BaseBuilder {
 
     /**
      * 申请命名空间
+     * 比如resultMap中的嵌套select
+     * select的值是selectAuthorWithInlineParams 那么就需要在前面加上命名空间
      *
      * @param base
      * @param isReference 是否引用
@@ -249,6 +251,8 @@ public class MapperBuilderAssistant extends BaseBuilder {
     }
 
     /**
+     * 添加结果map
+     *
      * @param id             对应resultMapId
      * @param type
      * @param extend
@@ -329,7 +333,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
      * @param timeout
      * @param parameterMap
      * @param parameterType
-     * @param resultMap resultMapId
+     * @param resultMap      resultMapId
      * @param resultType
      * @param resultSetType
      * @param flushCache
@@ -397,7 +401,6 @@ public class MapperBuilderAssistant extends BaseBuilder {
     }
 
     /**
-     *
      * @param resultMap
      * @param resultType
      * @param statementId
@@ -500,6 +503,9 @@ public class MapperBuilderAssistant extends BaseBuilder {
 
     /**
      * 解析结果java类型
+     * 比如；property的值为author 那么根据resultType找到这个class
+     * 然后从resultType class中拿到对应的author属性的class
+     * org/apache/ibatis/binding/BoundBlogMapper.xml
      *
      * @param resultType
      * @param property

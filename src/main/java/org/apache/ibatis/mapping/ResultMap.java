@@ -34,7 +34,7 @@ import org.apache.ibatis.reflection.ParamNameUtil;
 import org.apache.ibatis.session.Configuration;
 
 /**
- * 结果map
+ * 结果map 对应xml中的resultMap属性
  *
  * @author Clinton Begin
  */

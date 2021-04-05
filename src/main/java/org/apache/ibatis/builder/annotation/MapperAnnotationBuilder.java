@@ -220,7 +220,7 @@ public class MapperAnnotationBuilder {
             }
             //如果不为空 那么
             if (inputStream != null) {
-                //xml文件解析器
+                //xml文件解析器 这里设置了映射构造器助手的命名空间
                 XMLMapperBuilder xmlParser = new XMLMapperBuilder(inputStream, assistant.getConfiguration(),
                         xmlResource, configuration.getSqlFragments(), type.getName());
                 //解析xml文件

@@ -27,6 +27,7 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
  * 结果映射
+ * 对应xml中resultMap属性中的各种子属性
  *
  * @author Clinton Begin
  */

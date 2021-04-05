@@ -456,7 +456,7 @@ public class XMLMapperBuilder extends BaseBuilder {
                 if ("id".equals(resultChild.getName())) {
                     flags.add(ResultFlag.ID);
                 }
-                //
+                //结果映射集合中添加相应的结果map
                 resultMappings.add(buildResultMappingFromContext(resultChild, typeClass, flags));
             }
         }
@@ -600,7 +600,9 @@ public class XMLMapperBuilder extends BaseBuilder {
         String column = context.getStringAttribute("column");
         String javaType = context.getStringAttribute("javaType");
         String jdbcType = context.getStringAttribute("jdbcType");
+        //嵌套的select
         String nestedSelect = context.getStringAttribute("select");
+        //嵌套的result map
         String nestedResultMap = context.getStringAttribute("resultMap",
                 processNestedResultMappings(context, Collections.<ResultMapping>emptyList()));
         String notNullColumn = context.getStringAttribute("notNullColumn");

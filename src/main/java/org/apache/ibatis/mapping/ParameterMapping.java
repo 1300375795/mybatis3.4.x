@@ -24,6 +24,7 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
  * 参数映射
+ * 对应xml中parameterMap各种子属性
  *
  * @author Clinton Begin
  */
