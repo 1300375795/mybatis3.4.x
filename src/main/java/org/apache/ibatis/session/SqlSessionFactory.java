@@ -18,6 +18,7 @@ package org.apache.ibatis.session;
 import java.sql.Connection;
 
 /**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
  * Creates an {@link SqlSession} out of a connection or a DataSource
  * sqlSession工厂
  *

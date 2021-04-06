@@ -32,6 +32,7 @@ import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.managed.ManagedTransactionFactory;
 
 /**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
  * 默认的会话工厂
  *
  * @author Clinton Begin

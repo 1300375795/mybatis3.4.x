@@ -48,6 +48,8 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 
 /**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
+ * 跟org.apache.ibatis.builder.annotation.MapperAnnotationBuilder相对应 一个是接口一个是xml
  * xml类型的mapper文件构造器
  * 通过xml形式构造映射之后同时会根据xml中的命名空间去找到对应的映射接口进行构建映射
  *
@@ -470,6 +472,14 @@ public class XMLMapperBuilder extends BaseBuilder {
         }
     }
 
+    /**
+     * 解析构造函数对应的元素
+     *
+     * @param resultChild
+     * @param resultType
+     * @param resultMappings
+     * @throws Exception
+     */
     private void processConstructorElement(XNode resultChild, Class<?> resultType, List<ResultMapping> resultMappings)
             throws Exception {
         List<XNode> argChildren = resultChild.getChildren();

@@ -39,6 +39,7 @@ import org.apache.ibatis.reflection.invoker.SetFieldInvoker;
 import org.apache.ibatis.reflection.property.PropertyNamer;
 
 /**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
  * This class represents a cached set of class definition information that
  * allows for easy mapping between property names and getter/setter methods.
  * 这个类表示一组缓存的类定义信息

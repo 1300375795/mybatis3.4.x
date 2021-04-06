@@ -23,6 +23,7 @@ import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.cache.CacheException;
 
 /**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
  * 无期限缓存
  * 基于hashMap
  *

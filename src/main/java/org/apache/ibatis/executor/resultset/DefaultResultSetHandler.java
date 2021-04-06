@@ -62,7 +62,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
  * 默认的结果集处理器
+ * 处理sql查询出来的结果
  *
  * @author Clinton Begin
  * @author Eduardo Macarron
@@ -514,6 +516,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         //循环根据结果集中的记录创建行对象
         while (shouldProcessMoreRows(resultContext, rowBounds) && rsw.getResultSet().next()) {
             ResultMap discriminatedResultMap = resolveDiscriminatedResultMap(rsw.getResultSet(), resultMap, null);
+            // TODO: 2021/4/6 CallYeDeGuo 嵌套的sql的结果也获取在里面
             Object rowValue = getRowValue(rsw, discriminatedResultMap);
             storeObject(resultHandler, resultContext, rowValue, parentMapping, rsw.getResultSet());
         }
@@ -573,6 +576,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
      * @throws SQLException
      */
     private void skipRows(ResultSet rs, RowBounds rowBounds) throws SQLException {
+        //如果是
         if (rs.getType() != ResultSet.TYPE_FORWARD_ONLY) {
             if (rowBounds.getOffset() != RowBounds.NO_ROW_OFFSET) {
                 rs.absolute(rowBounds.getOffset());
@@ -874,6 +878,17 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         return resultObject;
     }
 
+    /**
+     * 创建结果对象
+     *
+     * @param rsw
+     * @param resultMap
+     * @param constructorArgTypes
+     * @param constructorArgs
+     * @param columnPrefix
+     * @return
+     * @throws SQLException
+     */
     private Object createResultObject(ResultSetWrapper rsw, ResultMap resultMap, List<Class<?>> constructorArgTypes,
             List<Object> constructorArgs, String columnPrefix) throws SQLException {
         final Class<?> resultType = resultMap.getType();
@@ -1072,6 +1087,17 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         return value;
     }
 
+    /**
+     * 获取嵌套sql的结果的值
+     *
+     * @param rs
+     * @param metaResultObject
+     * @param propertyMapping
+     * @param lazyLoader
+     * @param columnPrefix
+     * @return
+     * @throws SQLException
+     */
     private Object getNestedQueryMappingValue(ResultSet rs, MetaObject metaResultObject, ResultMapping propertyMapping,
             ResultLoaderMap lazyLoader, String columnPrefix) throws SQLException {
         final String nestedQueryId = propertyMapping.getNestedQueryId();
@@ -1103,6 +1129,16 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         return value;
     }
 
+    /**
+     * 获取嵌套查询的参数值
+     *
+     * @param rs
+     * @param resultMapping
+     * @param parameterType
+     * @param columnPrefix
+     * @return
+     * @throws SQLException
+     */
     private Object prepareParameterForNestedQuery(ResultSet rs, ResultMapping resultMapping, Class<?> parameterType,
             String columnPrefix) throws SQLException {
         if (resultMapping.isCompositeResult()) {
@@ -1112,6 +1148,16 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         }
     }
 
+    /**
+     * 获取执行字段在resultSet中的值
+     *
+     * @param rs
+     * @param resultMapping
+     * @param parameterType
+     * @param columnPrefix
+     * @return
+     * @throws SQLException
+     */
     private Object prepareSimpleKeyParameter(ResultSet rs, ResultMapping resultMapping, Class<?> parameterType,
             String columnPrefix) throws SQLException {
         final TypeHandler<?> typeHandler;

@@ -49,6 +49,9 @@ public class VelocitySqlSourceBuilder extends BaseBuilder {
     return new StaticSqlSource(configuration, sql, handler.getParameterMappings());
   }
 
+  /**
+   * // TODO: 2021/4/7 CallYeDeGuo 核心类 处理#{}参数为?
+   */
   private static class ParameterMappingTokenHandler extends BaseBuilder implements TokenHandler {
 
     private List<ParameterMapping> parameterMappings = new ArrayList<ParameterMapping>();

@@ -36,7 +36,9 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 /**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
  * 映射中的某个方法的一些详细的信息
+ * 对应mapper接口中给的每一个方法
  *
  * @author Clinton Begin
  * @author Eduardo Macarron

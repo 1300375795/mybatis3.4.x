@@ -26,6 +26,7 @@ import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.session.defaults.DefaultSqlSessionFactory;
 
 /**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
  * 会话工厂构建者
  * Builds {@link SqlSession} instances.
  *

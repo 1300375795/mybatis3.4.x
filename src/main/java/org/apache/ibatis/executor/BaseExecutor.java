@@ -45,6 +45,7 @@ import org.apache.ibatis.transaction.Transaction;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
  * 基础执行器
  *
  * @author Clinton Begin
@@ -62,7 +63,6 @@ public abstract class BaseExecutor implements Executor {
      * 执行器包装对象 存了被包装的执行器 或者包装自己的执行器
      * 比如CachingExecutor 那么这个就是SimpleExecutor
      * SimpleExecutor 那么就是 CachingExecutor
-     *
      */
     protected Executor wrapper;
 

@@ -32,6 +32,7 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
 /**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
  * Prepared类型的声明处理器
  *
  * @author Clinton Begin

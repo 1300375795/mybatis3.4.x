@@ -90,6 +90,8 @@ import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.UnknownTypeHandler;
 
 /**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
+ * 跟org.apache.ibatis.builder.xml.XMLMapperBuilder相对应 一个是接口一个是xml
  * 映射注解构造器
  * 这个类主要就是解析class类mapper的各种注解（不写xml）
  * 通过MapperAnnotation构建之后同时会根据映射接口的路径加上.xml进行构建相应的xml文件

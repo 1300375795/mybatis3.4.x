@@ -50,6 +50,7 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 
 /**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
  * 映射构造器助手
  * 帮助构建mapper中的各种元素节点
  * 这个只有在MapperAnnotationBuilder以及XMLMapperBuilder类中会进行创建

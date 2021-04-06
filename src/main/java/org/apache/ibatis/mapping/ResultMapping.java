@@ -26,6 +26,7 @@ import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
  * 结果映射
  * 对应xml中resultMap属性中的各种子属性
  *

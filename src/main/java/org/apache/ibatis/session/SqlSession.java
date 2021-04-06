@@ -24,6 +24,7 @@ import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.executor.BatchResult;
 
 /**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
  * The primary Java interface for working with MyBatis.
  * Through this interface you can execute commands, get mappers and manage transactions.
  * 使用MyBatis的主要Java接口。

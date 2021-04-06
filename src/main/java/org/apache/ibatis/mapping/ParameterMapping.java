@@ -23,6 +23,7 @@ import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
  * 参数映射
  * 对应xml中parameterMap各种子属性
  *

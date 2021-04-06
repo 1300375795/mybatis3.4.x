@@ -34,8 +34,10 @@ import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
  * xml声明构造器
  * select、update、insert、delete
+ * 跟org.apache.ibatis.builder.annotation.MapperAnnotationBuilder中的parseStatement类似
  *
  * @author Clinton Begin
  */
@@ -122,6 +124,7 @@ public class XMLStatementBuilder extends BaseBuilder {
         includeParser.applyIncludes(context.getNode());
 
         // Parse selectKey after includes and remove them.
+        //解析select key节点并删除
         processSelectKeyNodes(id, parameterTypeClass, langDriver);
 
         // Parse the SQL (pre: <selectKey> and <include> were parsed and removed)
@@ -147,6 +150,13 @@ public class XMLStatementBuilder extends BaseBuilder {
                         resultOrdered, keyGenerator, keyProperty, keyColumn, databaseId, langDriver, resultSets);
     }
 
+    /**
+     * 解析select key节点
+     *
+     * @param id
+     * @param parameterTypeClass
+     * @param langDriver
+     */
     private void processSelectKeyNodes(String id, Class<?> parameterTypeClass, LanguageDriver langDriver) {
         List<XNode> selectKeyNodes = context.evalNodes("selectKey");
         if (configuration.getDatabaseId() != null) {
@@ -156,6 +166,15 @@ public class XMLStatementBuilder extends BaseBuilder {
         removeSelectKeyNodes(selectKeyNodes);
     }
 
+    /**
+     * 解析selectKey对应的节点
+     *
+     * @param parentId             就是 这个select key对应父节点的id  一般就是insert标签的id
+     * @param list
+     * @param parameterTypeClass
+     * @param langDriver
+     * @param skRequiredDatabaseId
+     */
     private void parseSelectKeyNodes(String parentId, List<XNode> list, Class<?> parameterTypeClass,
             LanguageDriver langDriver, String skRequiredDatabaseId) {
         for (XNode nodeToHandle : list) {
@@ -167,6 +186,15 @@ public class XMLStatementBuilder extends BaseBuilder {
         }
     }
 
+    /**
+     * 解析select key节点
+     *
+     * @param id
+     * @param nodeToHandle
+     * @param parameterTypeClass
+     * @param langDriver
+     * @param databaseId
+     */
     private void parseSelectKeyNode(String id, XNode nodeToHandle, Class<?> parameterTypeClass,
             LanguageDriver langDriver, String databaseId) {
         String resultType = nodeToHandle.getStringAttribute("resultType");
@@ -202,12 +230,35 @@ public class XMLStatementBuilder extends BaseBuilder {
         configuration.addKeyGenerator(id, new SelectKeyGenerator(keyStatement, executeBefore));
     }
 
+    /**
+     * 删除selectKey节点
+     * 删除前：
+     * <insert parameterType="org.apache.ibatis.domain.blog.Author" id="insertAuthor">
+     * <selectKey order="BEFORE" keyProperty="id" resultType="int">
+     * select CAST(RANDOM()*1000000 as INTEGER) a from SYSIBM.SYSDUMMY1
+     * </selectKey>
+     * </insert>
+     * <p>
+     * 删除后：
+     * <insert parameterType="org.apache.ibatis.domain.blog.Author" id="insertAuthor">
+     * </insert>
+     *
+     * @param selectKeyNodes
+     */
     private void removeSelectKeyNodes(List<XNode> selectKeyNodes) {
         for (XNode nodeToHandle : selectKeyNodes) {
             nodeToHandle.getParent().getNode().removeChild(nodeToHandle.getNode());
         }
     }
 
+    /**
+     * 判断数据库id是否匹配
+     *
+     * @param id
+     * @param databaseId
+     * @param requiredDatabaseId
+     * @return
+     */
     private boolean databaseIdMatchesCurrent(String id, String databaseId, String requiredDatabaseId) {
         if (requiredDatabaseId != null) {
             if (!requiredDatabaseId.equals(databaseId)) {

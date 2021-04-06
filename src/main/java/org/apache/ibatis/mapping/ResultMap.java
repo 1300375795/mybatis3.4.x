@@ -34,6 +34,7 @@ import org.apache.ibatis.reflection.ParamNameUtil;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
  * 结果map 对应xml中的resultMap属性
  *
  * @author Clinton Begin

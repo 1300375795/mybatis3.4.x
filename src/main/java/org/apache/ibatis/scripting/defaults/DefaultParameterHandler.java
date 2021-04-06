@@ -33,7 +33,9 @@ import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
  * 默认的参数处理器
+ * 实际执行的时候替换参数
  *
  * @author Clinton Begin
  * @author Eduardo Macarron

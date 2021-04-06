@@ -40,6 +40,7 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 
 /**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
  * 默认的sql会话
  * The default implementation for {@link SqlSession}.
  * Note that this class is not Thread-Safe.
