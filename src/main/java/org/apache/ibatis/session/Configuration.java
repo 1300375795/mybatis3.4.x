@@ -1003,7 +1003,9 @@ public class Configuration {
      */
     public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement,
             Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
-        StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject,
+        //创建代理对象 并且执行生成主键的processBefore方法
+        StatementHandler statementHandler = new
+                RoutingStatementHandler(executor, mappedStatement, parameterObject,
                 rowBounds, resultHandler, boundSql);
         // TODO: 2021/3/31 CallYeDeGuo 在这里将插件进行包装
         statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);

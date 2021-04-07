@@ -31,7 +31,8 @@ import java.sql.Statement;
 import java.util.Collections;
 import java.util.List;
 
-/** // TODO: 2021/4/7 CallYeDeGuo 核心类
+/**
+ * // TODO: 2021/4/7 CallYeDeGuo 核心类
  * 简单执行器
  *
  * @author Clinton Begin
@@ -62,6 +63,7 @@ public class SimpleExecutor extends BaseExecutor {
         Statement stmt = null;
         try {
             Configuration configuration = ms.getConfiguration();
+            //创建statementHandler代理对象 并且执行processBefore方法 再就插件的包装也是在这里面
             StatementHandler handler = configuration
                     .newStatementHandler(wrapper, ms, parameter, rowBounds, resultHandler, boundSql);
             stmt = prepareStatement(handler, ms.getStatementLog());

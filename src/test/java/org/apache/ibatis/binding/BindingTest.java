@@ -166,7 +166,7 @@ public class BindingTest {
     }
 
     /**
-     *
+     * 测试基于select key出入数据
      */
     @Test
     public void shouldInsertAuthorWithSelectKey() {
