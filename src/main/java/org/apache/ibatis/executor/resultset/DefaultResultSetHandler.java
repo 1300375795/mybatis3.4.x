@@ -512,6 +512,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     private void handleRowValuesForSimpleResultMap(ResultSetWrapper rsw, ResultMap resultMap,
             ResultHandler<?> resultHandler, RowBounds rowBounds, ResultMapping parentMapping) throws SQLException {
         DefaultResultContext<Object> resultContext = new DefaultResultContext<Object>();
+        //如果用RowBounds进行分页的话 是通过这里进行跳过offset条记录的
         skipRows(rsw.getResultSet(), rowBounds);
         //循环根据结果集中的记录创建行对象
         while (shouldProcessMoreRows(resultContext, rowBounds) && rsw.getResultSet().next()) {
