@@ -91,7 +91,8 @@ public class ParameterExpression extends HashMap<String, String> {
     }
 
     /**
-     * 跳过0x20
+     * 跳过0x20 对应ascii字符的话就是：空格
+     * ws即white space
      *
      * @param expression
      * @param p
