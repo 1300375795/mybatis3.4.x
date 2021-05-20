@@ -44,6 +44,9 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
+/**
+ * 动态sql测试
+ */
 public class DynamicSqlSourceTest extends BaseDataTest {
 
     /**

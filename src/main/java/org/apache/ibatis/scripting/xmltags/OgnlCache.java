@@ -57,6 +57,7 @@ public final class OgnlCache {
     /**
      * 解析表达式
      * 如果缓存中存在 直接返回 如果没有存在解析 然后放入缓存
+     * 注意返回的不是结果 而是解析后的表达式  这个是为了后面根据表达式获取缓存用的
      *
      * @param expression
      * @return
