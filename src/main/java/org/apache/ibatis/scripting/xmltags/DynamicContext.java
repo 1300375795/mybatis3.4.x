@@ -44,6 +44,12 @@ public class DynamicContext {
     private final StringBuilder sqlBuilder = new StringBuilder();
     private int uniqueNumber = 0;
 
+    /**
+     * 构造函数
+     *
+     * @param configuration
+     * @param parameterObject
+     */
     public DynamicContext(Configuration configuration, Object parameterObject) {
         if (parameterObject != null && !(parameterObject instanceof Map)) {
             MetaObject metaObject = configuration.newMetaObject(parameterObject);
@@ -55,36 +61,80 @@ public class DynamicContext {
         bindings.put(DATABASE_ID_KEY, configuration.getDatabaseId());
     }
 
+    /**
+     * 获取绑定的参数
+     *
+     * @return
+     */
     public Map<String, Object> getBindings() {
         return bindings;
     }
 
+    /**
+     * 绑定参数到map中
+     *
+     * @param name
+     * @param value
+     */
     public void bind(String name, Object value) {
         bindings.put(name, value);
     }
 
+    /**
+     * 拼接sql
+     *
+     * @param sql
+     */
     public void appendSql(String sql) {
         sqlBuilder.append(sql);
         sqlBuilder.append(" ");
     }
 
+    /**
+     * 获取拼接的sql 去掉头尾空格
+     *
+     * @return
+     */
     public String getSql() {
         return sqlBuilder.toString().trim();
     }
 
+    /**
+     * 获取唯一的数量
+     *
+     * @return
+     */
     public int getUniqueNumber() {
         return uniqueNumber++;
     }
 
+    /**
+     * 上下文map
+     */
     static class ContextMap extends HashMap<String, Object> {
         private static final long serialVersionUID = 2977601501966151582L;
 
+        /**
+         * 参数元对象
+         */
         private MetaObject parameterMetaObject;
 
+        /**
+         * 构造函数
+         *
+         * @param parameterMetaObject
+         */
         public ContextMap(MetaObject parameterMetaObject) {
             this.parameterMetaObject = parameterMetaObject;
         }
 
+        /**
+         * 如果mao中包含这个函数 那么直接返回
+         * 如果没有包含并且元对象不为空 那么尝试从元对象中获取
+         *
+         * @param key
+         * @return
+         */
         @Override
         public Object get(Object key) {
             String strKey = (String) key;

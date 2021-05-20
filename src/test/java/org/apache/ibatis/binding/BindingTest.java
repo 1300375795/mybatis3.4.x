@@ -224,6 +224,9 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 测试返回类型是map并且加了@MapKey注解的查询
+     */
     @Test
     public void shouldExecuteBoundSelectMapOfBlogsById() {
         SqlSession session = sqlSessionFactory.openSession();
@@ -239,6 +242,10 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 测试两次session里面相同的sql查询到的数据应该一样
+     * 直接执行statement
+     */
     @Test
     public void shouldExecuteMultipleBoundSelectOfBlogsByIdInWithProvidedResultHandlerBetweenSessions() {
         SqlSession session = sqlSessionFactory.openSession();
@@ -261,6 +268,10 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 测试一个session里面同个sql查询到的数据应该一样
+     * 直接执行statement
+     */
     @Test
     public void shouldExecuteMultipleBoundSelectOfBlogsByIdInWithProvidedResultHandlerInSameSession() {
         SqlSession session = sqlSessionFactory.openSession();
@@ -279,6 +290,11 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 测试一个session里面同个sql查询到的数据应该一样
+     * 通过从session中拿到mapper
+     * 同时判断返回的map中的key是否跟记录中的key相同
+     */
     @Test
     public void shouldExecuteMultipleBoundSelectMapOfBlogsByIdInSameSessionWithoutClearingLocalCache() {
         SqlSession session = sqlSessionFactory.openSession();
@@ -299,6 +315,11 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 测试两个session里面同个sql查询到的数据应该一样
+     * 通过从session中拿到mapper
+     * 同时判断返回的map中的key是否跟记录中的key相同
+     */
     @Test
     public void shouldExecuteMultipleBoundSelectMapOfBlogsByIdBetweenTwoSessionsWithGlobalCacheEnabled() {
         SqlSession session = sqlSessionFactory.openSession();
@@ -324,6 +345,9 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 测试根据xml中的配置的sql查询
+     */
     @Test
     public void shouldSelectListOfBlogsUsingXMLConfig() {
         SqlSession session = sqlSessionFactory.openSession();
@@ -336,6 +360,9 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 测试根据sql provider查询
+     */
     @Test
     public void shouldExecuteBoundSelectListOfBlogsStatementUsingProvider() {
         SqlSession session = sqlSessionFactory.openSession();
@@ -348,6 +375,9 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 根据返回的是map list
+     */
     @Test
     public void shouldExecuteBoundSelectListOfBlogsAsMaps() {
         SqlSession session = sqlSessionFactory.openSession();
@@ -360,6 +390,9 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 测试分页 like查询
+     */
     @Test
     public void shouldSelectListOfPostsLike() {
         SqlSession session = sqlSessionFactory.openSession();
@@ -372,6 +405,9 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 测试多个like 分页查询
+     */
     @Test
     public void shouldSelectListOfPostsLikeTwoParameters() {
         SqlSession session = sqlSessionFactory.openSession();
@@ -384,6 +420,9 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 测试根据id获取记录
+     */
     @Test
     public void shouldExecuteBoundSelectOneBlogStatement() {
         SqlSession session = sqlSessionFactory.openSession();
@@ -397,6 +436,10 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 根id查询记录
+     * 方法根据注解ConstructorArgs以及Arg进行创建对象以及个关联查询
+     */
     @Test
     public void shouldExecuteBoundSelectOneBlogStatementWithConstructor() {
         SqlSession session = sqlSessionFactory.openSession();
@@ -413,6 +456,10 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 根据id查询
+     * 方法根据xml中resultMap进行创建对象以及个关联查询
+     */
     @Test
     public void shouldExecuteBoundSelectBlogUsingConstructorWithResultMap() {
         SqlSession session = sqlSessionFactory.openSession();
@@ -429,6 +476,10 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 测试根据id查询
+     * 同时根据resultMap进行各种关联查询
+     */
     @Test
     public void shouldExecuteBoundSelectBlogUsingConstructorWithResultMapAndProperties() {
         SqlSession session = sqlSessionFactory.openSession();
@@ -450,6 +501,10 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 测试根据id查询
+     * 并且根据xml中配置的进行各种关联查询
+     */
     @Ignore
     @Test // issue #480 and #101
     public void shouldExecuteBoundSelectBlogUsingConstructorWithResultMapCollection() {
@@ -467,6 +522,10 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 测试根据id查询
+     * 并且根据xml中的配置关联查询
+     */
     @Test
     public void shouldExecuteBoundSelectOneBlogStatementWithConstructorUsingXMLConfig() {
         SqlSession session = sqlSessionFactory.openSession();
@@ -483,6 +542,9 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 测试给出的参数是map形式的查询
+     */
     @Test
     public void shouldSelectOneBlogAsMap() {
         SqlSession session = sqlSessionFactory.openSession();
@@ -500,6 +562,14 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 测试根据id查询
+     * 返回结果下面三个注解
+     *
+     * @ConstructorArgs
+     * @Results
+     * @Select
+     */
     @Test
     public void shouldSelectOneAuthor() {
         SqlSession session = sqlSessionFactory.openSession();
@@ -516,6 +586,9 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 测试根据缓存获取到的数据要一致
+     */
     @Test
     public void shouldSelectOneAuthorFromCache() {
         Author author1 = selectOneAuthor();
@@ -533,6 +606,12 @@ public class BindingTest {
         }
     }
 
+    /**
+     * 测试根据id查询
+     *
+     * @ConstructorArgs
+     * @Select
+     */
     @Test
     public void shouldSelectOneAuthorByConstructor() {
         SqlSession session = sqlSessionFactory.openSession();

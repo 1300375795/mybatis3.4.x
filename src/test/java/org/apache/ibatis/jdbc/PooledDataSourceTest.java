@@ -106,7 +106,7 @@ public class PooledDataSourceTest extends BaseDataTest {
     final String PASSWORD = "";
 
     PooledDataSource ds = new PooledDataSource();
-    ds.setDriver("com.mysql.jdbc.Driver");
+    ds.setDriver("com.mysql.cj.jdbc.Driver");
     ds.setUrl(URL);
     ds.setUsername(USERNAME);
     ds.setPassword(PASSWORD);

@@ -60,7 +60,7 @@ public class DynamicSqlSource implements SqlSource {
     public BoundSql getBoundSql(Object parameterObject) {
         //根据参数获取动态文本
         DynamicContext context = new DynamicContext(configuration, parameterObject);
-        //应用动态内容
+        //应用动态内容 多态调用这个sql节点的apply
         rootSqlNode.apply(context);
         SqlSourceBuilder sqlSourceParser = new SqlSourceBuilder(configuration);
         Class<?> parameterType = parameterObject == null ? Object.class : parameterObject.getClass();
