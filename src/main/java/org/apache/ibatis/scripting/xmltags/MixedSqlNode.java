@@ -27,10 +27,21 @@ import java.util.List;
 public class MixedSqlNode implements SqlNode {
     private final List<SqlNode> contents;
 
+    /**
+     * 混合sql节点
+     *
+     * @param contents
+     */
     public MixedSqlNode(List<SqlNode> contents) {
         this.contents = contents;
     }
 
+    /**
+     * 循环处理混合节点中的每一个节点
+     *
+     * @param context
+     * @return
+     */
     @Override
     public boolean apply(DynamicContext context) {
         for (SqlNode sqlNode : contents) {

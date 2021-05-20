@@ -141,6 +141,13 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         assertEquals(expected, boundSql.getSql());
     }
 
+    /**
+     * 测试choose 节点
+     * 如果choose sql节点的第一个节点结果不为true  那么顺序选择下一个为true的节点
+     * 这个测试用例里面就是第二个节点 而不是default
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldConditionallyChooseSecond() throws Exception {
         final String expected = "SELECT * FROM BLOG WHERE CATEGORY = 'NONE'";
@@ -153,6 +160,12 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         assertEquals(expected, boundSql.getSql());
     }
 
+    /**
+     * 测试where sql节点
+     * 测试第一个where sql节点中要去掉and 这种操作符
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldTrimWHEREInsteadOfANDForFirstCondition() throws Exception {
         final String expected = "SELECT * FROM BLOG WHERE  ID = ?";
@@ -164,6 +177,12 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         assertEquals(expected, boundSql.getSql());
     }
 
+    /**
+     * 测试where节点 中第一个节点是 and\n 前缀
+     * 这个也要去掉
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldTrimWHEREANDWithLFForFirstCondition() throws Exception {
         final String expected = "SELECT * FROM BLOG WHERE \n ID = ?";
@@ -174,6 +193,12 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         assertEquals(expected, boundSql.getSql());
     }
 
+    /**
+     * 测试where节点中第一个节点的前置是and\r\n 前缀
+     * 这个时候只去掉and
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldTrimWHEREANDWithCRLFForFirstCondition() throws Exception {
         final String expected = "SELECT * FROM BLOG WHERE \r\n ID = ?";
@@ -184,6 +209,11 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         assertEquals(expected, boundSql.getSql());
     }
 
+    /**
+     * 测试where 节点 and\t
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldTrimWHEREANDWithTABForFirstCondition() throws Exception {
         final String expected = "SELECT * FROM BLOG WHERE \t ID = ?";
@@ -194,6 +224,11 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         assertEquals(expected, boundSql.getSql());
     }
 
+    /**
+     * 测试where节点第一个节点的or\n
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldTrimWHEREORWithLFForFirstCondition() throws Exception {
         final String expected = "SELECT * FROM BLOG WHERE \n ID = ?";
@@ -204,6 +239,11 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         assertEquals(expected, boundSql.getSql());
     }
 
+    /**
+     * 测试where节点第一个节点的or\r\n
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldTrimWHEREORWithCRLFForFirstCondition() throws Exception {
         final String expected = "SELECT * FROM BLOG WHERE \r\n ID = ?";
@@ -214,6 +254,11 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         assertEquals(expected, boundSql.getSql());
     }
 
+    /**
+     * 测试where节点第一个节点的or\t
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldTrimWHEREORWithTABForFirstCondition() throws Exception {
         final String expected = "SELECT * FROM BLOG WHERE \t ID = ?";
@@ -224,6 +269,11 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         assertEquals(expected, boundSql.getSql());
     }
 
+    /**
+     * 测试where节点第一个节点的or
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldTrimWHEREInsteadOfORForSecondCondition() throws Exception {
         final String expected = "SELECT * FROM BLOG WHERE  NAME = ?";
@@ -235,6 +285,11 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         assertEquals(expected, boundSql.getSql());
     }
 
+    /**
+     * 测试where节点 符合条件的多个节点中第一个节点要去掉and(or)  下面的节点则保留
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldTrimWHEREInsteadOfANDForBothConditions() throws Exception {
         final String expected = "SELECT * FROM BLOG WHERE  ID = ?   OR NAME = ?";
@@ -246,6 +301,11 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         assertEquals(expected, boundSql.getSql());
     }
 
+    /**
+     * 测试where节点 如果没有符合的节点 那么不拼接
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldTrimNoWhereClause() throws Exception {
         final String expected = "SELECT * FROM BLOG";
@@ -257,6 +317,11 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         assertEquals(expected, boundSql.getSql());
     }
 
+    /**
+     * 测试set 节点 如果多个节点符合 那么去掉最后一个节点中的,
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldTrimSETInsteadOfCOMMAForBothConditions() throws Exception {
         final String expected = "UPDATE BLOG SET ID = ?,  NAME = ?";
@@ -268,6 +333,11 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         assertEquals(expected, boundSql.getSql());
     }
 
+    /**
+     * 测试set节点  瑞如果没有符合条件的节点 那么都不拼接
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldTrimNoSetClause() throws Exception {
         final String expected = "UPDATE BLOG";
@@ -279,6 +349,11 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         assertEquals(expected, boundSql.getSql());
     }
 
+    /**
+     * 测试for each 节点
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldIterateOnceForEachItemInCollection() throws Exception {
         final HashMap<String, String[]> parameterObject = new HashMap<String, String[]>() {{
@@ -296,6 +371,11 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         assertEquals("__frch_item_2", boundSql.getParameterMappings().get(2).getProperty());
     }
 
+    /**
+     * 测试处理ognl 表达式
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldHandleOgnlExpression() throws Exception {
         final HashMap<String, String> parameterObject = new HashMap<String, String>() {{
@@ -308,6 +388,11 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         assertEquals(expected, boundSql.getSql());
     }
 
+    /**
+     * 测试for each节点 其中空数组的话 要跳过这个拼接
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldSkipForEachWhenCollectionIsEmpty() throws Exception {
         final HashMap<String, Integer[]> parameterObject = new HashMap<String, Integer[]>() {{
@@ -322,6 +407,11 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         assertEquals(0, boundSql.getParameterMappings().size());
     }
 
+    /**
+     * 测试for each节点 中的嵌套查询
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldPerformStrictMatchOnForEachVariableSubstitution() throws Exception {
         final Map<String, Object> param = new HashMap<String, Object>();
@@ -345,6 +435,14 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         assertEquals("__frch_u_0", boundSql.getParameterMappings().get(3).getProperty());
     }
 
+    /**
+     * 创建动态sql 配合测试用
+     *
+     * @param contents
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     */
     private DynamicSqlSource createDynamicSqlSource(SqlNode... contents) throws IOException, SQLException {
         createBlogDataSource();
         final String resource = "org/apache/ibatis/builder/MapperConfig.xml";
@@ -355,10 +453,19 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         return new DynamicSqlSource(configuration, sqlNode);
     }
 
+    /**
+     * 将sql节点转化成混合节点
+     *
+     * @param contents
+     * @return
+     */
     private MixedSqlNode mixedContents(SqlNode... contents) {
         return new MixedSqlNode(Arrays.asList(contents));
     }
 
+    /**
+     * 测试如果参数是对象 那么如果对听的参数的值是null的话 那么替换成空
+     */
     @Test
     public void shouldMapNullStringsToEmptyStrings() {
         final String expected = "id=${id}";
@@ -368,6 +475,9 @@ public class DynamicSqlSourceTest extends BaseDataTest {
         Assert.assertEquals("id=", sql);
     }
 
+    /**
+     * bean对象
+     */
     public static class Bean {
         public String id;
 
