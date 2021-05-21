@@ -176,6 +176,11 @@ public class XmlConfigBuilderTest {
         assertArrayEquals(MyEnum.values(), ((EnumOrderTypeHandler) typeHandler).constants);
     }
 
+    /**
+     * 测试配置了相关的属性的配置文件的加载
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldSuccessfullyLoadXMLConfigFile() throws Exception {
         String resource = "org/apache/ibatis/builder/CustomizedSettingsMapperConfig.xml";
@@ -253,17 +258,29 @@ public class XmlConfigBuilderTest {
         inputStream.close();
     }
 
+    /**
+     * 测试加载配置文件中的属性配置
+     * 其中属性配置是基于file进行加载的
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldSuccessfullyLoadXMLConfigFileWithPropertiesUrl() throws Exception {
         String resource = "org/apache/ibatis/builder/PropertiesUrlMapperConfig.xml";
         InputStream inputStream = Resources.getResourceAsStream(resource);
         XMLConfigBuilder builder = new XMLConfigBuilder(inputStream);
         Configuration config = builder.parse();
-        assertThat(config.getVariables().get("driver").toString()).isEqualTo("org.apache.derby.jdbc.EmbeddedDriver");
+        assertThat(config.getVariables().get("driver").toString()).isEqualTo("com.mysql.cj.jdbc.Driver");
         assertThat(config.getVariables().get("prop1").toString()).isEqualTo("bbbb");
         inputStream.close();
     }
 
+    /**
+     * 测试用一个配置文件不能加载两次
+     * 需要抛出相关异常
+     *
+     * @throws Exception
+     */
     @Test
     public void parseIsTwice() throws Exception {
         String resource = "org/apache/ibatis/builder/MinimalMapperConfig.xml";
@@ -277,6 +294,10 @@ public class XmlConfigBuilderTest {
         inputStream.close();
     }
 
+    /**
+     * 测试设置不存在的属性
+     * 需要抛出相关异常
+     */
     @Test
     public void unknownSettings() {
         final String MAPPER_CONFIG = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
@@ -290,6 +311,10 @@ public class XmlConfigBuilderTest {
                 "The setting foo is not known.  Make sure you spelled it correctly (case sensitive).");
     }
 
+    /**
+     * 测试别名为空 并且类型不对的时候
+     * 需要抛出相关异常
+     */
     @Test
     public void unknownJavaTypeOnTypeHandler() {
         final String MAPPER_CONFIG = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
@@ -303,6 +328,9 @@ public class XmlConfigBuilderTest {
                 .hasMessageContaining("Error registering typeAlias for 'null'. Cause: ");
     }
 
+    /**
+     * 测试属性加载的时候 文件不存在或者url不存在的时候 需要对的路径
+     */
     @Test
     public void propertiesSpecifyResourceAndUrlAtSameTime() {
         final String MAPPER_CONFIG = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
