@@ -194,6 +194,7 @@ public class TypeAliasRegistry {
         if (alias == null) {
             throw new TypeException("The parameter alias cannot be null");
         }
+        //别名是忽略大小写的 存的key是以小写形式的
         // issue #748
         String key = alias.toLowerCase(Locale.ENGLISH);
         if (TYPE_ALIASES.containsKey(key) && TYPE_ALIASES.get(key) != null && !TYPE_ALIASES.get(key).equals(value)) {

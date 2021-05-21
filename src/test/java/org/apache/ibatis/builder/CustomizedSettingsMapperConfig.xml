@@ -100,7 +100,7 @@
   </environments>
   
   <databaseIdProvider type="DB_VENDOR">
-    <property name="Apache Derby" value="derby"/>
+    <property name="MySQL" value="MySql"/>
   </databaseIdProvider>
 
   <mappers>

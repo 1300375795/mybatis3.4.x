@@ -67,15 +67,23 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 
 /**
+ * 核心的xml配置文件测试类
  * TODO: 2021/3/5 CallYeDeGuo 核心入口测试类
  */
 public class XmlConfigBuilderTest {
 
+    /**
+     * 测试成功加载最低限度要求的xml配置文件
+     * 基本就是默认值
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldSuccessfullyLoadMinimalXMLConfigFile() throws Exception {
-//        String resource = "org/apache/ibatis/builder/MinimalMapperConfig.xml";
-        String resource = "org/apache/ibatis/builder/CustomizedSettingsMapperConfig.xml";
-//        String resource = "org/apache/ibatis/builder/MapperConfig.xml";
+        //第一个是原来的测试用例用到的文件
+        String resource = "org/apache/ibatis/builder/MinimalMapperConfig.xml";
+        //        String resource = "org/apache/ibatis/builder/CustomizedSettingsMapperConfig.xml";
+        //        String resource = "org/apache/ibatis/builder/MapperConfig.xml";
         InputStream inputStream = Resources.getResourceAsStream(resource);
         XMLConfigBuilder builder = new XMLConfigBuilder(inputStream);
         Configuration config = builder.parse();
@@ -146,6 +154,9 @@ public class XmlConfigBuilderTest {
         }
     }
 
+    /**
+     * 注册枚举类型的java类型以及初始化类型处理器
+     */
     @Test
     public void registerJavaTypeInitializingTypeHandler() {
         final String MAPPER_CONFIG = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
@@ -232,7 +243,7 @@ public class XmlConfigBuilderTest {
         assertThat(environment.getDataSource()).isInstanceOf(UnpooledDataSource.class);
         assertThat(environment.getTransactionFactory()).isInstanceOf(JdbcTransactionFactory.class);
 
-        assertThat(config.getDatabaseId()).isEqualTo("derby");
+        assertThat(config.getDatabaseId()).isEqualTo("MySql");
 
         assertThat(config.getMapperRegistry().getMappers().size()).isEqualTo(4);
         assertThat(config.getMapperRegistry().hasMapper(CachedAuthorMapper.class)).isTrue();
