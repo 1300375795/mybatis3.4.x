@@ -42,6 +42,11 @@ public class XmlMapperBuilderTest {
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
 
+    /**
+     * 测试xml加载
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldSuccessfullyLoadXMLMapperFile() throws Exception {
         Configuration configuration = new Configuration();

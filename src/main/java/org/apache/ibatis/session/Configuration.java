@@ -1612,6 +1612,7 @@ public class Configuration {
         /**
          * 存放key对应的value
          * 如果map中已经存在这个key 那么抛出异常
+         * 会同时把full key跟short key 存到map中
          *
          * @param key
          * @param value
