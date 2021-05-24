@@ -219,6 +219,11 @@ public class XmlMapperBuilderTest {
         then(caughtException()).hasMessage("No cache for namespace 'eee' could be found.");
     }
 
+    /**
+     * 测试错误的select 标签应该报错
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldFailedLoadXMLMapperFile() throws Exception {
         expectedEx.expect(BuilderException.class);

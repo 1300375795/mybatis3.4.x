@@ -201,6 +201,7 @@ public class SqlSourceBuilder extends BaseBuilder {
 
         /**
          * 解析参数映射
+         * context 不能为空 不然会抛出相应的异常
          *
          * @param content
          * @return
