@@ -49,6 +49,11 @@ public class JndiDataSourceFactoryTest extends BaseDataTest {
         expectedDataSource = createUnpooledDataSource(BLOG_PROPERTIES);
     }
 
+    /**
+     * 测试基于jdni创建的数据源是一致的
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldRetrieveDataSourceFromJNDI() throws Exception {
         createJndiDataSource();
@@ -65,6 +70,11 @@ public class JndiDataSourceFactoryTest extends BaseDataTest {
         assertEquals(expectedDataSource, actualDataSource);
     }
 
+    /**
+     * 创建jndi数据源
+     *
+     * @throws Exception
+     */
     private void createJndiDataSource() throws Exception {
         try {
             Hashtable<String, String> env = new Hashtable<String, String>();
@@ -81,6 +91,9 @@ public class JndiDataSourceFactoryTest extends BaseDataTest {
         }
     }
 
+    /**
+     * Mock上下文工厂
+     */
     public static class MockContextFactory implements InitialContextFactory {
         @Override
         public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
@@ -88,6 +101,9 @@ public class JndiDataSourceFactoryTest extends BaseDataTest {
         }
     }
 
+    /**
+     * Mock上下文
+     */
     public static class MockContext extends InitialContext {
         private static Map<String, Object> bindings = new HashMap<String, Object>();
 
