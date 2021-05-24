@@ -58,6 +58,11 @@ public class XmlMapperBuilderTest {
         inputStream.close();
     }
 
+    /**
+     * 测试执行的某个select 操作的配置是否加载成功
+     *
+     * @throws Exception
+     */
     @Test
     public void mappedStatementWithOptions() throws Exception {
         Configuration configuration = new Configuration();
@@ -77,6 +82,9 @@ public class XmlMapperBuilderTest {
         inputStream.close();
     }
 
+    /**
+     * 测试基础builder中的正则表达式
+     */
     @Test
     public void parseExpression() {
         BaseBuilder builder = new BaseBuilder(new Configuration()) {{
@@ -93,6 +101,9 @@ public class XmlMapperBuilderTest {
         }
     }
 
+    /**
+     * 测试基础builder中错误的jdbc枚举类型
+     */
     @Test
     public void resolveJdbcTypeWithUndefinedValue() {
         BaseBuilder builder = new BaseBuilder(new Configuration()) {{
@@ -103,6 +114,9 @@ public class XmlMapperBuilderTest {
                 .hasMessageEndingWith("org.apache.ibatis.type.JdbcType.aaa");
     }
 
+    /**
+     * 测试基础builder中错误的resultSetType枚举类型
+     */
     @Test
     public void resolveResultSetTypeWithUndefinedValue() {
         BaseBuilder builder = new BaseBuilder(new Configuration()) {{
@@ -113,6 +127,9 @@ public class XmlMapperBuilderTest {
                 .hasMessageEndingWith("org.apache.ibatis.mapping.ResultSetType.bbb");
     }
 
+    /**
+     * 测试基础builder中错误的ParamMode枚举类型
+     */
     @Test
     public void resolveParameterModeWithUndefinedValue() {
         BaseBuilder builder = new BaseBuilder(new Configuration()) {{
@@ -123,6 +140,9 @@ public class XmlMapperBuilderTest {
                 .hasMessageEndingWith("org.apache.ibatis.mapping.ParameterMode.ccc");
     }
 
+    /**
+     * 测试基础builder中创建抽象类要报错
+     */
     @Test
     public void createInstanceWithAbstractClass() {
         BaseBuilder builder = new BaseBuilder(new Configuration()) {{
@@ -132,6 +152,9 @@ public class XmlMapperBuilderTest {
                 "Error creating instance. Cause: java.lang.InstantiationException: org.apache.ibatis.builder.BaseBuilder");
     }
 
+    /**
+     * 测试基础builder中创建不存在的类
+     */
     @Test
     public void resolveClassWithNotFound() {
         BaseBuilder builder = new BaseBuilder(new Configuration()) {{
@@ -141,6 +164,9 @@ public class XmlMapperBuilderTest {
                 "Error resolving class. Cause: org.apache.ibatis.type.TypeException: Could not resolve type alias 'ddd'.  Cause: java.lang.ClassNotFoundException: Cannot find class: ddd");
     }
 
+    /**
+     * 测试解析类型处理器的时候给出的别名是null的场景 这个时候需要返回null
+     */
     @Test
     public void resolveTypeHandlerTypeHandlerAliasIsNull() {
         BaseBuilder builder = new BaseBuilder(new Configuration()) {{
@@ -149,6 +175,9 @@ public class XmlMapperBuilderTest {
         assertThat(typeHandler).isNull();
     }
 
+    /**
+     * 测试类型处理器不匹配
+     */
     @Test
     public void resolveTypeHandlerNoAssignable() {
         BaseBuilder builder = new BaseBuilder(new Configuration()) {{
@@ -158,6 +187,9 @@ public class XmlMapperBuilderTest {
                 "Type java.lang.Integer is not a valid TypeHandler because it does not implement TypeHandler interface");
     }
 
+    /**
+     * 测试需要给出命名空间
+     */
     @Test
     public void setCurrentNamespaceValueIsNull() {
         MapperBuilderAssistant builder = new MapperBuilderAssistant(new Configuration(), "resource");
@@ -166,6 +198,9 @@ public class XmlMapperBuilderTest {
                 .hasMessage("The mapper element requires a namespace attribute to be specified.");
     }
 
+    /**
+     * 测试缓存使用缓存引用的时候需要给出命名空间
+     */
     @Test
     public void useCacheRefNamespaceIsNull() {
         MapperBuilderAssistant builder = new MapperBuilderAssistant(new Configuration(), "resource");
@@ -174,6 +209,9 @@ public class XmlMapperBuilderTest {
                 .hasMessage("cache-ref element requires a namespace attribute.");
     }
 
+    /**
+     * 测试使用缓存引用的时候需要给出正确的命名空间
+     */
     @Test
     public void useCacheRefNamespaceIsUndefined() {
         MapperBuilderAssistant builder = new MapperBuilderAssistant(new Configuration(), "resource");

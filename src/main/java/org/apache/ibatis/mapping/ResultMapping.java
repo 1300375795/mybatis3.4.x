@@ -35,39 +35,119 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 public class ResultMapping {
 
     private Configuration configuration;
+
+    /**
+     * ˙这个是java类中的属性
+     */
     private String property;
+
+    /**
+     * 这个是数据库中的字段
+     */
     private String column;
+
+    /**
+     * 这个是java类型
+     */
     private Class<?> javaType;
+
+    /**
+     * 这个是jdbc的类型
+     */
     private JdbcType jdbcType;
+
+    /**
+     * 这个是类型处理器
+     */
     private TypeHandler<?> typeHandler;
+
+    /**
+     * 这个是嵌套的resultMapId
+     */
     private String nestedResultMapId;
+
+    /**
+     * 这个是嵌套的查询id
+     */
     private String nestedQueryId;
+
+    /**
+     * 这个是不能为空的数据库字段集合
+     */
     private Set<String> notNullColumns;
+
+    /**
+     * 数据库字段前缀
+     */
     private String columnPrefix;
+
+    /**
+     * 结果标识集合
+     */
     private List<ResultFlag> flags;
+
+    /**
+     *
+     */
     private List<ResultMapping> composites;
     private String resultSet;
     private String foreignColumn;
+
+    /**
+     * 是否懒加载
+     */
     private boolean lazy;
 
+    /**
+     * 构造函数
+     */
     ResultMapping() {
     }
 
+    /**
+     * 构造器
+     */
     public static class Builder {
+
+        /**
+         * 对应result map中的子属性
+         */
         private ResultMapping resultMapping = new ResultMapping();
 
+        /**
+         * 构造器构造函数
+         *
+         * @param configuration
+         * @param property
+         * @param column
+         * @param typeHandler
+         */
         public Builder(Configuration configuration, String property, String column, TypeHandler<?> typeHandler) {
             this(configuration, property);
             resultMapping.column = column;
             resultMapping.typeHandler = typeHandler;
         }
 
+        /**
+         * 构造器构造函数
+         *
+         * @param configuration
+         * @param property
+         * @param column
+         * @param javaType
+         */
         public Builder(Configuration configuration, String property, String column, Class<?> javaType) {
             this(configuration, property);
             resultMapping.column = column;
             resultMapping.javaType = javaType;
         }
 
+        /**
+         * 构造器构造函数
+         *
+         * @param configuration
+         * @param property
+         */
         public Builder(Configuration configuration, String property) {
             resultMapping.configuration = configuration;
             resultMapping.property = property;
@@ -76,51 +156,111 @@ public class ResultMapping {
             resultMapping.lazy = configuration.isLazyLoadingEnabled();
         }
 
+        /**
+         * 设置java类型
+         *
+         * @param javaType
+         * @return
+         */
         public Builder javaType(Class<?> javaType) {
             resultMapping.javaType = javaType;
             return this;
         }
 
+        /**
+         * 设置jdbc类型
+         *
+         * @param jdbcType
+         * @return
+         */
         public Builder jdbcType(JdbcType jdbcType) {
             resultMapping.jdbcType = jdbcType;
             return this;
         }
 
+        /**
+         * 设置嵌套的resultMapId
+         *
+         * @param nestedResultMapId
+         * @return
+         */
         public Builder nestedResultMapId(String nestedResultMapId) {
             resultMapping.nestedResultMapId = nestedResultMapId;
             return this;
         }
 
+        /**
+         * 设置嵌套的查询id
+         *
+         * @param nestedQueryId
+         * @return
+         */
         public Builder nestedQueryId(String nestedQueryId) {
             resultMapping.nestedQueryId = nestedQueryId;
             return this;
         }
 
+        /**
+         * 设置结果集合
+         *
+         * @param resultSet
+         * @return
+         */
         public Builder resultSet(String resultSet) {
             resultMapping.resultSet = resultSet;
             return this;
         }
 
+        /**
+         * 设置外联的数据库字段
+         *
+         * @param foreignColumn
+         * @return
+         */
         public Builder foreignColumn(String foreignColumn) {
             resultMapping.foreignColumn = foreignColumn;
             return this;
         }
 
+        /**
+         * 设置不为null的字段集合
+         *
+         * @param notNullColumns
+         * @return
+         */
         public Builder notNullColumns(Set<String> notNullColumns) {
             resultMapping.notNullColumns = notNullColumns;
             return this;
         }
 
+        /**
+         * 设置数据库字段前缀
+         *
+         * @param columnPrefix
+         * @return
+         */
         public Builder columnPrefix(String columnPrefix) {
             resultMapping.columnPrefix = columnPrefix;
             return this;
         }
 
+        /**
+         * 设置结果标识集合
+         *
+         * @param flags
+         * @return
+         */
         public Builder flags(List<ResultFlag> flags) {
             resultMapping.flags = flags;
             return this;
         }
 
+        /**
+         * 设置类型处理器
+         *
+         * @param typeHandler
+         * @return
+         */
         public Builder typeHandler(TypeHandler<?> typeHandler) {
             resultMapping.typeHandler = typeHandler;
             return this;
@@ -131,11 +271,22 @@ public class ResultMapping {
             return this;
         }
 
+        /**
+         * 设置是否懒加载
+         *
+         * @param lazy
+         * @return
+         */
         public Builder lazy(boolean lazy) {
             resultMapping.lazy = lazy;
             return this;
         }
 
+        /**
+         * 构建resultMapping
+         *
+         * @return
+         */
         public ResultMapping build() {
             // lock down collections
             resultMapping.flags = Collections.unmodifiableList(resultMapping.flags);
