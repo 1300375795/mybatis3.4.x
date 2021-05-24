@@ -30,11 +30,24 @@ public class CacheKey implements Cloneable, Serializable {
 
     private static final long serialVersionUID = 1146682552656046210L;
 
+    /**
+     * 空对象缓存key
+     */
     public static final CacheKey NULL_CACHE_KEY = new NullCacheKey();
 
+    /**
+     * 默认的乘数
+     */
     private static final int DEFAULT_MULTIPLYER = 37;
+
+    /**
+     * 默认的hashCode
+     */
     private static final int DEFAULT_HASHCODE = 17;
 
+    /**
+     * 乘数
+     */
     private final int multiplier;
 
     /**
@@ -42,6 +55,9 @@ public class CacheKey implements Cloneable, Serializable {
      */
     private int hashcode;
 
+    /**
+     * 基于baseHashCode加起来得到
+     */
     private long checksum;
 
     /**
@@ -87,6 +103,7 @@ public class CacheKey implements Cloneable, Serializable {
     /**
      * 根据每次给出的内容计算hashCode
      * 同时将给出的object加到更新集合中
+     * // TODO: 2021/5/24 CallYeDeGuo 这个算法有什么讲究吗
      *
      * @param object
      */
