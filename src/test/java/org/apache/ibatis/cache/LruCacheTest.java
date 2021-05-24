@@ -27,6 +27,11 @@ import org.junit.Test;
  */
 public class LruCacheTest {
 
+    /**
+     * 测试5个元素最近最常使用缓存的时候
+     * 如果get、put操作了 那么这个缓存key会被放在缓存的最后面
+     * 如果超过了缓存的大小 那么缓存中最前面的那个缓存会被删除
+     */
     @Test
     public void shouldRemoveLeastRecentlyUsedItemInBeyondFiveEntries() {
         LruCache cache = new LruCache(new PerpetualCache("default"));
@@ -40,6 +45,9 @@ public class LruCacheTest {
         assertEquals(5, cache.getSize());
     }
 
+    /**
+     * 测试存入以及取出缓存能正常通过
+     */
     @Test
     public void shouldRemoveItemOnDemand() {
         Cache cache = new LruCache(new PerpetualCache("default"));
@@ -49,6 +57,9 @@ public class LruCacheTest {
         assertNull(cache.getObject(0));
     }
 
+    /**
+     * 测试情况缓存之后 获取被情况的缓存的结果正常
+     */
     @Test
     public void shouldFlushAllItemsOnDemand() {
         Cache cache = new LruCache(new PerpetualCache("default"));
