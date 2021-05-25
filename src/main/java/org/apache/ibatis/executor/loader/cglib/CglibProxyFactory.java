@@ -92,10 +92,22 @@ public class CglibProxyFactory implements ProxyFactory {
         // Not Implemented
     }
 
+    /**
+     * 创建代理对象
+     *
+     * @param type                目标对象class类
+     * @param callback            EnhancedResultObjectProxyImpl对象
+     * @param constructorArgTypes 目标对象构造参数类型集合
+     * @param constructorArgs     目标对象构造参数集合
+     * @return
+     */
     static Object crateProxy(Class<?> type, Callback callback, List<Class<?>> constructorArgTypes,
             List<Object> constructorArgs) {
+        //创建增强
         Enhancer enhancer = new Enhancer();
+        //设置回调
         enhancer.setCallback(callback);
+        //设置父类class
         enhancer.setSuperclass(type);
         try {
             type.getDeclaredMethod(WRITE_REPLACE_METHOD);
@@ -109,9 +121,12 @@ public class CglibProxyFactory implements ProxyFactory {
             // nothing to do here
         }
         Object enhanced;
+        //如果构造参数类型为空 那么直接创建增强
         if (constructorArgTypes.isEmpty()) {
             enhanced = enhancer.create();
-        } else {
+        }
+        //否则将构造参数类型、构造参数转换成数组 然后创建
+        else {
             Class<?>[] typesArray = constructorArgTypes.toArray(new Class[constructorArgTypes.size()]);
             Object[] valuesArray = constructorArgs.toArray(new Object[constructorArgs.size()]);
             enhanced = enhancer.create(typesArray, valuesArray);
@@ -119,16 +134,53 @@ public class CglibProxyFactory implements ProxyFactory {
         return enhanced;
     }
 
+    /**
+     * 增强结果对象代理实现类
+     * 内部类实现了cglib的方法拦截器
+     */
     private static class EnhancedResultObjectProxyImpl implements MethodInterceptor {
 
+        /**
+         * 目标代理对象
+         */
         private final Class<?> type;
         private final ResultLoaderMap lazyLoader;
+
+        /**
+         * 是否按需加载
+         */
         private final boolean aggressive;
+
+        /**
+         * 懒加载跳过的方法集合
+         */
         private final Set<String> lazyLoadTriggerMethods;
+
+        /**
+         * 对象工厂 创建对象用
+         */
         private final ObjectFactory objectFactory;
+
+        /**
+         * 构造参数类型集合
+         */
         private final List<Class<?>> constructorArgTypes;
+
+        /**
+         * 构造参数集合
+         */
         private final List<Object> constructorArgs;
 
+        /**
+         * 构造函数
+         *
+         * @param type
+         * @param lazyLoader
+         * @param configuration
+         * @param objectFactory
+         * @param constructorArgTypes
+         * @param constructorArgs
+         */
         private EnhancedResultObjectProxyImpl(Class<?> type, ResultLoaderMap lazyLoader, Configuration configuration,
                 ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
             this.type = type;
@@ -140,6 +192,17 @@ public class CglibProxyFactory implements ProxyFactory {
             this.constructorArgs = constructorArgs;
         }
 
+        /**
+         * 创建代理对象
+         *
+         * @param target
+         * @param lazyLoader
+         * @param configuration
+         * @param objectFactory
+         * @param constructorArgTypes
+         * @param constructorArgs
+         * @return
+         */
         public static Object createProxy(Object target, ResultLoaderMap lazyLoader, Configuration configuration,
                 ObjectFactory objectFactory, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
             final Class<?> type = target.getClass();
@@ -193,6 +256,9 @@ public class CglibProxyFactory implements ProxyFactory {
         }
     }
 
+    /**
+     * 增强的反序列化代理实现类
+     */
     private static class EnhancedDeserializationProxyImpl extends AbstractEnhancedDeserializationProxy
             implements MethodInterceptor {
 

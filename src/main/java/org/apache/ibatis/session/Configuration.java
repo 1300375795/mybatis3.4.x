@@ -107,6 +107,12 @@ public class Configuration {
     protected boolean safeRowBoundsEnabled;
     protected boolean safeResultHandlerEnabled = true;
     protected boolean mapUnderscoreToCamelCase;
+
+    /**
+     * 是否按需加载属性
+     * 如果为true 那么对象中的任意一个方法属性的调用就会触发关联查询
+     * 如果为false 那么对象中的真正配置了关联查询的方法属性的调用才会触发关联查询
+     */
     protected boolean aggressiveLazyLoading;
     protected boolean multipleResultSetsEnabled = true;
 
@@ -154,7 +160,7 @@ public class Configuration {
     protected JdbcType jdbcTypeForNull = JdbcType.OTHER;
 
     /**
-     * 延迟加载触发方法
+     * 延迟加载不触发方法
      */
     protected Set<String> lazyLoadTriggerMethods = new HashSet<String>(
             Arrays.asList(new String[] { "equals", "clone", "hashCode", "toString" }));
@@ -1004,8 +1010,7 @@ public class Configuration {
     public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement,
             Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
         //创建代理对象 并且执行生成主键的processBefore方法
-        StatementHandler statementHandler = new
-                RoutingStatementHandler(executor, mappedStatement, parameterObject,
+        StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject,
                 rowBounds, resultHandler, boundSql);
         // TODO: 2021/3/31 CallYeDeGuo 在这里将插件进行包装
         statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);

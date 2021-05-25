@@ -38,7 +38,7 @@ import org.junit.Test;
 public class CglibProxyTest extends SerializableProxyTest {
 
     /**
-     *
+     * 创建cglib代理工厂
      */
     public CglibProxyTest() {
         proxyFactory = new CglibProxyFactory();
