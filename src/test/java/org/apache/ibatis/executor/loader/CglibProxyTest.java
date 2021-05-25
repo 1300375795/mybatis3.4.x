@@ -46,6 +46,7 @@ public class CglibProxyTest extends SerializableProxyTest {
 
     @Test
     public void shouldCreateAProxyForAPartiallyLoadedBean() throws Exception {
+        // TODO: 2021/5/25 CallYeDeGuo 暂时没看懂 后续再看吧
         ResultLoaderMap loader = new ResultLoaderMap();
         loader.addLoader("id", null, null);
         Object proxy = proxyFactory

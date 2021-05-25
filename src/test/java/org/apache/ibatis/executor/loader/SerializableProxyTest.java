@@ -46,6 +46,11 @@ public abstract class SerializableProxyTest {
      */
     protected ProxyFactory proxyFactory;
 
+    /**
+     * 测试一般类型
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldKeepGenericTypes() throws Exception {
         for (int i = 0; i < 10000; i++) {
@@ -57,6 +62,13 @@ public abstract class SerializableProxyTest {
         }
     }
 
+    /**
+     * 测试通过默认构造函数进行代理
+     * 并将这个代理后的对象进行序列化反序列化
+     * 这个时候两个的值要相同
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldSerializeAProxyForABeanWithDefaultConstructor() throws Exception {
         Object proxy = proxyFactory
@@ -66,6 +78,13 @@ public abstract class SerializableProxyTest {
         assertEquals(author, proxy2);
     }
 
+    /**
+     * 测试基于带参数的构造函数进行代理
+     * 然后代理对象进行序列化反序列化后
+     * 两个的值要相同
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldSerializeAProxyForABeanWithoutDefaultConstructor() throws Exception {
         AuthorWithoutDefaultConstructor author = new AuthorWithoutDefaultConstructor(999, "someone", "!@#@!#!@#",
@@ -91,6 +110,13 @@ public abstract class SerializableProxyTest {
         assertEquals(author, proxy2);
     }
 
+    /**
+     * 测试只有带参数构造函数
+     * 进行增强后然后序列化反序列化
+     * 两个的值应该相同
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldSerializeAProxyForABeanWithoutDefaultConstructorAndUnloadedProperties() throws Exception {
         AuthorWithoutDefaultConstructor author = new AuthorWithoutDefaultConstructor(999, "someone", "!@#@!#!@#",
@@ -117,6 +143,11 @@ public abstract class SerializableProxyTest {
         assertEquals(author, proxy2);
     }
 
+    /**
+     * 测试应该序列化全部的属性过去
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldSerizaliceAFullLoadedObjectToOriginalClass() throws Exception {
         Object proxy = proxyFactory
@@ -126,12 +157,18 @@ public abstract class SerializableProxyTest {
         assertEquals(author.getClass(), proxy2.getClass());
     }
 
+    /**
+     * 测试一开始没有writeReplace方法 后面加上了接口后会有这个方法
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldGenerateWriteReplace() throws Exception {
         try {
             author.getClass().getDeclaredMethod("writeReplace");
             fail("Author should not have a writeReplace method");
         } catch (NoSuchMethodException e) {
+            System.out.println("一开始是没有这个方法的");
             // ok
         }
         Object proxy = proxyFactory
@@ -140,6 +177,11 @@ public abstract class SerializableProxyTest {
         Method m = proxy.getClass().getDeclaredMethod("writeReplace");
     }
 
+    /**
+     * 测试存在writeReplace方法的对象 不会在interfaces里面额外加上WriteReplaceInterface接口
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldNotGenerateWriteReplaceItThereIsAlreadyOne() throws Exception {
         AuthorWithWriteReplaceMethod beanWithWriteReplace = new AuthorWithWriteReplaceMethod(999, "someone",
@@ -162,11 +204,18 @@ public abstract class SerializableProxyTest {
         assertFalse(ownInterfaceFound);
     }
 
+    /**
+     * 测试不会为全量加载的bean创建代理
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldNotCreateAProxyForAFullyLoadedBean() throws Exception {
         Object proxy = proxyFactory
                 .createProxy(author, new ResultLoaderMap(), new Configuration(), new DefaultObjectFactory(),
                         new ArrayList<Class<?>>(), new ArrayList<Object>());
+        Class<?> aClass = proxy.getClass();
+        System.out.println(aClass);
         Author author2 = (Author) deserialize(serialize((Serializable) proxy));
         assertEquals(author.getClass(), author2.getClass());
     }
@@ -203,6 +252,13 @@ public abstract class SerializableProxyTest {
         assertEquals(999, author2.getId());
     }
 
+    /**
+     * 序列化
+     *
+     * @param value
+     * @return
+     * @throws Exception
+     */
     protected byte[] serialize(Serializable value) throws Exception {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(bos);
@@ -212,6 +268,13 @@ public abstract class SerializableProxyTest {
         return bos.toByteArray();
     }
 
+    /**
+     * 反序列化
+     *
+     * @param value
+     * @return
+     * @throws Exception
+     */
     protected Serializable deserialize(byte[] value) throws Exception {
         ByteArrayInputStream bis = new ByteArrayInputStream(value);
         ObjectInputStream ois = new ObjectInputStream(bis);
@@ -220,6 +283,10 @@ public abstract class SerializableProxyTest {
         return result;
     }
 
+    /**
+     * 同时存在默认构造函数以及带参数的构造函数
+     * 并且有writeReplace方法
+     */
     public static class AuthorWithWriteReplaceMethod extends Author {
 
         public AuthorWithWriteReplaceMethod() {
@@ -235,6 +302,9 @@ public abstract class SerializableProxyTest {
         }
     }
 
+    /**
+     * 不通过默认构造函数的Author类 并且有writeReplace方法
+     */
     public static class AuthorWithoutDefaultConstructor extends Author {
 
         public AuthorWithoutDefaultConstructor(Integer id, String username, String password, String email, String bio,

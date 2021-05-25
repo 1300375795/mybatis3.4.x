@@ -110,12 +110,14 @@ public class CglibProxyFactory implements ProxyFactory {
         //设置父类class
         enhancer.setSuperclass(type);
         try {
+            //设置读写方法
             type.getDeclaredMethod(WRITE_REPLACE_METHOD);
             // ObjectOutputStream will call writeReplace of objects returned by writeReplace
             if (log.isDebugEnabled()) {
                 log.debug(WRITE_REPLACE_METHOD + " method was found on bean " + type + ", make sure it returns this");
             }
         } catch (NoSuchMethodException e) {
+            //如果没有这个方法 那么就加上这个接口
             enhancer.setInterfaces(new Class[] { WriteReplaceInterface.class });
         } catch (SecurityException e) {
             // nothing to do here
@@ -208,7 +210,9 @@ public class CglibProxyFactory implements ProxyFactory {
             final Class<?> type = target.getClass();
             EnhancedResultObjectProxyImpl callback = new EnhancedResultObjectProxyImpl(type, lazyLoader, configuration,
                     objectFactory, constructorArgTypes, constructorArgs);
+            //创建代理对象
             Object enhanced = crateProxy(type, callback, constructorArgTypes, constructorArgs);
+            //拷贝源对象的属性到增强对象中
             PropertyCopier.copyBeanProperties(type, target, enhanced);
             return enhanced;
         }
