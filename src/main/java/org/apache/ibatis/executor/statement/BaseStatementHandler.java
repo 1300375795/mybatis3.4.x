@@ -158,7 +158,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
      */
     protected void setStatementTimeout(Statement stmt, Integer transactionTimeout) throws SQLException {
         Integer queryTimeout = null;
-        //如果xml中sql指定了超时时间 那么就获取这个超时时间
+        //如果通过xml或者注解构建的MappedStatement设置了超时时间 那么就获取这个超时时间
         if (mappedStatement.getTimeout() != null) {
             queryTimeout = mappedStatement.getTimeout();
         }
@@ -174,7 +174,14 @@ public abstract class BaseStatementHandler implements StatementHandler {
         StatementUtil.applyTransactionTimeout(stmt, queryTimeout, transactionTimeout);
     }
 
+    /**
+     * 设置批量返回的值的大小
+     *
+     * @param stmt
+     * @throws SQLException
+     */
     protected void setFetchSize(Statement stmt) throws SQLException {
+        ////如果通过xml或者注解构建的MappedStatement设置了批量返回的值 那么就获取这个批量返回的值
         Integer fetchSize = mappedStatement.getFetchSize();
         if (fetchSize != null) {
             stmt.setFetchSize(fetchSize);
