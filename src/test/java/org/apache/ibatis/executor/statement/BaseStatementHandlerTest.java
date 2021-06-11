@@ -79,7 +79,7 @@ public class BaseStatementHandlerTest {
         BaseStatementHandler handler = new SimpleStatementHandler(null, mappedStatementBuilder.build(), null, null,
                 null, null);
         handler.setStatementTimeout(statement, null);
-
+        //verify方法是测试指定的方法是不是被调用了而且给出的参数是不是一样
         verify(statement).setQueryTimeout(10); // apply a mapped statement timeout
     }
 
@@ -147,6 +147,12 @@ public class BaseStatementHandlerTest {
         verify(configuration, never()).getDefaultStatementTimeout();
     }
 
+    /**
+     * 测试给出了全局配置中的超时时间以及事务超时时间
+     * 但是事务超时时间大于配置的超时时间 这个时候以配置的超时时间为准
+     *
+     * @throws SQLException
+     */
     @Test
     public void specifyQueryTimeoutAndTransactionTimeoutMinIsQueryTimeout() throws SQLException {
         doReturn(10).when(configuration).getDefaultStatementTimeout();
@@ -158,6 +164,13 @@ public class BaseStatementHandlerTest {
         verify(statement).setQueryTimeout(10); // apply a query timeout
     }
 
+    /**
+     * 测试给出了全局配置的以及给出了事务的超时时间
+     * 这个时候由于先给出了全局的超时时间 那么先会进行设置
+     * 又因为事务的超时时间给出了且小于全局的超时时间 这个时候就会再次进行设置
+     *
+     * @throws SQLException
+     */
     @Test
     public void specifyQueryTimeoutAndTransactionTimeoutMinIsTransactionTimeout() throws SQLException {
         doReturn(10).when(configuration).getDefaultStatementTimeout();
@@ -170,6 +183,13 @@ public class BaseStatementHandlerTest {
         verify(statement).setQueryTimeout(5); // apply a transaction timeout
     }
 
+    /**
+     * 测试给出了全局配置时间也给出了事务超时时间
+     * 但是两个的时候是相同的
+     * 这个时候就只会设置一次
+     *
+     * @throws SQLException
+     */
     @Test
     public void specifyQueryTimeoutAndTransactionTimeoutWithSameValue() throws SQLException {
         doReturn(10).when(configuration).getDefaultStatementTimeout();
