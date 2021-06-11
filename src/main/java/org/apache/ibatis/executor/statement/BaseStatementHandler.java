@@ -149,16 +149,28 @@ public abstract class BaseStatementHandler implements StatementHandler {
 
     protected abstract Statement instantiateStatement(Connection connection) throws SQLException;
 
+    /**
+     * 设置声明超时时间
+     *
+     * @param stmt
+     * @param transactionTimeout
+     * @throws SQLException
+     */
     protected void setStatementTimeout(Statement stmt, Integer transactionTimeout) throws SQLException {
         Integer queryTimeout = null;
+        //如果xml中sql指定了超时时间 那么就获取这个超时时间
         if (mappedStatement.getTimeout() != null) {
             queryTimeout = mappedStatement.getTimeout();
-        } else if (configuration.getDefaultStatementTimeout() != null) {
+        }
+        //如果全局配置中的超时时间不为空 那么就拿全局配置中的
+        else if (configuration.getDefaultStatementTimeout() != null) {
             queryTimeout = configuration.getDefaultStatementTimeout();
         }
+        //如果进行了配置 那么给声明设置超时时间
         if (queryTimeout != null) {
             stmt.setQueryTimeout(queryTimeout);
         }
+        //根据事务超时时间以及设置的超时时间进行设置
         StatementUtil.applyTransactionTimeout(stmt, queryTimeout, transactionTimeout);
     }
 
