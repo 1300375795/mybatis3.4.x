@@ -1,17 +1,17 @@
 /**
- *    Copyright 2009-2015 the original author or authors.
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ * Copyright 2009-2015 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.ibatis;
 
@@ -27,70 +27,117 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
+/**
+ * 抽象的基础数据测试器
+ */
 public abstract class BaseDataTest {
 
-  public static final String BLOG_PROPERTIES = "org/apache/ibatis/databases/blog/blog-derby.properties";
-  public static final String BLOG_DDL = "org/apache/ibatis/databases/blog/blog-derby-schema.sql";
-  public static final String BLOG_DATA = "org/apache/ibatis/databases/blog/blog-derby-dataload.sql";
+    public static final String BLOG_PROPERTIES = "org/apache/ibatis/databases/blog/blog-derby.properties";
+    public static final String BLOG_DDL = "org/apache/ibatis/databases/blog/blog-derby-schema.sql";
+    public static final String BLOG_DATA = "org/apache/ibatis/databases/blog/blog-derby-dataload.sql";
 
-  public static final String JPETSTORE_PROPERTIES = "org/apache/ibatis/databases/jpetstore/jpetstore-hsqldb.properties";
-  public static final String JPETSTORE_DDL = "org/apache/ibatis/databases/jpetstore/jpetstore-hsqldb-schema.sql";
-  public static final String JPETSTORE_DATA = "org/apache/ibatis/databases/jpetstore/jpetstore-hsqldb-dataload.sql";
+    public static final String JPETSTORE_PROPERTIES = "org/apache/ibatis/databases/jpetstore/jpetstore-hsqldb.properties";
+    public static final String JPETSTORE_DDL = "org/apache/ibatis/databases/jpetstore/jpetstore-hsqldb-schema.sql";
+    public static final String JPETSTORE_DATA = "org/apache/ibatis/databases/jpetstore/jpetstore-hsqldb-dataload.sql";
 
-  public static UnpooledDataSource createUnpooledDataSource(String resource) throws IOException {
-    Properties props = Resources.getResourceAsProperties(resource);
-    UnpooledDataSource ds = new UnpooledDataSource();
-    ds.setDriver(props.getProperty("driver"));
-    ds.setUrl(props.getProperty("url"));
-    ds.setUsername(props.getProperty("username"));
-    ds.setPassword(props.getProperty("password"));
-    return ds;
-  }
-
-  public static PooledDataSource createPooledDataSource(String resource) throws IOException {
-    Properties props = Resources.getResourceAsProperties(resource);
-    PooledDataSource ds = new PooledDataSource();
-    ds.setDriver(props.getProperty("driver"));
-    ds.setUrl(props.getProperty("url"));
-    ds.setUsername(props.getProperty("username"));
-    ds.setPassword(props.getProperty("password"));
-    return ds;
-  }
-
-  public static void runScript(DataSource ds, String resource) throws IOException, SQLException {
-    Connection connection = ds.getConnection();
-    try {
-      ScriptRunner runner = new ScriptRunner(connection);
-      runner.setAutoCommit(true);
-      runner.setStopOnError(false);
-      runner.setLogWriter(null);
-      runner.setErrorLogWriter(null);
-      runScript(runner, resource);
-    } finally {
-      connection.close();
+    /**
+     * 创建非池化的数据源
+     *
+     * @param resource
+     * @return
+     * @throws IOException
+     */
+    public static UnpooledDataSource createUnpooledDataSource(String resource) throws IOException {
+        Properties props = Resources.getResourceAsProperties(resource);
+        UnpooledDataSource ds = new UnpooledDataSource();
+        ds.setDriver(props.getProperty("driver"));
+        ds.setUrl(props.getProperty("url"));
+        ds.setUsername(props.getProperty("username"));
+        ds.setPassword(props.getProperty("password"));
+        return ds;
     }
-  }
 
-  public static void runScript(ScriptRunner runner, String resource) throws IOException, SQLException {
-    Reader reader = Resources.getResourceAsReader(resource);
-    try {
-      runner.runScript(reader);
-    } finally {
-      reader.close();
+    /**
+     * 创建池化的数据源
+     *
+     * @param resource
+     * @return
+     * @throws IOException
+     */
+    public static PooledDataSource createPooledDataSource(String resource) throws IOException {
+        Properties props = Resources.getResourceAsProperties(resource);
+        PooledDataSource ds = new PooledDataSource();
+        ds.setDriver(props.getProperty("driver"));
+        ds.setUrl(props.getProperty("url"));
+        ds.setUsername(props.getProperty("username"));
+        ds.setPassword(props.getProperty("password"));
+        return ds;
     }
-  }
 
-  public static DataSource createBlogDataSource() throws IOException, SQLException {
-    DataSource ds = createUnpooledDataSource(BLOG_PROPERTIES);
-    runScript(ds, BLOG_DDL);
-    runScript(ds, BLOG_DATA);
-    return ds;
-  }
+    /**
+     * 运行sql脚本
+     *
+     * @param ds
+     * @param resource
+     * @throws IOException
+     * @throws SQLException
+     */
+    public static void runScript(DataSource ds, String resource) throws IOException, SQLException {
+        Connection connection = ds.getConnection();
+        try {
+            ScriptRunner runner = new ScriptRunner(connection);
+            runner.setAutoCommit(true);
+            runner.setStopOnError(false);
+            runner.setLogWriter(null);
+            runner.setErrorLogWriter(null);
+            runScript(runner, resource);
+        } finally {
+            connection.close();
+        }
+    }
 
-  public static DataSource createJPetstoreDataSource() throws IOException, SQLException {
-    DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
-    runScript(ds, JPETSTORE_DDL);
-    runScript(ds, JPETSTORE_DATA);
-    return ds;
-  }
+    /**
+     * 运行sql脚本
+     *
+     * @param runner
+     * @param resource
+     * @throws IOException
+     * @throws SQLException
+     */
+    public static void runScript(ScriptRunner runner, String resource) throws IOException, SQLException {
+        Reader reader = Resources.getResourceAsReader(resource);
+        try {
+            runner.runScript(reader);
+        } finally {
+            reader.close();
+        }
+    }
+
+    /**
+     * 创建blog数据源（已被改成mysql）
+     *
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     */
+    public static DataSource createBlogDataSource() throws IOException, SQLException {
+        DataSource ds = createUnpooledDataSource(BLOG_PROPERTIES);
+        runScript(ds, BLOG_DDL);
+        runScript(ds, BLOG_DATA);
+        return ds;
+    }
+
+    /**
+     * 创建JPetstore数据源（已被改成mysql）
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     */
+
+    public static DataSource createJPetstoreDataSource() throws IOException, SQLException {
+        DataSource ds = createUnpooledDataSource(JPETSTORE_PROPERTIES);
+        runScript(ds, JPETSTORE_DDL);
+        runScript(ds, JPETSTORE_DATA);
+        return ds;
+    }
 }

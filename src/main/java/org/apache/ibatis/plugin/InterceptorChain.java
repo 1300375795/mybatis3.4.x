@@ -34,10 +34,11 @@ public class InterceptorChain {
     /**
      * 执行所有的拦截器的插件操作
      *
-     * @param target 目前看来是执行器
+     * @param target 传进来的参数是是声明处理器
      * @return
      */
     public Object pluginAll(Object target) {
+        //会遍历所有的插件 同时将target替换成包装好了的插件
         for (Interceptor interceptor : interceptors) {
             target = interceptor.plugin(target);
         }
