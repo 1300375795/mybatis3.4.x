@@ -51,6 +51,7 @@ public class PreparedStatementHandler extends BaseStatementHandler {
         int rows = ps.getUpdateCount();
         Object parameterObject = boundSql.getParameterObject();
         KeyGenerator keyGenerator = mappedStatement.getKeyGenerator();
+        // TODO: 2021/7/7 CallYeDeGuo 在update之后进行相关的处理
         //在这里执行processAfter  如果主键生成是在update之后的话 那么就会被执行 不然就会略
         keyGenerator.processAfter(executor, mappedStatement, ps, parameterObject);
         return rows;

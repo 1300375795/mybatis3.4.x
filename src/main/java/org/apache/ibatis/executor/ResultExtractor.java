@@ -31,20 +31,38 @@ public class ResultExtractor {
     private final Configuration configuration;
     private final ObjectFactory objectFactory;
 
+    /**
+     * 构造函数
+     *
+     * @param configuration
+     * @param objectFactory
+     */
     public ResultExtractor(Configuration configuration, ObjectFactory objectFactory) {
         this.configuration = configuration;
         this.objectFactory = objectFactory;
     }
 
+    /**
+     * 从集合中提取对象
+     *
+     * @param list
+     * @param targetType
+     * @return
+     */
     public Object extractObjectFromList(List<Object> list, Class<?> targetType) {
         Object value = null;
+        //如果目标类型不为null并且是list的父类 那么直接返回
         if (targetType != null && targetType.isAssignableFrom(list.getClass())) {
             value = list;
-        } else if (targetType != null && objectFactory.isCollection(targetType)) {
+        }
+        //如果目标对象不为null 并且是集合 那么放入MetaObject
+        else if (targetType != null && objectFactory.isCollection(targetType)) {
             value = objectFactory.create(targetType);
             MetaObject metaObject = configuration.newMetaObject(value);
             metaObject.addAll(list);
-        } else if (targetType != null && targetType.isArray()) {
+        }
+        //如果不为null 并且是数组 那么转换成数组
+        else if (targetType != null && targetType.isArray()) {
             Class<?> arrayComponentType = targetType.getComponentType();
             Object array = Array.newInstance(arrayComponentType, list.size());
             if (arrayComponentType.isPrimitive()) {
@@ -55,14 +73,20 @@ public class ResultExtractor {
             } else {
                 value = list.toArray((Object[]) array);
             }
-        } else {
+        }
+        //否则不是list类型的数据
+        else {
+            //如果不为null并且返回的结果记录大于1条 那么抛出异常
             if (list != null && list.size() > 1) {
                 throw new ExecutorException(
                         "Statement returned more than one row, where no more than one was expected.");
-            } else if (list != null && list.size() == 1) {
+            }
+            //如果不为null并且长度为1 那么直接返回这条记录
+            else if (list != null && list.size() == 1) {
                 value = list.get(0);
             }
         }
+        //其余情况直接返回null
         return value;
     }
 }

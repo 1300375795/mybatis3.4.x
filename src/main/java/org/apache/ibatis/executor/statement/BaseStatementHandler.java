@@ -98,6 +98,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
      */
     protected BaseStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject,
             RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+        // TODO: 2021/7/6 CallYeDeGuo  创建声明处理器的时候会同时处理这些东西 还是很重要的一个构造函数
         this.configuration = mappedStatement.getConfiguration();
         this.executor = executor;
         this.mappedStatement = mappedStatement;

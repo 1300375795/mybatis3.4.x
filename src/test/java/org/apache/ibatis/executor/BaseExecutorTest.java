@@ -99,6 +99,11 @@ public class BaseExecutorTest extends BaseDataTest {
         }
     }
 
+    /**
+     * 测试应该插入新的author
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldInsertNewAuthor() throws Exception {
 
@@ -120,6 +125,11 @@ public class BaseExecutorTest extends BaseDataTest {
         }
     }
 
+    /**
+     * 测试查询全部的数据
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldSelectAllAuthorsAutoMapped() throws Exception {
 
@@ -142,6 +152,11 @@ public class BaseExecutorTest extends BaseDataTest {
         }
     }
 
+    /**
+     * 测试自动生成key
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldInsertNewAuthorWithAutoKey() throws Exception {
 
@@ -170,6 +185,11 @@ public class BaseExecutorTest extends BaseDataTest {
         }
     }
 
+    /**
+     * 测试insert author 基于存储过程
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldInsertNewAuthorByProc() throws Exception {
 
@@ -190,6 +210,11 @@ public class BaseExecutorTest extends BaseDataTest {
         }
     }
 
+    /**
+     * 测试基于简单的无参准备好的声明
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldInsertNewAuthorUsingSimpleNonPreparedStatements() throws Exception {
 
@@ -211,6 +236,11 @@ public class BaseExecutorTest extends BaseDataTest {
         }
     }
 
+    /**
+     * 测试更新author
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldUpdateAuthor() throws Exception {
 
@@ -232,6 +262,11 @@ public class BaseExecutorTest extends BaseDataTest {
         }
     }
 
+    /**
+     * 测试删除
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldDeleteAuthor() throws Exception {
 
@@ -252,6 +287,10 @@ public class BaseExecutorTest extends BaseDataTest {
         }
     }
 
+    /**
+     * 测试
+     * @throws Exception
+     */
     @Test
     public void shouldSelectDiscriminatedPost() throws Exception {
 

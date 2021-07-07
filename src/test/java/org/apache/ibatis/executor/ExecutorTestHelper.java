@@ -100,6 +100,12 @@ public class ExecutorTestHelper {
         return ms;
     }
 
+    /**
+     * 准备insert author 已映射声明基于自动主键
+     *
+     * @param config
+     * @return
+     */
     public static MappedStatement prepareInsertAuthorMappedStatementWithAutoKey(final Configuration config) {
         final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
         MappedStatement ms = new MappedStatement.Builder(config, "insertAuthor", new StaticSqlSource(config,
@@ -377,6 +383,12 @@ public class ExecutorTestHelper {
         return ms;
     }
 
+    /**
+     * 测试固定sql语句 插入数据
+     *
+     * @param config
+     * @return
+     */
     public static MappedStatement createInsertAuthorWithIDof99MappedStatement(final Configuration config) {
         MappedStatement ms = new MappedStatement.Builder(config, "insertAuthor", new StaticSqlSource(config,
                 "INSERT INTO author (id,username,password,email,bio) values(99,'someone','******','someone@apache.org',null)"),

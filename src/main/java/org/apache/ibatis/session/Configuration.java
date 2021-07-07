@@ -1009,6 +1009,8 @@ public class Configuration {
      */
     public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement,
             Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+        // TODO: 2021/7/6 CallYeDeGuo 声明处理器 存在一个路由声明处理器 通过这个路由调用实际的处理器
+        // TODO: 2021/7/6 CallYeDeGuo 创建处理器的时候会执行在执行之前创建主键的操作
         //创建代理对象 并且执行生成主键的processBefore方法
         StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject,
                 rowBounds, resultHandler, boundSql);
@@ -1038,6 +1040,7 @@ public class Configuration {
         executorType = executorType == null ? defaultExecutorType : executorType;
         executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
         Executor executor;
+        // TODO: 2021/7/6 CallYeDeGuo 执行器有简单执行器、重用执行器、批量执行器 再就是缓存执行器
         //根据给出的执行器类型创建对应的执行器
         if (ExecutorType.BATCH == executorType) {
             executor = new BatchExecutor(this, transaction);

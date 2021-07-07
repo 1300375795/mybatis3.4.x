@@ -98,8 +98,10 @@ public class SelectKeyGenerator implements KeyGenerator {
                     } else if (values.size() > 1) {
                         throw new ExecutorException("SelectKey returned more than one value.");
                     } else {
+                        //如果返回的数据长度是1 并且keyProperties的长度是1
                         MetaObject metaResult = configuration.newMetaObject(values.get(0));
                         if (keyProperties.length == 1) {
+                            //如果有这个id的get 方法 那么进行设置操作
                             if (metaResult.hasGetter(keyProperties[0])) {
                                 setValue(metaParam, keyProperties[0], metaResult.getValue(keyProperties[0]));
                             } else {
@@ -108,6 +110,7 @@ public class SelectKeyGenerator implements KeyGenerator {
                                 setValue(metaParam, keyProperties[0], values.get(0));
                             }
                         } else {
+                            //处理多keyProperties的情况
                             handleMultipleProperties(keyProperties, metaParam, metaResult);
                         }
                     }
