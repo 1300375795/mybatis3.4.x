@@ -47,12 +47,18 @@ public class ResultExtractorTest {
         resultExtractor = new ResultExtractor(configuration, objectFactory);
     }
 
+    /**
+     * 测试提取的是null
+     */
     @Test
     public void shouldExtractNullForNullTargetType() {
         final Object result = resultExtractor.extractObjectFromList(null, null);
         assertThat(result).isNull();
     }
 
+    /**
+     * 测试提取的是list
+     */
     @Test
     public void shouldExtractList() {
         final List list = Arrays.asList(1, 2, 3);
@@ -62,6 +68,9 @@ public class ResultExtractorTest {
         assertThat(resultList).isEqualTo(list);
     }
 
+    /**
+     * 测试提取的是数组
+     */
     @Test
     public void shouldExtractArray() {
         final List list = Arrays.asList(1, 2, 3);
@@ -87,6 +96,9 @@ public class ResultExtractorTest {
         verify(metaObject).addAll(list);
     }
 
+    /**
+     * 测试提取的是单一集合对象
+     */
     @Test
     public void shouldExtractSingleObject() {
         final List list = Collections.singletonList("single object");
@@ -95,6 +107,9 @@ public class ResultExtractorTest {
         assertThat((String) resultExtractor.extractObjectFromList(list, Integer.class)).isEqualTo("single object");
     }
 
+    /**
+     * 测试应该抛出异常 如果target 不是集合 而list的长度大于1
+     */
     @Test(expected = ExecutorException.class)
     public void shouldFailWhenMutipleItemsInList() {
         final List list = Arrays.asList("first object", "second object");
