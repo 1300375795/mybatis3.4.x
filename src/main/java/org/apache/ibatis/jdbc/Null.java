@@ -38,6 +38,7 @@ import org.apache.ibatis.type.TimeOnlyTypeHandler;
 import org.apache.ibatis.type.TypeHandler;
 
 /**
+ * 类型处理器跟相应的类型
  * @author Clinton Begin
  * @author Adam Gent
  */
