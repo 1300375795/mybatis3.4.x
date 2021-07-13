@@ -37,6 +37,11 @@ import org.junit.Test;
  */
 public class PooledDataSourceTest extends BaseDataTest {
 
+    /**
+     * 测试基本的池化连接的参数
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldProperlyMaintainPoolOf3ActiveAnd2IdleConnections() throws Exception {
         PooledDataSource ds = createPooledDataSource(JPETSTORE_PROPERTIES);
@@ -78,6 +83,11 @@ public class PooledDataSourceTest extends BaseDataTest {
         }
     }
 
+    /**
+     * 测试获取连接不会失败
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldNotFailCallingToStringOverAnInvalidConnection() throws Exception {
         PooledDataSource ds = createPooledDataSource(JPETSTORE_PROPERTIES);
@@ -86,6 +96,11 @@ public class PooledDataSourceTest extends BaseDataTest {
         c.toString();
     }
 
+    /**
+     * 获取真实连接
+     *
+     * @throws Exception
+     */
     @Test
     public void ShouldReturnRealConnection() throws Exception {
         PooledDataSource ds = createPooledDataSource(JPETSTORE_PROPERTIES);
@@ -94,6 +109,11 @@ public class PooledDataSourceTest extends BaseDataTest {
         c.close();
     }
 
+    /**
+     * 测试连接
+     *
+     * @throws Exception
+     */
     @Ignore("See the comments")
     @Test
     public void shouldReconnectWhenServerKilledLeakedConnection() throws Exception {
@@ -139,6 +159,12 @@ public class PooledDataSourceTest extends BaseDataTest {
         con.close();
     }
 
+    /**
+     * 执行查询
+     *
+     * @param con
+     * @throws SQLException
+     */
     private void exexuteQuery(Connection con) throws SQLException {
         PreparedStatement st = con.prepareStatement("select 1");
         ResultSet rs = st.executeQuery();

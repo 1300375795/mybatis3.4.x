@@ -35,6 +35,7 @@ import org.apache.ibatis.logging.LogFactory;
 /**
  * // TODO: 2021/4/7 CallYeDeGuo 核心类
  * This is a simple, synchronous, thread-safe database connection pool.
+ * 简单同步、同步、线程安全的数据库连接池
  *
  * @author Clinton Begin
  */
@@ -42,42 +43,112 @@ public class PooledDataSource implements DataSource {
 
     private static final Log log = LogFactory.getLog(PooledDataSource.class);
 
+    /**
+     * 数据库连接池状态
+     */
     private final PoolState state = new PoolState(this);
 
+    /**
+     * 非池化数据库连接池
+     */
     private final UnpooledDataSource dataSource;
 
-    // OPTIONAL CONFIGURATION FIELDS
+    // OPTIONAL CONFIGURATION FIELDS  可选配置字段
+
+    /**
+     * 最大活跃连接数
+     */
     protected int poolMaximumActiveConnections = 10;
+
+    /**
+     * 最大空闲连接数
+     */
     protected int poolMaximumIdleConnections = 5;
+
+    /**
+     * 最大检出时间
+     */
     protected int poolMaximumCheckoutTime = 20000;
+
+    /**
+     * 等待时间
+     */
     protected int poolTimeToWait = 20000;
+
+    /**
+     * 最大坏连接数量
+     */
     protected int poolMaximumLocalBadConnectionTolerance = 3;
+
+    /**
+     * 连接池ping查询
+     */
     protected String poolPingQuery = "NO PING QUERY SET";
+
+    /**
+     * 是否允许ping
+     */
     protected boolean poolPingEnabled;
+
     protected int poolPingConnectionsNotUsedFor;
 
+    /**
+     * 期望的连接类型代码
+     */
     private int expectedConnectionTypeCode;
 
+    /**
+     * 构造函数
+     */
     public PooledDataSource() {
         dataSource = new UnpooledDataSource();
     }
 
+    /**
+     * 构造函数
+     *
+     * @param dataSource
+     */
     public PooledDataSource(UnpooledDataSource dataSource) {
         this.dataSource = dataSource;
     }
 
+    /**
+     * 构造函数
+     *
+     * @param driver
+     * @param url
+     * @param username
+     * @param password
+     */
     public PooledDataSource(String driver, String url, String username, String password) {
         dataSource = new UnpooledDataSource(driver, url, username, password);
         expectedConnectionTypeCode = assembleConnectionTypeCode(dataSource.getUrl(), dataSource.getUsername(),
                 dataSource.getPassword());
     }
 
+    /**
+     * 构造函数
+     *
+     * @param driver
+     * @param url
+     * @param driverProperties
+     */
     public PooledDataSource(String driver, String url, Properties driverProperties) {
         dataSource = new UnpooledDataSource(driver, url, driverProperties);
         expectedConnectionTypeCode = assembleConnectionTypeCode(dataSource.getUrl(), dataSource.getUsername(),
                 dataSource.getPassword());
     }
 
+    /**
+     * 构造函数
+     *
+     * @param driverClassLoader
+     * @param driver
+     * @param url
+     * @param username
+     * @param password
+     */
     public PooledDataSource(ClassLoader driverClassLoader, String driver, String url, String username,
             String password) {
         dataSource = new UnpooledDataSource(driverClassLoader, driver, url, username, password);
@@ -85,22 +156,50 @@ public class PooledDataSource implements DataSource {
                 dataSource.getPassword());
     }
 
+    /**
+     * 构造函数
+     *
+     * @param driverClassLoader
+     * @param driver
+     * @param url
+     * @param driverProperties
+     */
     public PooledDataSource(ClassLoader driverClassLoader, String driver, String url, Properties driverProperties) {
         dataSource = new UnpooledDataSource(driverClassLoader, driver, url, driverProperties);
         expectedConnectionTypeCode = assembleConnectionTypeCode(dataSource.getUrl(), dataSource.getUsername(),
                 dataSource.getPassword());
     }
 
+    /**
+     * 获取代理连接
+     *
+     * @return
+     * @throws SQLException
+     */
     @Override
     public Connection getConnection() throws SQLException {
         return popConnection(dataSource.getUsername(), dataSource.getPassword()).getProxyConnection();
     }
 
+    /**
+     * 获取代理连接
+     *
+     * @param username
+     * @param password
+     * @return
+     * @throws SQLException
+     */
     @Override
     public Connection getConnection(String username, String password) throws SQLException {
         return popConnection(username, password).getProxyConnection();
     }
 
+    /**
+     * 设置登录时间
+     *
+     * @param loginTimeout
+     * @throws SQLException
+     */
     @Override
     public void setLoginTimeout(int loginTimeout) throws SQLException {
         DriverManager.setLoginTimeout(loginTimeout);
@@ -111,52 +210,100 @@ public class PooledDataSource implements DataSource {
         return DriverManager.getLoginTimeout();
     }
 
+    /**
+     * 设置log writer
+     *
+     * @param logWriter
+     * @throws SQLException
+     */
     @Override
     public void setLogWriter(PrintWriter logWriter) throws SQLException {
         DriverManager.setLogWriter(logWriter);
     }
 
+    /**
+     * 获取log writer
+     *
+     * @return
+     * @throws SQLException
+     */
     @Override
     public PrintWriter getLogWriter() throws SQLException {
         return DriverManager.getLogWriter();
     }
 
+    /**
+     * 设置驱动
+     *
+     * @param driver
+     */
     public void setDriver(String driver) {
         dataSource.setDriver(driver);
         forceCloseAll();
     }
 
+    /**
+     * 设置url
+     *
+     * @param url
+     */
     public void setUrl(String url) {
         dataSource.setUrl(url);
         forceCloseAll();
     }
 
+    /**
+     * 设置用户名
+     *
+     * @param username
+     */
     public void setUsername(String username) {
         dataSource.setUsername(username);
         forceCloseAll();
     }
 
+    /**
+     * 设置密码
+     *
+     * @param password
+     */
     public void setPassword(String password) {
         dataSource.setPassword(password);
         forceCloseAll();
     }
 
+    /**
+     * 设置自动自动
+     *
+     * @param defaultAutoCommit
+     */
     public void setDefaultAutoCommit(boolean defaultAutoCommit) {
         dataSource.setAutoCommit(defaultAutoCommit);
         forceCloseAll();
     }
 
+    /**
+     * 设置默认事务隔离级别
+     *
+     * @param defaultTransactionIsolationLevel
+     */
     public void setDefaultTransactionIsolationLevel(Integer defaultTransactionIsolationLevel) {
         dataSource.setDefaultTransactionIsolationLevel(defaultTransactionIsolationLevel);
         forceCloseAll();
     }
 
+    /**
+     * 设置驱动属性
+     *
+     * @param driverProps
+     */
     public void setDriverProperties(Properties driverProps) {
         dataSource.setDriverProperties(driverProps);
         forceCloseAll();
     }
 
-    /*
+    /**
+     * 设置最大连接数
      * The maximum number of active connections
      *
      * @param poolMaximumActiveConnections The maximum number of active connections
@@ -166,7 +313,8 @@ public class PooledDataSource implements DataSource {
         forceCloseAll();
     }
 
-    /*
+    /**
+     * 设置最大空闲连接数
      * The maximum number of idle connections
      *
      * @param poolMaximumIdleConnections The maximum number of idle connections
@@ -176,13 +324,11 @@ public class PooledDataSource implements DataSource {
         forceCloseAll();
     }
 
-    /*
+    /**
      * The maximum number of tolerance for bad connection happens in one thread
      * which are applying for new {@link PooledConnection}
      *
-     * @param poolMaximumLocalBadConnectionTolerance
-     * max tolerance for bad connection happens in one thread
-     *
+     * @param poolMaximumLocalBadConnectionTolerance max tolerance for bad connection happens in one thread
      * @since 3.4.5
      */
     public void setPoolMaximumLocalBadConnectionTolerance(int poolMaximumLocalBadConnectionTolerance) {
@@ -301,13 +447,15 @@ public class PooledDataSource implements DataSource {
         return poolPingConnectionsNotUsedFor;
     }
 
-    /*
+    /**
+     * 强制关闭所有连接
      * Closes all active and idle connections in the pool
      */
     public void forceCloseAll() {
         synchronized (state) {
             expectedConnectionTypeCode = assembleConnectionTypeCode(dataSource.getUrl(), dataSource.getUsername(),
                     dataSource.getPassword());
+            //关闭活跃的连接集合
             for (int i = state.activeConnections.size(); i > 0; i--) {
                 try {
                     PooledConnection conn = state.activeConnections.remove(i - 1);
@@ -322,6 +470,7 @@ public class PooledDataSource implements DataSource {
                     // ignore
                 }
             }
+            //关闭空闲的连接集合
             for (int i = state.idleConnections.size(); i > 0; i--) {
                 try {
                     PooledConnection conn = state.idleConnections.remove(i - 1);
@@ -342,46 +491,81 @@ public class PooledDataSource implements DataSource {
         }
     }
 
+    /**
+     * 获取连接池状态
+     *
+     * @return
+     */
     public PoolState getPoolState() {
         return state;
     }
 
+    /**
+     * 根据url 用户名 密码获取hashCode
+     *
+     * @param url
+     * @param username
+     * @param password
+     * @return
+     */
     private int assembleConnectionTypeCode(String url, String username, String password) {
         return ("" + url + username + password).hashCode();
     }
 
+    /**
+     * 放回连接
+     *
+     * @param conn
+     * @throws SQLException
+     */
     protected void pushConnection(PooledConnection conn) throws SQLException {
 
         synchronized (state) {
+            //将连接从获取连接集合中删除
             state.activeConnections.remove(conn);
+            //如果连接是有效的
             if (conn.isValid()) {
+                //如果空闲连接小于最大空闲连接并且是同一个hashCode的连接
                 if (state.idleConnections.size() < poolMaximumIdleConnections
                         && conn.getConnectionTypeCode() == expectedConnectionTypeCode) {
                     state.accumulatedCheckoutTime += conn.getCheckoutTime();
+                    //如果不是自动连接 那么回滚
                     if (!conn.getRealConnection().getAutoCommit()) {
                         conn.getRealConnection().rollback();
                     }
+                    //重新创建池化连接
                     PooledConnection newConn = new PooledConnection(conn.getRealConnection(), this);
+                    //将新创建出来的连接放到空闲连接中
                     state.idleConnections.add(newConn);
+                    //设置如果空闲是时间
                     newConn.setCreatedTimestamp(conn.getCreatedTimestamp());
+                    //设置最近使用时间
                     newConn.setLastUsedTimestamp(conn.getLastUsedTimestamp());
+                    //将原先的连接位置无效
                     conn.invalidate();
                     if (log.isDebugEnabled()) {
                         log.debug("Returned connection " + newConn.getRealHashCode() + " to pool.");
                     }
+                    //通知所有等待的线程
                     state.notifyAll();
                 } else {
+                    //否则检出时间相加
                     state.accumulatedCheckoutTime += conn.getCheckoutTime();
+                    //回滚连接
                     if (!conn.getRealConnection().getAutoCommit()) {
                         conn.getRealConnection().rollback();
                     }
+                    //关闭连接
                     conn.getRealConnection().close();
                     if (log.isDebugEnabled()) {
                         log.debug("Closed connection " + conn.getRealHashCode() + ".");
                     }
+                    //设置为无效连接
                     conn.invalidate();
                 }
-            } else {
+            }
+            //如果连接是无效的 那么输出日志并坏连接数量+1
+            else {
                 if (log.isDebugEnabled()) {
                     log.debug("A bad connection (" + conn.getRealHashCode()
                             + ") attempted to return to the pool, discarding connection.");
@@ -391,6 +575,15 @@ public class PooledDataSource implements DataSource {
         }
     }
 
+    /**
+     * 根据用户名、密码获取连接
+     * 将连接放到活跃连接池中
+     *
+     * @param username
+     * @param password
+     * @return
+     * @throws SQLException
+     */
     private PooledConnection popConnection(String username, String password) throws SQLException {
         boolean countedWait = false;
         PooledConnection conn = null;
@@ -510,7 +703,8 @@ public class PooledDataSource implements DataSource {
         return conn;
     }
 
-    /*
+    /**
+     * ping连接
      * Method to check to see if a connection is still usable
      *
      * @param conn - the connection to check
@@ -566,7 +760,8 @@ public class PooledDataSource implements DataSource {
         return result;
     }
 
-    /*
+    /**
+     * 将池化的连接去去包装从而获得真实连接
      * Unwraps a pooled connection to get to the 'real' connection
      *
      * @param conn - the pooled connection to unwrap
@@ -582,6 +777,11 @@ public class PooledDataSource implements DataSource {
         return conn;
     }
 
+    /**
+     * 最终要做的事情
+     *
+     * @throws Throwable
+     */
     protected void finalize() throws Throwable {
         forceCloseAll();
         super.finalize();

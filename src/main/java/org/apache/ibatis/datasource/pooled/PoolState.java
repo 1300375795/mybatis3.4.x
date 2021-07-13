@@ -60,27 +60,57 @@ public class PoolState {
     protected long hadToWaitCount = 0;
     protected long badConnectionCount = 0;
 
+    /**
+     * 构造函数
+     *
+     * @param dataSource
+     */
     public PoolState(PooledDataSource dataSource) {
         this.dataSource = dataSource;
     }
 
+    /**
+     * 获取请求次数
+     *
+     * @return
+     */
     public synchronized long getRequestCount() {
         return requestCount;
     }
 
+    /**
+     * 获取平均请求时间
+     *
+     * @return
+     */
     public synchronized long getAverageRequestTime() {
         return requestCount == 0 ? 0 : accumulatedRequestTime / requestCount;
     }
 
+    /**
+     * 获取平均等待时间
+     *
+     * @return
+     */
     public synchronized long getAverageWaitTime() {
         return hadToWaitCount == 0 ? 0 : accumulatedWaitTime / hadToWaitCount;
 
     }
 
+    /**
+     * 获取等待次数
+     *
+     * @return
+     */
     public synchronized long getHadToWaitCount() {
         return hadToWaitCount;
     }
 
+    /**
+     * 获取坏连接次数
+     *
+     * @return
+     */
     public synchronized long getBadConnectionCount() {
         return badConnectionCount;
     }
