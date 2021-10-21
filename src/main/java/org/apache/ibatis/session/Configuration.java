@@ -114,7 +114,7 @@ public class Configuration {
      * 如果为false 那么对象中的真正配置了关联查询的方法属性的调用才会触发关联查询
      */
     protected boolean aggressiveLazyLoading;
-    protected boolean multgipleResultSetsEnabled = true;
+    protected boolean multipleResultSetsEnabled = true;
 
     /**
      * 是否使用主键生成器
