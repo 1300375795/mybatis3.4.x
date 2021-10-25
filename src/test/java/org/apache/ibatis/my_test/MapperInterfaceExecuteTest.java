@@ -3,6 +3,7 @@ package org.apache.ibatis.my_test;
 import java.io.Reader;
 import org.apache.ibatis.BaseDataTest;
 import org.apache.ibatis.domain.blog.Author;
+import org.apache.ibatis.domain.blog.Section;
 import org.apache.ibatis.domain.blog.mappers.AuthorMapper;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
@@ -34,7 +35,7 @@ public class MapperInterfaceExecuteTest extends BaseDataTest {
     }
 
     /**
-     * 测试简单查询流程
+     * 测试简单查询流程 mapper接口形式
      */
     @Test
     public void shouldExecuteSelectOneAuthorUsingMapperClass() {
@@ -43,6 +44,24 @@ public class MapperInterfaceExecuteTest extends BaseDataTest {
             AuthorMapper mapper = session.getMapper(AuthorMapper.class);
             Author author = mapper.selectAuthor(101);
             assertEquals(101, author.getId());
+        } finally {
+            session.close();
+        }
+    }
+
+    /**
+     * 测试简单查询流程 直接基于SqlSession进行操作
+     *
+     * @throws Exception
+     */
+    @Test
+    public void shouldSelectOneAuthor() throws Exception {
+        SqlSession session = sqlMapper.openSession();
+        try {
+            Author author = session
+                    .selectOne("org.apache.ibatis.domain.blog.mappers.AuthorMapper.selectAuthor", new Author(101));
+            assertEquals(101, author.getId());
+            assertEquals(Section.NEWS, author.getFavouriteSection());
         } finally {
             session.close();
         }
@@ -71,4 +90,5 @@ public class MapperInterfaceExecuteTest extends BaseDataTest {
             session.close();
         }
     }
+
 }

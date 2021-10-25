@@ -52,7 +52,8 @@ public class MapperMethod {
     private final SqlCommand command;
 
     /**
-     * 方法签名
+     * 方法签名 描述这个方法的一些信息
+     * 后续execute执行的时候根据这个来调用SqlSession不同的流程
      */
     private final MethodSignature method;
 
@@ -361,7 +362,7 @@ public class MapperMethod {
     public static class SqlCommand {
 
         /**
-         *
+         * 方法名称
          */
         private final String name;
 
