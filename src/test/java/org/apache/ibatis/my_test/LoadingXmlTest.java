@@ -47,6 +47,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * 测试mybatis的config.xml配置加载流程
+ *
  * @author YDG
  * @description
  * @since 2021/10/21
