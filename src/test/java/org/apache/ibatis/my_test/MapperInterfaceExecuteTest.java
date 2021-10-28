@@ -1,10 +1,13 @@
 package org.apache.ibatis.my_test;
 
 import java.io.Reader;
+import java.util.List;
+import java.util.Map;
 import org.apache.ibatis.BaseDataTest;
 import org.apache.ibatis.domain.blog.Author;
 import org.apache.ibatis.domain.blog.Section;
 import org.apache.ibatis.domain.blog.mappers.AuthorMapper;
+import org.apache.ibatis.domain.blog.mappers.BlogMapper;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -38,11 +41,11 @@ public class MapperInterfaceExecuteTest extends BaseDataTest {
      * 测试简单查询流程 mapper接口形式
      */
     @Test
-    public void shouldExecuteSelectOneAuthorUsingMapperClass() {
+    public void testShouldExecuteSelectOneAuthorUsingMapperClass() {
         SqlSession session = sqlMapper.openSession();
         try {
-            AuthorMapper mapper = session.getMapper(AuthorMapper.class);
-            Author author = mapper.selectAuthor(101);
+            AuthorMapper authorMapper = session.getMapper(AuthorMapper.class);
+            Author author = authorMapper.selectAuthor(101);
             assertEquals(101, author.getId());
         } finally {
             session.close();
@@ -88,6 +91,33 @@ public class MapperInterfaceExecuteTest extends BaseDataTest {
             assertEquals(expected.getBio(), actual.getBio());
         } finally {
             session.close();
+        }
+    }
+
+    /**
+     * 测试二级缓存
+     */
+    @Test
+    public void testMapperCache() {
+        try (SqlSession session1 = sqlMapper.openSession(); SqlSession session2 = sqlMapper.openSession();) {
+            //其他会话查询
+            AuthorMapper authorMapper1 = session1.getMapper(AuthorMapper.class);
+            BlogMapper blogMapper1 = session1.getMapper(BlogMapper.class);
+            Author author1 = authorMapper1.selectAuthor(101);
+            List<Map> maps1 = blogMapper1.selectAllPosts();
+            //update、insert、delete 等默认flushCache的值 是true  在XMLStatementBuilder的parseStatementNode方法中处理
+            //如果是update、insert、delete等操作会清空缓存 （如果commit在前 update在后  那么清空失败）
+            authorMapper1.updateAuthor(author1);
+            //需要提交其他会话才能获取到
+            session1.commit();
+            //其他会话查询
+            //可以通过在xml中对应的select 语句中加属性来控制二级缓存的一些逻辑
+            AuthorMapper authorMapper2 = session2.getMapper(AuthorMapper.class);
+            BlogMapper blogMapper2 = session2.getMapper(BlogMapper.class);
+            //如果flushCache=true的话 会在查询之前情况掉缓存中的内容
+            Author author2 = authorMapper2.selectAuthor(101);
+            //如果设置useCache=false 那么这个sql就不会启用二级缓存
+            List<Map> maps2 = blogMapper2.selectAllPosts();
         }
     }
 

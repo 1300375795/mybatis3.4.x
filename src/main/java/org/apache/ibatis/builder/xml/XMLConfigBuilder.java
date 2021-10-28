@@ -178,6 +178,7 @@ public class XMLConfigBuilder extends BaseBuilder {
      */
     private void parseConfiguration(XNode root) {
         try {
+            // TODO: 2021/10/27 CallYeDeGuo 可以看一下test.java.org.apache.ibatis.builder.CustomizedSettingsMapperConfig.xml文件 这个里面比较全
             //issue #117 read properties first
             //解析xml中的属性配置
             propertiesElement(root.evalNode("properties"));
@@ -191,9 +192,9 @@ public class XMLConfigBuilder extends BaseBuilder {
             pluginElement(root.evalNode("plugins"));
             //解析xml中的对象工厂
             objectFactoryElement(root.evalNode("objectFactory"));
-            //解析xml中的对象
+            //解析xml中的对象包装工厂
             objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
-            //解析xml中的放射工厂
+            //解析xml中的反射工厂
             reflectorFactoryElement(root.evalNode("reflectorFactory"));
             //解析settings中的属性到全局配置中
             settingsElement(settings);

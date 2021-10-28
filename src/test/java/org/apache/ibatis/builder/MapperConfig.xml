@@ -57,6 +57,9 @@
         <plugin interceptor="org.apache.ibatis.builder.ExamplePlugin">
             <property name="pluginProperty" value="100"/>
         </plugin>
+        <plugin interceptor="org.apache.ibatis.my_test.plugin.InterceptorTest2"/>
+        <plugin interceptor="org.apache.ibatis.my_test.plugin.InterceptorTest1"/>
+        <plugin interceptor="org.apache.ibatis.my_test.plugin.ErrorInterceptorTest"/>
     </plugins>
 
     <environments default="development">
@@ -70,6 +73,7 @@
                 <property name="username" value="${username}"/>
                 <property name="password" value="${password}"/>
             </dataSource>
+
         </environment>
     </environments>
 

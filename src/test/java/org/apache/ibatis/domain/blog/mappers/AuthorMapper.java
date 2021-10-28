@@ -20,7 +20,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
-
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.domain.blog.Author;
 import org.apache.ibatis.session.ResultHandler;
@@ -39,6 +38,7 @@ public interface AuthorMapper {
 
   void selectAllAuthors(ResultHandler handler);
 
+  @Select(" select id, username, password, email, bio, favourite_section\n" + "\t\tfrom author where id = '101'")
   Author selectAuthor(int id);
 
   LinkedHashMap<String, Object> selectAuthorLinkedHashMap(int id);

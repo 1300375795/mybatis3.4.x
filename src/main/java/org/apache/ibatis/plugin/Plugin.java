@@ -33,17 +33,17 @@ import org.apache.ibatis.reflection.ExceptionUtil;
 public class Plugin implements InvocationHandler {
 
     /**
-     * 包装的目标对象 最低层的包装是statementHandler 然后后面那一层都是包装包的插件对象
+     * 被代理对象
      */
     private final Object target;
 
     /**
-     * 被包装的插件
+     * 拦截器
      */
     private final Interceptor interceptor;
 
     /**
-     * 这个插件实现类对应的插件作用签名对象map
+     * 拦截器要拦截的所有的类以及类中的方法
      */
     private final Map<Class<?>, Set<Method>> signatureMap;
 
@@ -70,9 +70,11 @@ public class Plugin implements InvocationHandler {
     public static Object wrap(Object target, Interceptor interceptor) {
         //获取这个插件作用的签名map
         Map<Class<?>, Set<Method>> signatureMap = getSignatureMap(interceptor);
+        //目标接口
         Class<?> type = target.getClass();
+        //获取当前插件 是否有拦截当前目标接口
         Class<?>[] interfaces = getAllInterfaces(type, signatureMap);
-        //如果target有接口 那么进行代理
+        //如果目标在有被这个插件拦截的接口 那么生成代理对象
         if (interfaces.length > 0) {
             return Proxy
                     .newProxyInstance(type.getClassLoader(), interfaces, new Plugin(target, interceptor, signatureMap));
@@ -83,7 +85,9 @@ public class Plugin implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         try {
+            //获取当前类的被拦截的方法
             Set<Method> methods = signatureMap.get(method.getDeclaringClass());
+            //如果不为空并且当前方法又被拦截的话 那么拦截执行
             if (methods != null && methods.contains(method)) {
                 return interceptor.intercept(new Invocation(target, method, args));
             }

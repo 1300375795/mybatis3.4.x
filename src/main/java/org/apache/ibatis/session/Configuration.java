@@ -1040,7 +1040,6 @@ public class Configuration {
         executorType = executorType == null ? defaultExecutorType : executorType;
         executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
         Executor executor;
-        // TODO: 2021/7/6 CallYeDeGuo 执行器有简单执行器、重用执行器、批量执行器 再就是缓存执行器
         //根据给出的执行器类型创建对应的执行器
         if (ExecutorType.BATCH == executorType) {
             executor = new BatchExecutor(this, transaction);

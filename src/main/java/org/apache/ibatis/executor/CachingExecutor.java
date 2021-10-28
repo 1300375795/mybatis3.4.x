@@ -111,6 +111,7 @@ public class CachingExecutor implements Executor {
         Cache cache = ms.getCache();
         if (cache != null) {
             flushCacheIfRequired(ms);
+            //这里就是select 中useCache作用的地方 可以控制每一个sql是否用二级缓存
             if (ms.isUseCache() && resultHandler == null) {
                 ensureNoOutParams(ms, boundSql);
                 @SuppressWarnings("unchecked") List<E> list = (List<E>) tcm.getObject(cache, key);

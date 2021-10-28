@@ -132,6 +132,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
 
     @Override
     public Statement prepare(Connection connection, Integer transactionTimeout) throws SQLException {
+        // TODO: 2021/10/27 CallYeDeGuo 实际参数的替换
         ErrorContext.instance().sql(boundSql.getSql());
         Statement statement = null;
         try {

@@ -99,6 +99,7 @@ public class DefaultParameterHandler implements ParameterHandler {
      */
     @Override
     public void setParameters(PreparedStatement ps) {
+        // TODO: 2021/10/27 CallYeDeGuo 替换实际的参数 
         ErrorContext.instance().activity("setting parameters").object(mappedStatement.getParameterMap().getId());
         List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
         if (parameterMappings != null) {

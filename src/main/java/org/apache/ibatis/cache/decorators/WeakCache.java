@@ -32,14 +32,31 @@ import org.apache.ibatis.cache.Cache;
  */
 public class WeakCache implements Cache {
 
+    /**
+     * 强链接避免被垃圾回收的队列
+     * 能做到避免被回收是因为将软引用对应的value加到了这个集合中
+     * 这样这些value就被强引用关联了
+     */
     private final Deque<Object> hardLinksToAvoidGarbageCollection;
+
+    /**
+     * 垃圾回收键值对队列--里面的object继承了弱应用
+     * 如果该弱引用的value被回收了 那么会被放在这个队列里面
+     */
     private final ReferenceQueue<Object> queueOfGarbageCollectedEntries;
+
+    /**
+     * 被装饰对象
+     */
     private final Cache delegate;
+
+    /**
+     * 强链接数量
+     */
     private int numberOfHardLinks;
 
     public WeakCache(Cache delegate) {
-        // TODO: 2021/5/24 CallYeDeGuo 跟SoftCache类似 直接参考SoftCache里面的注释就好了
-        //  不过有一点跟Soft不同 就是WeakCache没有加synchronized关键词
+        // TODO: 2021/5/24 CallYeDeGuo 跟SoftCache类似
         this.delegate = delegate;
         this.numberOfHardLinks = 256;
         this.hardLinksToAvoidGarbageCollection = new LinkedList<Object>();
@@ -63,7 +80,9 @@ public class WeakCache implements Cache {
 
     @Override
     public void putObject(Object key, Object value) {
+        //先进行删除掉已经被jvm回收掉的缓存
         removeGarbageCollectedItems();
+        //放入包装后的对象
         delegate.putObject(key, new WeakEntry(key, value, queueOfGarbageCollectedEntries));
     }
 
@@ -72,7 +91,9 @@ public class WeakCache implements Cache {
         Object result = null;
         @SuppressWarnings("unchecked") // assumed delegate cache is totally managed by this cache
         WeakReference<Object> weakReference = (WeakReference<Object>) delegate.getObject(key);
+        //如果缓存中存在该弱引用 那么从弱引中获取具体的对象
         if (weakReference != null) {
+            //如果为null 表示被回收了 那么这个时候也从缓存中删除 否则将这个结果放入强引用队列中 避免被回收
             result = weakReference.get();
             if (result == null) {
                 delegate.removeObject(key);
@@ -104,6 +125,9 @@ public class WeakCache implements Cache {
         return null;
     }
 
+    /**
+     * 从弱引用队列中获取被jvm回收的对象 并删除缓存中的该对象
+     */
     private void removeGarbageCollectedItems() {
         WeakEntry sv;
         while ((sv = (WeakEntry) queueOfGarbageCollectedEntries.poll()) != null) {
@@ -111,6 +135,9 @@ public class WeakCache implements Cache {
         }
     }
 
+    /**
+     * 弱引用键值对
+     */
     private static class WeakEntry extends WeakReference<Object> {
         private final Object key;
 
