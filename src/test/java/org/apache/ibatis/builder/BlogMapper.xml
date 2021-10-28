@@ -22,7 +22,6 @@
 
 <mapper namespace="org.apache.ibatis.domain.blog.mappers.BlogMapper">
 
-  <cache-ref namespace="org.apache.ibatis.domain.blog.mappers.AuthorMapper"/>
 
   <resultMap id="earlyNestedDiscriminatorPost" type="org.apache.ibatis.domain.blog.Post">
     <id property="id" column="post_id"/>

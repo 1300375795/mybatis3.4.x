@@ -38,7 +38,6 @@ public interface AuthorMapper {
 
   void selectAllAuthors(ResultHandler handler);
 
-  @Select(" select id, username, password, email, bio, favourite_section\n" + "\t\tfrom author where id = '101'")
   Author selectAuthor(int id);
 
   LinkedHashMap<String, Object> selectAuthorLinkedHashMap(int id);

@@ -21,7 +21,6 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="org.apache.ibatis.domain.blog.mappers.AuthorMapper">
-	<cache type=""/>
 
 	<parameterMap id="selectAuthor" type="org.apache.ibatis.domain.blog.Author">
 		<parameter property="id" />
@@ -95,7 +94,7 @@
 
 	<select id="selectAuthor" parameterMap="selectAuthor" resultMap="selectAuthor" >
 		select id, username, password, email, bio, favourite_section
-		from author where id = '101'
+		from author where id = ?
 	</select>
 
 	<select id="selectImmutableAuthor" parameterMap="selectAuthor"
